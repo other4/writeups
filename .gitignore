@@ -1,4 +1,3 @@
 .env
 password
 *.temp
-.gitignore
