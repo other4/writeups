@@ -1,0 +1,78 @@
+
+All Subdoamin
+subfinder d terget.com-o subfinder.txt
+shodanx subdomain -d target.com-ra o shodax.txt
+amass enum -active -norecursive -noalts -d orwa.com-o amass.txt
+gobuster dns -d cengage.co.in w/usr/share/wordlists/subdomain_megalist.txt -o gobuster.txt
+
+curl -s https://crt.sh/\7q\-\\.$1\&output=json | jqr.[].name value' | sed 's/\*\.//g' | sortu | tee a subs domain.txt
+curl -s "https://otx.alienvault.com/api/v1/indicators/hostname/domain.com/passive_dns | jqr.passive_dns[]?.hostname |
+
+grep -E[a-zA-Z0-9.-]+\.domain\.coms" sortu | tee alienvault subs.txt
+
+curl -s "https://urlscan.10/api/v1/search/7q-domain:domain.com&size=10000" | jqr.results[]?.page?.domain' | grep -E_^[a-zA-Z0-9.-]+\.domain\.coms" | sortu | tee urlscan_subs.txt
+curls "http://web.archive.org/cdx/search/cdx?url=_.domain.com/\*&output=json&collapse urlkey" | jq-r'.[1:[] | [2] | grep -Eo ([a-zA-Z0-9]+\.)?domain.com | sortu | tee webarcive subs.txt
+
+Filtering live hosts with httpx
+cat subs domain.txt | httpx-td-title-sc-ip > httpx_domain.com.txt
+cat httpx_domain.com.txt | awk '{print $1}' > live_subs_domain.com.txt
+cat live_subs_domain.com.txt | grep -Ei 'asp|php|jsp|jspx aspx
+httpx -1 all subdomai.txt -ports 88,443,8088,8443,8880,8888,8081,8181,3306,5432,6379,27017, 15672,10000,9090,5900 -threads 88 -o alive.txt
+
+Nmap:
+naabu alive.txt -c 50 nmap-cli 'nmap -SV-sCo naabuports.txt
+sudo nmap -SV-IL live subs domain.com.txt -oN scaned-port.txt --script-vulη
+
+Nikto:
+nikto -h alive subdomains.txt -output nikto results.txt
+
+Subdomain Takeover:
+subzy run-targets subdomains.txt-concurrency 100-hide fails-verify ssl
+
+Broken Link Hijacking:
+socialhunter f alive subdomains.txt
+
+Screenshotting
+eyewitness-web-f alive subdomains.txt threads 5-d screenshots
+
+Nuclei Automated Live Subdomains Spray (with rate limit)
+nuclei 1 subdomin.txt -rl 10 bs 2-c 2-as-silents critical,high,medium
+
+Finding WAF (web application firewall)
+cat httpx domain.com.txt | grep 403
+
+Subdomains without WAF
+cat httpx domain.com.txt | grep -v 1 E cloudfront|imperva cloudflare > nowaf_subs_domain.com.txt
+
+Visit All Non-WAF Subdomains Manually
+cat nowaf subs domain.com.txt | grep 483 | awk '{print $1}'
+
+Prepare the List of 483 Subdomains for Fuzzing
+cat nowaf subs domain.com.txt | grep 463 | awk '{print $1}' > 403 subs domain.com.txt
+
+483 Fuzzing
+
+Default Wordlist Fuzzing
+dirsearch -u https://sub.domain.com-x 403,404,500,400,502,503,429-random-agent
+
+Extension based Fuzzing
+dirsearch -u https://sub.domain.come xml, json,sql,db,log.yml.yaml,bak, txt,tar.gz.zip x 403,404,500,400,502,503,429 --random-agent
+
+Next step
+JavaScript analysisok
+
+Google Dorking
+site:http://drive.google.com inurl:folder
+site:http://drive.google.com inurl:open
+site:http://docs.google.com inurl:d ()
+site:http://drive.google.com "confidential"
+site:http://docs.google.com inurl:d filetype:docx
+site:tesla.com inurl:folder
+site:tesla.com inurl:open
+site:tesla.com filetype:pdf
+site:tesla.com filetype:docx
+site:tesla.com "confidential"
+site:tesla.com inurl:/docs/
+site:tesla.com inurl:/files/
+site:tesla.com filetype:pptx
+site:tesla.com filetype:xlsx

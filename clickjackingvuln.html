@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Clickjacking vulnerability tester</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial; padding: 18px; max-width: 1080px; margin: auto; }
+    label, input, button { font-size: 16px; }
+    input[type="text"] { width: 60%; padding: 8px; margin: 6px; margin-left:0}
+    button {
+    	padding: 5px 16px;
+    	margin-right: 6px;
+    	border-radius: 14px;
+    }
+    #status { margin-top: 12px; padding: 10px; border-radius: 6px; }
+    #status.ok { background:#e6ffed; color:#064; border:1px solid #b7f0c6; }
+    #status.warn { background:#fff8e6; color:#8a5b00; border:1px solid #ffe7a8; }
+    #status.fail { background:#ffecec; color:#7a0a0a; border:1px solid #ffb6b6; }	
+    iframe { margin-top: 12px; width: 100%; height: 650px; border: 1px solid #ccc; }
+    small { color:#666; display:block; margin-top:6px; }
+    pre { background:#f7f7f7; padding:8px; overflow:auto; white-space:pre-wrap; }
+    .controls { margin-top:8px; }
+  </style>
+</head>
+<body>
+  <h3>Clickjacking vulnerability tester</h3>
+
+  <div>
+    <label for="url">URL to test</label><br />
+    <input id="url" type="text" placeholder="https://example.com" value="" />
+    <div class="btn">
+    <button id="go">Go</button>
+    <button id="pasteUrl">Paste</button>
+    <button id="copyUrl">Copy</button>
+    <button id="clear">Clear</button>
+    </div>
+    
+    <small>Enter the full URL (including scheme). If you omit it, https:// will be added.</small>
+  </div>
+
+  <div id="status" aria-live="polite">Ready — enter a URL and click Go.</div>
+
+  <iframe id="targetFrame" src="about:blank" sandbox="allow-same-origin allow-scripts"></iframe>
+
+  <p>
+    <strong>Notes:</strong> Client-side checks are heuristics — see the server-side check below for a reliable header-based test.
+  </p>
+
+  <details>
+    <summary>How this tool works (and limitations)</summary>
+    <ul>
+      <li>This tool loads the target URL in an iframe. If the server sends headers such as <code>X-Frame-Options: DENY</code> or a CSP <code>frame-ancestors</code> directive that blocks framing, the browser will usually prevent the page from being shown in the iframe.</li>
+      <li>Because of cross-origin restrictions, the script cannot read iframe internals for different origins. That makes purely browser-side detection imperfect — sometimes a blocked iframe still triggers events, or an embedded page may be cross-origin so we can't inspect its DOM.</li>
+      <li>For a reliable test, make a server-side request and inspect the response headers (example Node.js script below).</li>
+    </ul>
+  </details>
+
+  <h4>Server-side header check (recommended)</h4>
+  <p>
+    If you run a small Node.js script (or use curl) to fetch the page and examine the response headers for <code>X-Frame-Options</code> or CSP's <code>frame-ancestors</code>, you'll get a reliable answer. Example Node.js script is shown below.
+  </p>
+
+  <div class="controls" style="margin-bottom:8px;">
+    <button id="copyExample">Copy example</button>
+    <small style="display:inline-block; margin-left:8px; color:#666;">Copies the Node.js script shown below to clipboard.</small>
+  </div>
+
+  <pre id="nodeExample">
+// Node.js example (save as check-headers.js)
+// Usage: node check-headers.js https://example.com
+
+const https = require('https');
+const url = require('url');
+
+const target = process.argv[2];
+if (!target) { console.error('Usage: node check-headers.js <url>'); process.exit(1); }
+
+const u = new URL(target);
+
+const opts = {
+  hostname: u.hostname,
+  path: u.pathname + u.search,
+  protocol: u.protocol,
+  port: u.port || (u.protocol === 'https:' ? 443 : 80),
+  method: 'HEAD',
+  headers: { 'User-Agent': 'Clickjack-Header-Checker/1.0' }
+};
+
+const req = https.request(opts, (res) => {
+  console.log('Status:', res.statusCode);
+  console.log('X-Frame-Options:', res.headers['x-frame-options']);
+  console.log('Content-Security-Policy:', res.headers['content-security-policy']);
+  console.log('Other headers:', Object.keys(res.headers).filter(h => ['x-frame-options','content-security-policy'].indexOf(h)===-1).slice(0,10).join(', '));
+  res.resume();
+});
+req.on('error', (e)=> console.error('Request error:', e.message));
+req.end();
+  </pre>
+
+  <script>
+    (function(){
+      const urlInput = document.getElementById('url');
+      const goBtn = document.getElementById('go');
+      const clearBtn = document.getElementById('clear');
+      const statusEl = document.getElementById('status');
+      const iframe = document.getElementById('targetFrame');
+      const copyUrlBtn = document.getElementById('copyUrl');
+      const pasteUrlBtn = document.getElementById('pasteUrl');
+      const copyExampleBtn = document.getElementById('copyExample');
+      const nodeExampleEl = document.getElementById('nodeExample');
+
+      function setStatus(text, cls) {
+        statusEl.textContent = text;
+        statusEl.className = cls || '';
+      }
+
+      function normalizeUrl(input) {
+        let v = input.trim();
+        if (!v) return '';
+        if (!/^https?:\/\//i.test(v)) v = 'https://' + v;
+        try {
+          const u = new URL(v);
+          return u.toString();
+        } catch (e) {
+          return '';
+        }
+      }
+
+      // Primary iframe testing functionality (unchanged)
+      goBtn.addEventListener('click', () => {
+        const url = normalizeUrl(urlInput.value);
+        if (!url) { setStatus('Please provide a valid URL (e.g. https://example.com)', 'fail'); return; }
+
+        setStatus('Loading in iframe — waiting for result (up to 8s)...', 'warn');
+
+        // Clear iframe and create a fresh one to avoid cached state
+        iframe.src = 'about:blank';
+
+        // small delay before setting src to ensure about:blank registered
+        setTimeout(() => {
+          let settled = false;
+          const start = Date.now();
+
+          const onLoad = () => {
+            if (settled) return;
+            settled = true;
+            try {
+              const doc = iframe.contentDocument;
+              if (doc) {
+                const bodyText = (doc.body && doc.body.textContent || '').trim();
+                setStatus('Loaded in iframe — page rendered (likely embeddable).', 'ok');
+              } else {
+                setStatus('Loaded, but block/embedding could be ambiguous due to cross-origin restrictions. Page likely rendered.', 'warn');
+              }
+            } catch (err) {
+              setStatus('Loaded inside iframe (cross-origin). The site appears embeddable (may be vulnerable).', 'ok');
+            } finally {
+              cleanup();
+            }
+          };
+
+          const onError = () => {
+            if (settled) return;
+            settled = true;
+            setStatus('Failed to load into iframe — browser likely blocked framing (site not embeddable).', 'fail');
+            cleanup();
+          };
+
+          function cleanup() {
+            iframe.removeEventListener('load', onLoad);
+            iframe.removeEventListener('error', onError);
+            clearTimeout(timer);
+          }
+
+          iframe.addEventListener('load', onLoad);
+          iframe.addEventListener('error', onError);
+
+          iframe.src = url;
+
+          const timer = setTimeout(() => {
+            if (settled) return;
+            if (iframe.src === 'about:blank') {
+              setStatus('Blocked before navigation (likely not embeddable).', 'fail');
+            } else {
+              try {
+                const doc = iframe.contentDocument;
+                if (doc && doc.readyState !== 'complete') {
+                  setStatus('Iframe appears to be loading slowly; check network or CORS. Outcome uncertain.', 'warn');
+                } else {
+                  setStatus('No decisive signal from browser; outcome uncertain. For a reliable check run the server-side header test.', 'warn');
+                }
+              } catch (e) {
+                setStatus('Loaded inside iframe (cross-origin or access denied) — likely embeddable.', 'ok');
+              }
+            }
+            cleanup();
+          }, 8000); // 8 seconds
+
+        }, 100);
+      });
+
+      clearBtn.addEventListener('click', () => {
+        urlInput.value = '';
+        iframe.src = 'about:blank';
+        setStatus('Cleared. Enter a URL and click Go.', '');
+      });
+
+      // Copy URL to clipboard
+      copyUrlBtn.addEventListener('click', async () => {
+        const val = urlInput.value.trim();
+        if (!val) { setStatus('Nothing to copy — URL field is empty.', 'fail'); return; }
+        try {
+          await navigator.clipboard.writeText(val);
+          setStatus('URL copied to clipboard.', 'ok');
+        } catch (err) {
+          // Fallback: select and attempt execCommand
+          try {
+            urlInput.select();
+            document.execCommand('copy');
+            setStatus('URL copied using fallback method.', 'ok');
+          } catch (e) {
+            setStatus('Copy failed — your browser may block clipboard access.', 'fail');
+          }
+        }
+      });
+
+      // Paste from clipboard into the URL field
+      pasteUrlBtn.addEventListener('click', async () => {
+        if (!navigator.clipboard || !navigator.clipboard.readText) {
+          setStatus('Paste not supported in this browser. Try Ctrl+V in the URL field.', 'warn');
+          return;
+        }
+        try {
+          const text = await navigator.clipboard.readText();
+          if (!text) {
+            setStatus('Clipboard is empty or contains non-text.', 'warn');
+            return;
+          }
+          urlInput.value = text;
+          setStatus('Pasted clipboard text into URL field. Review and click Go.', 'ok');
+        } catch (err) {
+          setStatus('Unable to read clipboard: permission denied or unsupported. Try pasting manually (Ctrl+V).', 'fail');
+        }
+      });
+
+      // Copy the Node.js example text
+      copyExampleBtn.addEventListener('click', async () => {
+        const txt = nodeExampleEl.textContent || nodeExampleEl.innerText || '';
+        if (!txt.trim()) { setStatus('No example text found to copy.', 'fail'); return; }
+        try {
+          await navigator.clipboard.writeText(txt);
+          setStatus('Example script copied to clipboard.', 'ok');
+        } catch (err) {
+          // Fallback: create temporary textarea
+          try {
+            const ta = document.createElement('textarea');
+            ta.value = txt;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            setStatus('Example script copied using fallback method.', 'ok');
+          } catch (e) {
+            setStatus('Copy failed — your browser may block clipboard access.', 'fail');
+          }
+        }
+      });
+
+      // Allow Enter key to submit
+      urlInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') goBtn.click();
+      });
+    })();
+  </script>
+</body>
+</html>
