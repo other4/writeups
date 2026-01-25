@@ -1,3 +1,13 @@
+---
+title: "Prototype pollution"
+description: "In JavaScript almost every object inherits from another object called its prototype."
+author: ["name": "Roxoi", "roxoi001@rajendrapancholi.com", "image": "https://avatars.githubusercontent.com/u/218960969?v=4&size=64"]
+dateted: "2024-05-20"
+thumbnail: "images/3689-article-prototype-pollution-prototype-chain.svg"
+updated: "2024-05-21"
+tags: [nextjs, typescript, github, object, inherits]
+---
+
 # Prototype pollution
 
 ## 1) What is the JavaScript prototype (simple)
