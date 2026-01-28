@@ -1,3 +1,4 @@
+---
 title: "How to fetch GitHub files"
 description: "A deep dive into using Next.js with GitHub API"
 author: ['name': 'Rajendra', "email": "author@mail.com" ]
@@ -8,7 +9,7 @@ tags: [nextjs, typescript, github]
 ---
 
 
-# 1. What is the HTTP Host Header?
+# 1. How to fetch GitHub files?
 
 * In **HTTP/1.1 requests**, the `Host` header specifies **which website (domain)** the client wants.
 * Example:
