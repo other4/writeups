@@ -6,6 +6,7 @@ created: "2024-05-20"
 updated: "2024-05-21"
 thumbnail: "/images/site-definition.png"
 tags: [nextjs, typescript, github, system-design, sde, architectural]
+keywords: ["How to design a URL shortener", "System design for high availability", "Best database for real-time applications", "Microservices vs monolith pros and cons", "System design case studies"]
 ---
 
 
