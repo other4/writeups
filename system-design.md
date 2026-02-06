@@ -10,4 +10,4 @@ tags: [nextjs, typescript, github, system-design, sde, architectural]
 # System Design Overview
 
 In this section, we cover the basics. 
-Check out [What is System Design?](./what-is-system-design) to get started.
+Check out [What is System Design?](./system-design/what-is-system-design) to get started.
