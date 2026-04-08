@@ -9,7 +9,7 @@ tags: [socketio, nodejs, web-sockets, backend]
 keywords: ["What is Socket.io", "Real-time communication in Node.js", "Socket.io vs WebSockets tutorial"]
 ---
 
-# "Introduction to Socket.io: Building Real-Time Applications"
+# Introduction to Socket.io: Building Real-Time Applications
 
 Socket.io is a powerful library that enables real-time, bidirectional, and event-based communication between a client (usually a browser) and a server (Node.js).
 
