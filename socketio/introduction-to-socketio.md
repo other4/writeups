@@ -4,7 +4,7 @@ description: " A comprehensive guide to understanding Socket.io, enabling real-t
 author: ["name": "Rajendra Pancholi", "email": "rpancholi522@gmail.com" ]
 created: "2026-04-08"
 updated: "2026-04-08"
-thumbnail: " /images/socketiointro.png"
+thumbnail: "/images/socketiointro.png"
 tags: [socketio, nodejs, web-sockets, backend]
 keywords: ["What is Socket.io", "Real-time communication in Node.js", "Socket.io vs WebSockets tutorial"]
 ---
