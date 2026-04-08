@@ -13,7 +13,7 @@ keywords: ["What is Socket.io", "Real-time communication in Node.js", "Socket.io
 
 Socket.io is a powerful library that enables real-time, bidirectional, and event-based communication between a client (usually a browser) and a server (Node.js).
 
-![Socket.IO]( /images/socketiointro.png)
+![Socket.IO](/images/socketiointro.png)
 
 ## What is Socket.IO?
 
