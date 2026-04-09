@@ -920,6 +920,33 @@ appointment-scheduler/
 └── .env
 ```
 
+- more structured socketio
+```bash
+backend/src/
+├── ...
+├── socket/
+│   ├── index.ts                # Main Socket.IO setup
+│   ├── middleware/             # Socket.IO middleware (reuses existing auth/rateLimiter)
+│   │   ├── auth.ts             # Socket.IO auth middleware (adapts authMiddleware.ts)
+│   │   └── rateLimit.ts        # Socket.IO rate limiting (adapts rateLimiter.ts)
+│   ├── handlers/               # Socket.IO event handlers (reuses services)
+│   │   ├── appointment/
+│   │   │   ├── book.ts         # Handles 'appointment:book' event
+│   │   │   ├── cancel.ts       # Handles 'appointment:cancel' event
+│   │   │   └── lockSlot.ts     # Handles 'slot:lock' event
+│   │   └── notification/
+│   │       ├── new.ts          # Handles 'notification:new' event
+│   │       └── markRead.ts     # Handles 'notification:mark_read' event
+│   ├── namespaces/             # Socket.IO namespaces
+│   │   ├── appointment.ts      # /appointments namespace
+│   │   └── notification.ts     # /notifications namespace
+│   └── types/                  # Socket.IO-specific types (extends your existing types)
+│       ├── appointment.d.ts    # Appointment-related Socket.IO types
+│       └── notification.d.ts   # Notification-related Socket.IO types
+├── ...
+└── server.ts                   # Updated to initialize Socket.IO
+```
+
 ### Backend Setup
 
 #### 1. server.js - Main Server File
