@@ -1,7 +1,7 @@
 ---
 title: "How to Manage Multiple GitHub Accounts on One Computer using SSH"
 description: "A complete guide on setting up and switching between personal and work GitHub accounts using custom SSH configurations and IdentityFiles."
-author: {'name': 'Rajendra Pancholi', 'email': 'rpancholi522@gmail.com'}
+author: ["name": "Rajendra Pancholi", "email": "rpancholi522@gmail.com"]
 created: "2026-04-07"
 updated: "2026-04-07"
 thumbnail: "/images/github-multiple-accounts.webp"

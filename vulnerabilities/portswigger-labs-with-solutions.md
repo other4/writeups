@@ -1,7 +1,7 @@
 ---
 title: "Mastering Web Security: Complete PortSwigger Academy Lab Solutions"
 description: "A comprehensive guide and walkthrough of all PortSwigger Web Security Academy labs, designed for security researchers to master exploitation techniques."
-author: {'name': 'Rajendra Pancholi', 'email': 'rpancholi522@gmail.com'}
+author: ["name": "Rajendra Pancholi", "email": "rpancholi522@gmail.com"]
 created: "2026-04-07"
 updated: "2026-04-07"
 thumbnail: "/images/portswigger-labs-guide.png"
