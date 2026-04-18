@@ -1,7 +1,23 @@
-# JWT attacks |
+---
+title: "JWT Vulnerabilities"
+description: "Understand common JWT vulnerabilities like none algorithm, weak secrets, and token manipulation."
+author: ["name": "Rajendra Pancholi", "email": "rpancholi522@gmail.com"]
+created: "2026-04-18"
+updated: "2026-04-18"
+thumbnail: "/images/site-definition.png"
+tags: [jwt, authentication, web-security, bugbounty]
+keywords: ["JWT attack", "none algorithm", "JWT cracking", "authentication bypass"]
+---
 
-What are JWTs?
---------------
+# JWT Vulnerabilities
+
+Understand common JWT vulnerabilities like none algorithm, weak secrets, and token manipulation.
+
+![JWT Vulnerabilities](/images/site-definition.png)
+
+
+## What are JWTs?
+
 
 JSON web tokens (JWTs) are a standardized format for sending cryptographically signed JSON data between systems. They can theoretically contain any kind of data, but are most commonly used to send information ("claims") about users as part of authentication, session handling, and access control mechanisms.
 

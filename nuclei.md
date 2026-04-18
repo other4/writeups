@@ -1,15 +1,31 @@
-### Custom Nuclei Templates in Bug Bounty Hunting
+---
+title: "Custom Nuclei Templates in Bug Bounty Hunting"
+description: "Learn how custom Nuclei templates help bug bounty hunters discover unique vulnerabilities, reduce false positives, and automate reconnaissance for higher payouts."
+author: ["name": "Rajendra Pancholi", "email": "rpancholi522@gmail.com" ]
+created: "2026-04-18"
+updated: "2026-04-18"
+thumbnail: "/images/intro-nuclei.png"
+tags: [bugbounty, nuclei, cybersecurity, automation, vulnerability-scanning]
+keywords: ["Custom Nuclei templates", "Bug bounty automation", "Nuclei vulnerability scanner", "Write Nuclei templates", "Advanced bug hunting techniques"]
+---
 
-Nuclei, a fast YAML-based vulnerability scanner, excels in bug bounty hunting through its customizable templates. While the official repository (github.com/projectdiscovery/nuclei-templates) offers thousands of community-curated templates for common vulnerabilities like CVEs, misconfigurations, and exposures, custom templates allow hunters to target program-specific flaws, niche tech stacks, or emerging threats not covered in defaults. Custom templates are essential for automation, reducing false positives, and finding "hidden gems" in large scopes, leading to bounties from $500 (low-impact) to $10,000+ (critical). Below, I outline common uses and examples of custom templates in bug hunting, drawn from real-world guides, write-ups, and community shares. These are not exhaustive ("all" is impractical due to endless variations), but represent key patterns.
 
-#### Why Use Custom Templates in Bug Hunting?
+# Custom Nuclei Templates in Bug Bounty Hunting
+
+Custom Nuclei templates play a crucial role in modern bug bounty hunting. Nuclei is a fast, YAML-based vulnerability scanner that allows security researchers to automate detection of security issues across large attack surfaces. While the official template repository provides thousands of ready-to-use checks for known vulnerabilities such as CVEs, misconfigurations, and exposed services, relying only on default templates limits the depth of testing.
+
+![Nuclei Templates](/images/intro-nuclei.png)
+
+Custom templates enable bug hunters to go beyond generic scans and focus on program-specific vulnerabilities, unique business logic flaws, and uncommon technology stacks. This is where real advantage comes in competitive bug bounty environments.
+
+## Why Use Custom Templates in Bug Hunting?
 - **Customization**: Tailor to a program's tech (e.g., GraphQL, Next.js) or unique endpoints, avoiding over-hunted defaults.
 - **Automation**: Chain with recon tools (e.g., subfinder + httpx) for workflows like subdomain scanning + vuln checks.
 - **Efficiency**: Focus on high-impact vulns (e.g., SSRF, IDOR) with low noise; integrate into scripts for large scopes.
 - **Real-World Impact**: Hunters report finding bugs like exposed .env files or host header injections leading to bounties.
 - **Tools for Management**: Use repos like recon-ninja for storing/running customs, or AI-assisted validation.
 
-#### Common Uses and Examples of Custom Templates
+## Common Uses and Examples of Custom Templates
 Custom templates typically involve HTTP requests, matchers (e.g., regex, status codes), and extractors. Save as .yaml files and run via `nuclei -u target.com -t custom.yaml`. Here are key categories with examples adapted from bug bounty write-ups and guides.
 
 1. **Misconfigurations and Exposures (e.g., Exposed Files/Endpoints)**
@@ -179,7 +195,7 @@ Custom templates typically involve HTTP requests, matchers (e.g., regex, status 
      ```
    - **How to Use**: Create payloads/sqli.txt with common injections; validate positives manually.
 
-#### Advanced Workflows and Tips
+## Advanced Workflows and Tips
 - **Chaining Templates**: Use Nuclei workflows for multi-step (e.g., open-redirect.yaml + ssrf.yaml).
   ```yaml
   id: redirect-ssrf-chain
@@ -198,13 +214,13 @@ For more, explore GitHub forks or YouTube tutorials on creating customs. If you 
 
 ---
 
-### Advanced SSRF Nuclei Templates for Bug Bounty Hunting
+## Advanced SSRF Nuclei Templates for Bug Bounty Hunting
 
 Server-Side Request Forgery (SSRF) is a high-impact vulnerability in bug bounty programs, often leading to critical findings like internal network access, cloud metadata theft, or RCE chains. Nuclei's YAML templates excel at automating SSRF detection, especially advanced variants involving blinds, bypasses, protocol smuggling, and cloud-specific exploits. While the official Nuclei repository includes basic SSRF templates (e.g., blind-ssrf.yaml for OOB checks), custom advanced templates allow tailoring to program scopes, reducing duplicates, and targeting emerging threats like those in AWS/GCP metadata or Redis exploitation.
 
 Below are custom advanced SSRF templates inspired by real-world methodologies, including cloud metadata probing, blind OOB, protocol smuggling (e.g., gopher for Redis), IP obfuscation bypasses, and chaining with open redirects. These use Nuclei's HTTP requests, matchers (e.g., DSL for OOB), and interact.sh integration for callbacks. Save as .yaml files and run via `nuclei -u http://target.com -t template.yaml -rl 10` (adjust rate limit for ethics). Always validate findings manually (e.g., with Burp Collaborator) and respect program rules to avoid bans.
 
-#### 1. **Blind SSRF with OOB Detection**
+### 1. **Blind SSRF with OOB Detection**
    - **Use Case**: Detects blind SSRF where no response is echoed, but side effects (e.g., DNS/HTTP callbacks) confirm exploitation. Ideal for API params like `?url=` in cloud-heavy programs.
    - **Template** (blind-ssrf-oob.yaml):
      ```yaml:disable-run
@@ -225,7 +241,7 @@ Below are custom advanced SSRF templates inspired by real-world methodologies, i
      ```
    - **How It Works**: Sends a request to your interact.sh domain; matches on callback protocols. In bug bounty, chain with internal port scanning (e.g., modify path to `?url=127.0.0.1:{{port}}` in a fuzzed version). Payout potential: $2,000+ for confirmed internal access.
 
-#### 2. **Cloud Metadata SSRF (AWS/GCP/Azure)**
+### 2. **Cloud Metadata SSRF (AWS/GCP/Azure)**
    - **Use Case**: Probes for SSRF accessing cloud instance metadata, common in misconfigured AWS/GCP/Azure-hosted apps. High-reward in enterprise programs.
    - **Template** (cloud-metadata-ssrf.yaml):
      ```yaml
@@ -254,7 +270,7 @@ Below are custom advanced SSRF templates inspired by real-world methodologies, i
      ```
    - **How It Works**: Tests multiple cloud endpoints; matches on provider-specific keywords. Escalate by extracting creds (e.g., add `/iam/security-credentials/` for AWS). Use in recon after identifying cloud-hosted subdomains.
 
-#### 3. **Protocol Smuggling SSRF (Gopher for Redis RCE)**
+### 3. **Protocol Smuggling SSRF (Gopher for Redis RCE)**
    - **Use Case**: Exploits non-HTTP protocols like gopher for smuggling commands to internal services (e.g., Redis), leading to RCE. Advanced for database-exposed targets.
    - **Template** (gopher-redis-ssrf.yaml):
      ```yaml
@@ -277,7 +293,7 @@ Below are custom advanced SSRF templates inspired by real-world methodologies, i
      ```
    - **How It Works**: Uses URL-encoded gopher payload to flush and set Redis keys (e.g., for webshell injection). Test on apps supporting custom protocols; confirm RCE manually. Bounty tip: Chain with subdomain enum for internal Redis instances.
 
-#### 4. **SSRF Bypass with IP Obfuscation**
+### 4. **SSRF Bypass with IP Obfuscation**
    - **Use Case**: Bypasses blacklists/whitelists using alternative IP formats (decimal, hex, etc.). Useful against filtered loopback/internal IPs.
    - **Template** (ssrf-bypass-obfuscation.yaml):
      ```yaml
@@ -306,7 +322,7 @@ Below are custom advanced SSRF templates inspired by real-world methodologies, i
      ```
    - **How It Works**: Tests obfuscated IPs for loopback access; matches on internal indicators. In bounties, combine with DNS rebinding tools like rbndr for dynamic bypasses.
 
-#### 5. **Chained SSRF with Open Redirect**
+### 5. **Chained SSRF with Open Redirect**
    - **Use Case**: Chains SSRF with open redirects for pivoting to internals, escalating low-impact redirects to critical SSRF.
    - **Template** (chained-redirect-ssrf.yaml):
      ```yaml
@@ -326,7 +342,7 @@ Below are custom advanced SSRF templates inspired by real-world methodologies, i
      ```
    - **How It Works**: Uses Nuclei workflows to first detect redirects, then chain to SSRF probes. Customize with program-specific paths; report as chained vuln for higher bounties.
 
-#### Tips for Using These in Bug Bounty
+### Tips for Using These in Bug Bounty
 - **Workflow Integration**: Pipe recon (e.g., `subfinder -d target.com | httpx -silent | nuclei -t ssrf-templates/`) for automated scans.
 - **Optimization**: Add `-c 20 -rl 50` for speed; use interact.sh for OOB to avoid false positives.
 - **Validation & Reporting**: Confirm with manual tools (e.g., SSRFmap); include Nuclei output, PoC requests, and impact (e.g., "Exposed AWS creds leading to account takeover").
@@ -336,14 +352,14 @@ For more, check community repos or adapt these for specific programs. If you nee
 
 ---
 
-### Custom Nuclei Templates for XSS Detection in Bug Bounty Hunting
+## XSS Detection
 
 Cross-Site Scripting (XSS) remains a high-value vulnerability in bug bounty programs due to its potential for session theft, phishing, or account takeover, with bounties ranging from $500 to $10,000+ depending on impact (e.g., stored XSS with GDPR implications). Nuclei’s YAML-based templates are ideal for automating XSS detection across reflected, stored, and DOM-based variants, especially when tailored to program-specific endpoints or tech stacks. While the official Nuclei template repository (github.com/projectdiscovery/nuclei-templates) includes XSS templates, custom templates allow hunters to target unique input fields, bypass filters, and reduce false positives in large scopes.
 
 Below are advanced custom Nuclei templates for detecting XSS vulnerabilities, designed for bug bounty hunting. These focus on reflected, stored, DOM-based XSS, and filter bypasses, with examples inspired by real-world methodologies and community practices. Save each as a .yaml file and run with `nuclei -u http://target.com -t xss-template.yaml -rl 10` (adjust rate limit for ethics). Always validate findings manually with Burp Suite and report responsibly within program scopes.
 
-<xaiArtifact artifact_id="524778c9-12bf-4f54-8a7b-1003093a5ba9" artifact_version_id="c2c69c97-590e-4cca-b11c-4dd0b5192e41" title="xss_templates.yaml" contentType="text/yaml">
-# Template 1: Reflected XSS in URL Parameters
+### Template 1: Reflected XSS in URL Parameters
+```yaml
 id: reflected-xss
 info:
   name: Reflected XSS in URL Parameters
@@ -372,8 +388,10 @@ http:
       - type: status
         status:
           - 200
+```
 
-# Template 2: Stored XSS in Forms
+### Template 2: Stored XSS in Forms
+```yaml
 id: stored-xss-form
 info:
   name: Stored XSS in Form Inputs
@@ -414,8 +432,11 @@ http:
           - "<script>alert(document.cookie)</script>"
           - "onerror=alert(1)"
         condition: or
+```
 
-# Template 3: DOM-Based XSS
+### Template 3: DOM-Based XSS
+
+```yaml
 id: dom-xss
 info:
   name: DOM-Based XSS Detection
@@ -441,8 +462,11 @@ http:
       - type: status
         status:
           - 200
+```
 
-# Template 4: XSS Filter Bypass
+### Template 4: XSS Filter Bypass
+
+```yaml
 id: xss-filter-bypass
 info:
   name: XSS Filter Bypass with Obfuscation
@@ -470,8 +494,10 @@ http:
       - type: status
         status:
           - 200
+```
 
-# Template 5: Blind XSS with OOB
+### Template 5: Blind XSS with OOB
+```yaml
 id: blind-xss-oob
 info:
   name: Blind XSS with OOB Callback
@@ -490,11 +516,11 @@ http:
       - type: dsl
         dsl:
           - "contains(interactsh_protocol, 'http')"
-</xaiArtifact>
+```
 
 ---
 
-### How to Use These Templates in Bug Bounty
+## How to Use These Templates
 
 1. **Setup and Run**:
    - Save the artifact as `xss_templates.yaml` in your Nuclei templates directory (e.g., `~/custom-nuclei/xss_templates.yaml`).
@@ -541,7 +567,7 @@ http:
 
 ---
 
-### Practical Example
+## Practical Example
 - **Target**: `example.com` (HackerOne public program).
 - **Workflow**:
   1. Recon: `subfinder -d example.com | httpx -silent | gau --subs > urls.txt`.
@@ -551,12 +577,4 @@ http:
 
 ---
 
-### Notes
-- **False Positives**: Nuclei may flag non-executable reflections; always verify script execution in browser.
-- **Scope**: Customize paths/params for program (e.g., add `/forum/post` for forums).
-- **Practice**: Test on PortSwigger labs or VDPs like Open Bug Bounty.
-
-If you need a specific XSS template customized (e.g., for a CMS or API) or a workflow script integrating these, let me know! I can also search X for recent XSS-related Nuclei tips if desired.
-
----
 

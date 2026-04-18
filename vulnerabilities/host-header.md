@@ -1,4 +1,17 @@
-# 1. What is the HTTP Host Header?
+---
+title: "Host Header Injection"
+description: "Explore host header injection attacks, their impact, and techniques to exploit and mitigate them."
+author: ["name": "Rajendra Pancholi", "email": "rpancholi522@gmail.com"]
+created: "2026-04-18"
+updated: "2026-04-18"
+thumbnail: "/images/site-definition.png"
+tags: [host-header, web-security, bugbounty, http]
+keywords: ["Host header injection", "password reset poisoning", "web cache poisoning"]
+---
+
+# Host Header Injection
+
+## 1. What is the HTTP Host Header?
 
 * In **HTTP/1.1 requests**, the `Host` header specifies **which website (domain)** the client wants.
 * Example:
@@ -7,6 +20,9 @@
   GET /home HTTP/1.1
   Host: example.com
   ```
+
+![Host Header Injection](/images/site-definition.png)
+
 * Why important?
 
   * Servers often host **multiple domains** on the same IP.

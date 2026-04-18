@@ -1,3 +1,14 @@
+---
+title: "Web Cache Poisoning"
+description: "Explore how attackers poison caches to serve malicious content to users."
+author: ["name": "Rajendra Pancholi", "email": "rpancholi522@gmail.com"]
+created: "2026-04-18"
+updated: "2026-04-18"
+thumbnail: "/images/site-definition.png"
+tags: [cache-poisoning, web-security, bugbounty]
+keywords: ["web cache poisoning", "cache manipulation", "cdn attack"]
+---
+
 # Web Cache Poisoning
 
 * **What it is**:

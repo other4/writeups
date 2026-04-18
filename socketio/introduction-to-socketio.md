@@ -1106,7 +1106,7 @@ module.exports = (io, socket) => {
   
   // Event: User creates a new appointment
   socket.on("appointment:create", async (data) => {
-    console.log(`📅 New appointment created by ${socket.userId}:`, data);
+    console.log(`New appointment created by ${socket.userId}:`, data);
 
     const appointment = {
       id: Date.now(),

@@ -1,4 +1,17 @@
-# Header Name Splitting
+---
+title: "HTTP Request Smuggling"
+description: "Deep dive into HTTP request smuggling vulnerabilities caused by inconsistent parsing between servers."
+author: ["name": "Rajendra Pancholi", "email": "rpancholi522@gmail.com"]
+created: "2026-04-18"
+updated: "2026-04-18"
+thumbnail: "/images/site-definition.png"
+tags: [http, request-smuggling, web-security, bugbounty]
+keywords: ["HTTP request smuggling", "CL TE", "TE CL", "desync attack"]
+---
+
+# HTTP Request Smuggling
+
+## Header Name Splitting
 
 You'll find some servers don't let you use newlines in header names, but do allow colons. This only rarely enables full desynchronization, due to the trailing colon appended during the downgrade:
 http2 req.
@@ -26,6 +39,8 @@ GET / HTTP/1.1
 Host: example.com
 Host: psres.net: 443
 `
+![HTTP Request Smuggling](/images/site-definition.png)
+
 ```js
 fetch('https://0ae500b703a4d37580e70dd200160020.h1-web-security-academy.net', {
         method: 'POST',

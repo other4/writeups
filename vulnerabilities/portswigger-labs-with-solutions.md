@@ -13,7 +13,7 @@ keywords: ["PortSwigger Lab Solutions", "Web Security Academy walkthrough", "Eth
 
 The PortSwigger Web Security Academy is the gold standard for learning web vulnerabilities. This blog compiles detailed solutions and methodologies for every lab, from Apprentice to Practitioner levels.
 
-![labguid](/images/portswigger-labs-guide.png)
+![Complete PortSwigger Academy Lab Solutions](/images/portswigger-labs-guide.png)
 
 ## SQL injection vulnerability
 
