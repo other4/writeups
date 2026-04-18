@@ -4,13 +4,15 @@ description: "A quick guide to fingerprinting web application technologies by an
 author: ["name": "Rajendra Pancholi", "email": "rpancholi522@gmail.com" ]
 created: "2026-04-18"
 updated: "2026-04-18"
-thumbnail: "/images/site-definition.png"
+thumbnail: "/images/session-token.png"
 tags: [Web Security, Reconnaissance, Session Management, Pentesting]
 keywords: ["Session token identification", "Web tech fingerprinting", "JSESSIONID", "PHPSESSID", "ASPSESSIONID"]
 ---
 
 # Session Tokens
 Many web servers and web application platforms generate session tokens by default with names that provide information about the technology in use. Identifying these tokens is a quick way to fingerprint the backend tech stack during the reconnaissance phase.
+
+![Session Tokens](/images/session-token.png)
 
 ## Common Default Session Tokens
 

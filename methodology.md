@@ -4,7 +4,7 @@ description: "A complete technical workflow for advanced bug bounty hunting, cov
 author: ["name": "Rajendra Pancholi", "email": "rpancholi522@gmail.com" ]
 created: "2026-04-18"
 updated: "2026-04-18"
-thumbnail: "/images/site-definition.png"
+thumbnail: "/images/methodology-bug-hunting.png"
 tags: [bugbounty, cybersecurity, websecurity, automation, pentesting]
 keywords: ["Advanced bug bounty methodology", "Recon workflow bug bounty", "Web vulnerabilities guide", "Nuclei automation", "Bug bounty hunting steps"]
 ---

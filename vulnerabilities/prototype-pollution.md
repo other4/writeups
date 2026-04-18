@@ -4,14 +4,14 @@ description: "Learn how prototype pollution affects JavaScript applications and 
 author: ["name": "Rajendra Pancholi", "email": "rpancholi522@gmail.com"]
 created: "2026-04-18"
 updated: "2026-04-18"
-thumbnail: "/images/site-definition.png"
+thumbnail: "/images/prototype-pollution-vulnerability.png"
 tags: [prototype-pollution, javascript, web-security]
 keywords: ["prototype pollution attack", "javascript vulnerability", "object prototype exploit"]
 ---
 
 # Prototype pollution
 
-![Prototype Pollution](/images/site-definition.png)
+![Prototype Pollution](/images/prototype-pollution-vulnerability.png)
 
 ## 1) What is the JavaScript prototype (simple)
 

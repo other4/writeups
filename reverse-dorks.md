@@ -4,7 +4,7 @@ description: "A comprehensive guide to using advanced Google search operators (G
 author: ["name": "Rajendra Pancholi", "email": "rpancholi522@gmail.com" ]
 created: "2026-04-18"
 updated: "2026-04-18"
-thumbnail: "/images/site-definition.png"
+thumbnail: "/images/google-dorking.jpeg"
 tags: [Google Dorks, OSINT, Reconnaissance, Bug Bounty, Pentesting]
 keywords: ["Google hacking database", "Advanced search operators", "SQL injection dorks", "Sensitive file exposure", "Passive recon workflow"]
 ---

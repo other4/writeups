@@ -4,7 +4,7 @@ description: "Explore security risks in Large Language Models including prompt i
 author: ["name": "Rajendra Pancholi", "email": "rpancholi522@gmail.com"]
 created: "2026-04-18"
 updated: "2026-04-18"
-thumbnail: "/images/site-definition.png"
+thumbnail: "/images/llm-vulnerability.png"
 tags: [llm, ai-security, prompt-injection, cybersecurity]
 keywords: ["LLM security", "prompt injection", "AI vulnerabilities", "model exploitation"]
 ---
@@ -13,7 +13,7 @@ keywords: ["LLM security", "prompt injection", "AI vulnerabilities", "model expl
 
 Organizations are rushing to integrate Large Language Models (LLMs) in order to improve their online customer experience. This exposes them to web LLM attacks that take advantage of the model's access to data, APIs, or user information that an attacker cannot access directly. For example, an attack may:
 
-![LLM Security Vulnerabilities](/images/site-definition.png)
+![LLM Security Vulnerabilities](/images/llm-vulnerability.png)
 
 *   Retrieve data that the LLM has access to. Common sources of such data include the LLM's prompt, training set, and APIs provided to the model.
 *   Trigger harmful actions via APIs. For example, the attacker could use an LLM to perform a SQL injection attack on an API it has access to.

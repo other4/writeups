@@ -4,7 +4,7 @@ description: "Understand CSRF attacks, how attackers exploit authenticated sessi
 author: ["name": "Rajendra Pancholi", "email": "rpancholi522@gmail.com"]
 created: "2026-04-18"
 updated: "2026-04-18"
-thumbnail: "/images/site-definition.png"
+thumbnail: "/images/csrf-vulnerability.png"
 tags: [csrf, web-security, authentication, bugbounty]
 keywords: ["CSRF attack", "CSRF token", "cross site request forgery", "csrf prevention"]
 ---
@@ -17,7 +17,7 @@ keywords: ["CSRF attack", "CSRF token", "cross site request forgery", "csrf prev
 * Exploits the browser automatically including credentials (usually cookies) in requests to a target site.
 * Partly circumvents same-origin protections by leveraging the victim’s authenticated session.
 
-![Cross-Site Request Forgery (CSRF)](/images/site-definition.png)
+![Cross-Site Request Forgery (CSRF)](/images/csrf-vulnerability.png)
 
 
 ## Impact

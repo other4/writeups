@@ -4,7 +4,7 @@ description: "Understand common JWT vulnerabilities like none algorithm, weak se
 author: ["name": "Rajendra Pancholi", "email": "rpancholi522@gmail.com"]
 created: "2026-04-18"
 updated: "2026-04-18"
-thumbnail: "/images/site-definition.png"
+thumbnail: "/images/jwt-vulnerability.png"
 tags: [jwt, authentication, web-security, bugbounty]
 keywords: ["JWT attack", "none algorithm", "JWT cracking", "authentication bypass"]
 ---
@@ -13,7 +13,7 @@ keywords: ["JWT attack", "none algorithm", "JWT cracking", "authentication bypas
 
 Understand common JWT vulnerabilities like none algorithm, weak secrets, and token manipulation.
 
-![JWT Vulnerabilities](/images/site-definition.png)
+![JWT Vulnerabilities](/images/jwt-vulnerability.png)
 
 
 ## What are JWTs?

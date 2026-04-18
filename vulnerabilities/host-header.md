@@ -4,7 +4,7 @@ description: "Explore host header injection attacks, their impact, and technique
 author: ["name": "Rajendra Pancholi", "email": "rpancholi522@gmail.com"]
 created: "2026-04-18"
 updated: "2026-04-18"
-thumbnail: "/images/site-definition.png"
+thumbnail: "/images/host-header-vulnerability.png"
 tags: [host-header, web-security, bugbounty, http]
 keywords: ["Host header injection", "password reset poisoning", "web cache poisoning"]
 ---
@@ -21,7 +21,7 @@ keywords: ["Host header injection", "password reset poisoning", "web cache poiso
   Host: example.com
   ```
 
-![Host Header Injection](/images/site-definition.png)
+![Host Header Injection](/images/host-header-vulnerability.png)
 
 * Why important?
 

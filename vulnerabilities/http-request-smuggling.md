@@ -11,6 +11,8 @@ keywords: ["HTTP request smuggling", "CL TE", "TE CL", "desync attack"]
 
 # HTTP Request Smuggling
 
+![HTTP Request Smuggling](/images/http-request-smuggling-vulnerability.png)
+
 ## Header Name Splitting
 
 You'll find some servers don't let you use newlines in header names, but do allow colons. This only rarely enables full desynchronization, due to the trailing colon appended during the downgrade:
@@ -39,7 +41,7 @@ GET / HTTP/1.1
 Host: example.com
 Host: psres.net: 443
 `
-![HTTP Request Smuggling](/images/site-definition.png)
+
 
 ```js
 fetch('https://0ae500b703a4d37580e70dd200160020.h1-web-security-academy.net', {

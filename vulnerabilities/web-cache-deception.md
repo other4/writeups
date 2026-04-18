@@ -4,7 +4,7 @@ description: 'Understand how attackers exploit caching mechanisms to expose sens
 author: ['name': 'Rajendra Pancholi', 'email': 'rpancholi522@gmail.com']
 created: '2026-04-18'
 updated: '2026-04-18'
-thumbnail: '/images/wcd-image-1.png'
+thumbnail: '/images/web-cache-deception-vulnerabilities.png'
 tags: [cache, web-security, bugbounty]
 keywords: ['web cache deception', 'cache attack', 'sensitive data exposure']
 ---
@@ -15,7 +15,7 @@ Web cache deception is a vulnerability that enables an attacker to trick a web c
 
 In a web cache deception attack, an attacker persuades a victim to visit a malicious URL, inducing the victim's browser to make an ambiguous request for sensitive content. The cache misinterprets this as a request for a static resource and stores the response. The attacker can then request the same URL to access the cached response, gaining unauthorized access to private information.
 
-![Web cache deception example](/images/wcd-image-1.png)
+![Web cache deception example](/images/web-cache-deception-vulnerabilities.png)
 
 #### Note
 

@@ -4,7 +4,7 @@ description: "Learn how clickjacking attacks trick users into unintended actions
 author: ["name": "Rajendra Pancholi", "email": "rpancholi522@gmail.com"]
 created: "2026-04-18"
 updated: "2026-04-18"
-thumbnail: "/images/site-definition.png"
+thumbnail: "/images/clickjacking-vulnerability.png"
 tags: [clickjacking, web-security, bugbounty, browser-security]
 keywords: ["Clickjacking attack", "UI redressing", "X-Frame-Options", "frame injection"]
 ---
@@ -16,7 +16,7 @@ keywords: ["Clickjacking attack", "UI redressing", "X-Frame-Options", "frame inj
 
 Clickjacking is an interface-based attack in which a user is tricked into clicking on actionable content on a hidden website by clicking on some other content in a decoy website. Consider the following example:
 
-![Clickjacking Vulnerability](/images/site-definition.png)
+![Clickjacking Vulnerability](/images/clickjacking-vulnerability.png)
 
 A web user accesses a decoy website (perhaps this is a link provided by an email) and clicks on a button to win a prize. Unknowingly, they have been deceived by an attacker into pressing an alternative hidden button and this results in the payment of an account on another site. This is an example of a clickjacking attack. The technique depends upon the incorporation of an invisible, actionable web page (or multiple pages) containing a button or hidden link, say, within an iframe. The iframe is overlaid on top of the user's anticipated decoy web page content. This attack differs from a [CSRF](/web-security/csrf) attack in that the user is required to perform an action such as a button click whereas a CSRF attack depends upon forging an entire request without the user's knowledge or input.
 

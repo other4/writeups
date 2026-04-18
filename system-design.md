@@ -2,7 +2,7 @@
 title: "System Design Overview"
 description: "A structured overview of system design covering core concepts and linking to detailed guides for each component and architectural pattern."
 author: ['name': 'Rajendra', "email": "author@mail.com" ]
-thumbnail: "/images/site-definition.png"
+thumbnail: "/images/system-desing-overview.jpeg"
 tags: [nextjs, typescript, github, system-design, sde, architectural]
 ---
 

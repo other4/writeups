@@ -4,7 +4,7 @@ description: "Explore how attackers poison caches to serve malicious content to 
 author: ["name": "Rajendra Pancholi", "email": "rpancholi522@gmail.com"]
 created: "2026-04-18"
 updated: "2026-04-18"
-thumbnail: "/images/site-definition.png"
+thumbnail: "/images/web-cache-poisoning-vulnerabilities.png"
 tags: [cache-poisoning, web-security, bugbounty]
 keywords: ["web cache poisoning", "cache manipulation", "cdn attack"]
 ---
@@ -13,6 +13,8 @@ keywords: ["web cache poisoning", "cache manipulation", "cdn attack"]
 
 * **What it is**:
   Attackers trick a web cache into storing a harmful response. Other users then receive this poisoned response instead of the real one.
+
+![Web Cache Poisoning](/images/web-cache-poisoning-vulnerabilities.png)
 
 * **How it works**:
 
