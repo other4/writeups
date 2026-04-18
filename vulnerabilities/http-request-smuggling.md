@@ -4,7 +4,7 @@ description: "Deep dive into HTTP request smuggling vulnerabilities caused by in
 author: ["name": "Rajendra Pancholi", "email": "rpancholi522@gmail.com"]
 created: "2026-04-18"
 updated: "2026-04-18"
-thumbnail: "/images/site-definition.png"
+thumbnail: "/images/http-request-smuggling-vulnerability.png"
 tags: [http, request-smuggling, web-security, bugbounty]
 keywords: ["HTTP request smuggling", "CL TE", "TE CL", "desync attack"]
 ---
