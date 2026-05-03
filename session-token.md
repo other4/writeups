@@ -9,8 +9,7 @@ tags: [Web Security, Reconnaissance, Session Management, Pentesting]
 keywords: ["Session token identification", "Web tech fingerprinting", "JSESSIONID", "PHPSESSID", "ASPSESSIONID"]
 ---
 
-# Identifying Tech Stacks via Session Tokens
-## Session Tokens
+# Session Tokens
 Many web servers and web application platforms generate session tokens by default with names that provide information about the technology in use. Identifying these tokens is a quick way to fingerprint the backend tech stack during the reconnaissance phase.
 
 ![Session Tokens](/images/session-token.png)
