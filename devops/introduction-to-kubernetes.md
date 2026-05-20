@@ -269,20 +269,10 @@ In Kubernetes, the `master process` ***refers to the Control Plane, which acts a
 3. Scheduling: The Scheduler notices a new Pod needs a home and tells the API Server which Node to use.
 4. Enforcement: The Controller Manager constantly checks that what is actually running matches what you requested in your configuration. 
 
-Would you like to see how these master components communicate with the Kubelet on your worker nodes to actually start a container?
 
----
 ## References
 [0] [kubernetes](https://kubernetes.io/docs/)
 [1] [https://www.geeksforgeeks.org](https://www.geeksforgeeks.org/devops/what-is-kubernetes-control-plane/)
 [2] [https://medium.com](https://medium.com/jorgeacetozi/kubernetes-master-components-etcd-api-server-controller-manager-and-scheduler-3a0179fc8186)
 [3] [https://medium.com](https://medium.com/@thisara.weerakoon2001/kubernetes-the-roles-of-master-and-worker-nodes-08fc539812d2)
 [4] [https://www.linkedin.com](https://www.linkedin.com/pulse/kubernetes-master-node-deep-dive-bojan-djokic-gkhbf)
-[5] [https://medium.com](https://medium.com/jorgeacetozi/kubernetes-master-components-etcd-api-server-controller-manager-and-scheduler-3a0179fc8186)
-[6] [https://medium.com](https://medium.com/@akshay.ar.1733/lesson-03-understanding-the-components-of-master-node-in-k8s-c168c7265c76)
-[7] [https://dev.to](https://dev.to/monarene/inside-the-kubernetes-control-plane-28ie)
-[8] [https://blog.devops.dev](https://blog.devops.dev/kubernetes-architecture-understanding-nodes-and-processes-bcc0e860a012)
-[9] [https://medium.com](https://medium.com/@rajeshkanumurudevops/kubernetes-master-components-248b57b36e03)
-[10] [https://www.armosec.io](https://www.armosec.io/glossary/kubernetes-control-plane/)
-
----
