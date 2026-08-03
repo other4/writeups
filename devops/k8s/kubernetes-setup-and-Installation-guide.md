@@ -16,18 +16,6 @@ keywords: ["Kubernetes installation guide", "How to install Kubernetes on Linux"
 
 ![Installation Guide](/images/k8sinstallation.png)
 
-## Table of Contents
-0. [Which one should I use?](#0-which-one-should-i-use)
-1. [Common Prerequisites (all methods)](#1-common-prerequisites-all-methods)
-2. [Install kubectl](#2-install-kubectl)
-3. [Method A: Kind (Kubernetes IN Docker)](#3-method-a-kind-kubernetes-in-docker)
-4. [Method B: Minikube](#4-method-b-minikube)
-5. [Method C: kubeadm (Real Multi-Node Cluster)](#5-method-c-kubeadm-real-multi-node-cluster)
-6. [Verifying Your Cluster](#6-verifying-your-cluster)
-7. [Common Setup Errors & Fixes](#7-common-setup-errors--fixes)
-8. [Uninstalling / Cleaning Up](#8-uninstalling--cleaning-up)
-9. [Quick Reference Table](#9-quick-reference-table)
-
 ## 0. Which one should I use?
 
 | Method | Best for | Nodes | Effort |

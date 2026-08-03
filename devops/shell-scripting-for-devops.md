@@ -15,25 +15,6 @@ keywords: ["Shell scripting for DevOps", "Bash scripting tutorial", "Linux shell
 
 ![Shell Scripting for DevOps](/images/shellscripting.png)
 
-## Table of Contents
-1. [What is Shell? Linux Architecture](#1-what-is-shell-linux-architecture)
-2. [History: sh vs bash](#2-history-sh-vs-bash)
-3. [Environment Setup](#3-environment-setup)
-4. [Your First Shell Script](#4-your-first-shell-script)
-5. [File Permissions & Making Scripts Executable](#5-file-permissions--making-scripts-executable)
-6. [Variables](#6-variables)
-7. [User Input (`read`)](#7-user-input-read)
-8. [Arguments (`$0`, `$1`, `$2`...)](#8-arguments-0-1-2)
-9. [Conditionals (if / elif / else)](#9-conditionals-if--elif--else)
-10. [Loops (for & while)](#10-loops-for--while)
-11. [Functions](#11-functions)
-12. [Error Handling](#12-error-handling)
-13. [Makefiles](#13-makefiles)
-14. [AWS CLI + Shell Automation](#14-aws-cli--shell-automation)
-15. [Project: Backup Script with Rotation](#15-project-backup-script-with-rotation)
-16. [Automating with Cron](#16-automating-with-cron)
-17. [Quick Command & Syntax Cheatsheet](#17-quick-command--syntax-cheatsheet)
-
 ## 1. What is Shell? Linux Architecture
 
 Think of Linux as three layers, from the hardware outward:
