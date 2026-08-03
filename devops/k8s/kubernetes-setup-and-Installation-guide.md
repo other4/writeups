@@ -1,6 +1,6 @@
 ---
 title: "Kubernetes Setup & Installation Guide (Linux)"
-description: "Every common way to get Kubernetes running on Linux — Kind, Minikube, and kubeadm — with prerequisites, step-by-step commands, verification, troubleshooting, and cleanup."
+description: "Every common way to get Kubernetes running on Linux - Kind, Minikube, and kubeadm - with prerequisites, step-by-step commands, verification, troubleshooting, and cleanup."
 author: ["name": "Rajendra Pancholi", "email": "rpancholi522@gmail.com" ]
 thumbnail: "/images/k8sinstallation.png"
 tags: [Kubernetes, Docker, DevOps, Cloud-Computing]
@@ -11,7 +11,7 @@ keywords: ["Kubernetes installation guide", "How to install Kubernetes on Linux"
 
 > Covers every common way to get Kubernetes running on a Linux machine:
 > **Kind** (fastest, local, multi-node in Docker), **Minikube** (local, single-node with add-ons),
-> and **kubeadm** (real multi-server cluster — what managed services like EKS do under the hood).
+> and **kubeadm** (real multi-server cluster - what managed services like EKS do under the hood).
 > Pick the one matching your goal in the [Which one should I use?](#0-which-one-should-i-use) section.
 
 ![Installation Guide](/images/k8sinstallation.png)
@@ -23,7 +23,7 @@ keywords: ["Kubernetes installation guide", "How to install Kubernetes on Linux"
 | **Kind** | Local dev/testing, CI pipelines, simulating multi-node behavior | Multiple (as Docker containers) | Low |
 | **Minikube** | Local dev, quick add-ons (dashboard, ingress, metrics-server) | Usually single-node | Low |
 | **kubeadm** | Learning real cluster internals, on-prem/bare-metal/VMs (e.g., EC2 instances) | Real multiple physical/virtual machines | High |
-| **EKS/AKS/GKE** | Production, managed control plane | Managed by cloud provider | Medium (out of scope here — covered separately) |
+| **EKS/AKS/GKE** | Production, managed control plane | Managed by cloud provider | Medium (out of scope here - covered separately) |
 
 If you just want to **learn and practice** → use **Kind**.
 If you want a **quick GUI dashboard / ingress out of the box** → use **Minikube**.
@@ -33,7 +33,7 @@ If you want to understand **exactly how a cluster is bootstrapped** (great for i
 ## 1. Common Prerequisites (all methods)
 
 ### 1.1 System requirements
-- Linux (Ubuntu 20.04/22.04/24.04 used in examples — Debian/CentOS work similarly with `yum`/`dnf` instead of `apt`).
+- Linux (Ubuntu 20.04/22.04/24.04 used in examples - Debian/CentOS work similarly with `yum`/`dnf` instead of `apt`).
 - Minimum 2 CPUs, 2GB RAM (4GB+ recommended) per node.
 - `sudo`/root access.
 
@@ -64,7 +64,7 @@ sudo apt-get install -y curl wget unzip
 
 ## 2. Install kubectl
 
-`kubectl` is the CLI you use to talk to *any* Kubernetes cluster (Kind, Minikube, kubeadm, or a cloud-managed one) — install this regardless of which method you choose below.
+`kubectl` is the CLI you use to talk to *any* Kubernetes cluster (Kind, Minikube, kubeadm, or a cloud-managed one) - install this regardless of which method you choose below.
 
 ```bash
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
@@ -80,7 +80,7 @@ kubectl version --client
 
 ## 3. Method A: Kind (Kubernetes IN Docker)
 
-Kind runs each "node" of your cluster as a Docker container — great for spinning up realistic multi-node clusters locally in seconds.
+Kind runs each "node" of your cluster as a Docker container - great for spinning up realistic multi-node clusters locally in seconds.
 
 ### 3.1 Install Kind
 ```bash
@@ -154,7 +154,7 @@ minikube version
 minikube start --driver=docker
 kubectl get nodes
 ```
-> `--driver=docker` runs Minikube's node as a Docker container — good when you're already on a headless server (e.g., an EC2 instance) without a hypervisor.
+> `--driver=docker` runs Minikube's node as a Docker container - good when you're already on a headless server (e.g., an EC2 instance) without a hypervisor.
 
 ### 4.3 Useful add-ons
 ```bash
@@ -184,7 +184,7 @@ minikube delete
 
 ## 5. Method C: kubeadm (Real Multi-Node Cluster)
 
-This is how you'd build a cluster across **real/separate machines** (e.g., 3 EC2 instances, or 3 VMs) — one becomes the control-plane, others join as workers. Run the steps in **Section 5.1** on *every* machine (master + workers), and the master-only/worker-only steps where indicated.
+This is how you'd build a cluster across **real/separate machines** (e.g., 3 EC2 instances, or 3 VMs) - one becomes the control-plane, others join as workers. Run the steps in **Section 5.1** on *every* machine (master + workers), and the master-only/worker-only steps where indicated.
 
 ### 5.1 On ALL nodes (master + every worker)
 
@@ -273,7 +273,7 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/manifests/calico.yaml
 ```
 
-**Generate the join command for workers** (save this output — you'll need it in 5.3):
+**Generate the join command for workers** (save this output - you'll need it in 5.3):
 ```bash
 kubeadm token create --print-join-command
 ```
@@ -291,7 +291,7 @@ sudo kubeadm join <master-ip>:6443 --token <token> \
 > sudo kubeadm reset
 > ```
 
-### 5.4 Back on the MASTER — verify workers joined
+### 5.4 Back on the MASTER - verify workers joined
 ```bash
 kubectl get nodes
 # nodes show NotReady briefly, then Ready once the CNI finishes setting up networking
