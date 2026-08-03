@@ -14,20 +14,6 @@ keywords: ["Docker interview questions", "Docker interview questions and answers
 
 ![Docker Interview Questions & Answers](/images/docker-interview-qa.png)
 
-## Table of Contents
-1. [Fundamentals](#1-fundamentals)
-2. [Images & Dockerfile](#2-images--dockerfile)
-3. [Containers — Lifecycle & Runtime](#3-containers--lifecycle--runtime)
-4. [Networking](#4-networking)
-5. [Storage / Volumes](#5-storage--volumes)
-6. [Docker Compose](#6-docker-compose)
-7. [Docker Architecture & Internals](#7-docker-architecture--internals)
-8. [Security](#8-security)
-9. [Registry & Image Distribution](#9-registry--image-distribution)
-10. [Performance & Optimization](#10-performance--optimization)
-11. [Scenario-Based Questions](#11-scenario-based-questions)
-12. [Rapid-Fire One-Liners](#12-rapid-fire-one-liners)
-
 ## 1. Fundamentals
 
 **Q1. What is Docker?**
