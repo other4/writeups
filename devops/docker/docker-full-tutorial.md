@@ -14,7 +14,7 @@ keywords: ["Introduction to Docker", "Docker tutorial for beginners", "Docker an
 
 ## 1. Introduction to Docker
 
-### 1.1 The Problem — "Works on my machine"
+### 1.1 The Problem - "Works on my machine"
 
 A classic scenario in the software industry:
 
@@ -37,9 +37,9 @@ This happens because of differences in:
 
 ### 1.2 What is Docker?
 
-**Docker** is an **open-source containerization platform** that packages an application together with everything it needs (code, runtime, system libraries, dependencies, config) into a single unit called a **container**, so it runs identically anywhere — your laptop, a teammate's laptop, or a cloud server.
+**Docker** is an **open-source containerization platform** that packages an application together with everything it needs (code, runtime, system libraries, dependencies, config) into a single unit called a **container**, so it runs identically anywhere - your laptop, a teammate's laptop, or a cloud server.
 
-> **Key correction:** Docker doesn't just create a "virtual environment" — it uses **Linux kernel features** (namespaces and cgroups) to isolate processes. This is the actual mechanism, not magic. More on this below.
+> **Note:** Docker doesn't just create a "virtual environment" - it uses **Linux kernel features** (namespaces and cgroups) to isolate processes. This is the actual mechanism, not magic. More on this below.
 
 ### 1.3 History of Docker
 
@@ -88,13 +88,13 @@ graph TD
 | Isolation unit | Full Guest OS via **Hypervisor** | Process, isolated via **namespaces/cgroups** |
 | Boot time | Minutes | Seconds |
 | Size | GBs (full OS) | MBs (just app + deps) |
-| Resource usage | Heavy — dedicated RAM/CPU per VM | Light — shares host OS kernel |
+| Resource usage | Heavy - dedicated RAM/CPU per VM | Light - shares host OS kernel |
 | Density | Few VMs per machine (e.g., 1–2 on 8GB RAM) | Many containers per machine |
 | Tools | VMware, VirtualBox, Hyper-V | Docker, **Podman**, **containerd** |
 
-> **Correction/Clarification:** A container is **NOT** "a lightweight VM." That's a common oversimplification. A container is just an **isolated process on the host OS kernel** — it does not virtualize hardware or boot its own kernel. That's precisely *why* it's so much lighter than a VM.
+> **Note:** A container is **NOT** "a lightweight VM." That's a common oversimplification. A container is just an **isolated process on the host OS kernel** - it does not virtualize hardware or boot its own kernel. That's precisely *why* it's so much lighter than a VM.
 
-> **Added concept:** The actual isolation is done using two Linux kernel primitives:
+> **Note:** The actual isolation is done using two Linux kernel primitives:
 > - **Namespaces** → isolate what a process can *see* (its own PID list, network interfaces, mount points, hostname, users)
 > - **cgroups (control groups)** → limit what a process can *use* (CPU, memory, disk I/O limits)
 >
@@ -121,12 +121,10 @@ graph LR
 | Component | What it does |
 |---|---|
 | **Docker CLI** | The command-line tool you type commands into (`docker run`, `docker ps`, etc.). Talks to the daemon via a REST API. |
-| **Docker Daemon (`dockerd`)** | Background service (Docker Engine) that does the actual work — builds images, runs containers, manages networks/volumes. |
+| **Docker Daemon (`dockerd`)** | Background service (Docker Engine) that does the actual work - builds images, runs containers, manages networks/volumes. |
 | **containerd** | A CNCF project, written in Go, that Docker uses internally to actually manage the container lifecycle (create, start, stop). |
 | **runc** | The low-level OCI-compliant runtime that actually creates the container using namespaces/cgroups. `containerd` calls `runc` under the hood. |
 | **Docker Client / Docker Desktop** | GUI or CLI that talks to the Engine via the API and shows you containers, images, volumes, etc. |
-
-> **Correction:** The video calls "Docker Engine" = "Docker Application Container Engine" and treats it as one blob. Technically it's a stack: **Docker CLI → dockerd → containerd → runc**. Good enough for beginners, but worth knowing the actual chain for interviews.
 
 ---
 
@@ -164,8 +162,6 @@ newgrp docker      # refresh group without logging out
 docker ps
 ```
 
-> **Why the permission error happens:** `dockerd` runs as root and listens on `/var/run/docker.sock`. Your normal user isn't in the `docker` group by default, so it can't talk to the socket. Adding your user to the `docker` group fixes this — **but note:** this effectively grants root-equivalent access, so be careful in production/shared environments.
-
 ---
 
 ## 4. Docker Images
@@ -181,10 +177,10 @@ graph LR
 ```
 
 - **Dockerfile** = the recipe / cheat sheet you write
-- **Docker Image** = a read-only, portable, layered blueprint built from the Dockerfile — like a "template" or "class"
-- **Docker Container** = a running (or stopped) **instance** of the image — like an "object" of that class
+- **Docker Image** = a read-only, portable, layered blueprint built from the Dockerfile - like a "template" or "class"
+- **Docker Container** = a running (or stopped) **instance** of the image - like an "object" of that class
 
-> **Added concept:** Images are made of **layers**. Each instruction in a Dockerfile (`FROM`, `RUN`, `COPY`, etc.) creates a new read-only layer, cached and stacked on top of each other. This is *why* Docker builds are fast on rebuild (layer caching) and why image size grows with each layer.
+> **Note:** Images are made of **layers**. Each instruction in a Dockerfile (`FROM`, `RUN`, `COPY`, etc.) creates a new read-only layer, cached and stacked on top of each other. This is *why* Docker builds are fast on rebuild (layer caching) and why image size grows with each layer.
 
 ### 4.2 Pulling & Running Pre-built Images
 
@@ -219,11 +215,11 @@ docker run -it ...         # interactive terminal mode
 docker run -itd ...        # interactive + detached + persistent (won't exit immediately)
 ```
 
-> **Important distinction (often missed):** A container's default lifecycle is: **run the CMD → exit.** If your CMD is just `echo "hello"`, the container runs it and dies immediately. That's expected behavior — not a bug! Use `-itd` for long-running processes like `ubuntu bash` that you want to keep alive.
+> **Note:** A container's default lifecycle is: **run the CMD → exit.** If your CMD is just `echo "hello"`, the container runs it and dies immediately. That's expected behavior - not a bug! Use `-itd` for long-running processes like `ubuntu bash` that you want to keep alive.
 
 ### 4.5 Rebuilding After Code Changes
 
-If you change your app's source code, the **image must be rebuilt** — a running container will NOT auto-pick-up host file changes (unless using volumes/bind mounts, covered later).
+If you change your app's source code, the **image must be rebuilt** - a running container will NOT auto-pick-up host file changes (unless using volumes/bind mounts, covered later).
 
 ```bash
 docker build -t java-app .
@@ -236,7 +232,7 @@ docker run java-app
 
 ### 5.1 The Maggi Noodles Analogy 🍜
 
-A Dockerfile is just a **recipe** — a sequence of steps:
+A Dockerfile is just a **recipe** - a sequence of steps:
 1. Take a pot (base image)
 2. Add water (set up environment)
 3. Add noodles, boil (copy code, install deps)
@@ -245,7 +241,7 @@ A Dockerfile is just a **recipe** — a sequence of steps:
 ### 5.2 Anatomy of a Basic Dockerfile
 
 ```dockerfile
-# 1. Base image — gives you the OS + runtime you need
+# 1. Base image - gives you the OS + runtime you need
 FROM openjdk:17-alpine
 
 # 2. Working directory inside the container
@@ -271,10 +267,10 @@ CMD ["java", "Main"]
 | `RUN` | Executes a command, creates a new image layer (installs, compiles) | Build time |
 | `ENV` | Sets environment variables | Build & runtime |
 | `EXPOSE` | Documents which port the app listens on (doesn't actually publish it) | Metadata only |
-| `CMD` | Default command when container **starts** | Runtime — **can be overridden** by `docker run <image> <new-cmd>` |
-| `ENTRYPOINT` | Fixed command when container starts | Runtime — **cannot be overridden**, only appended to |
+| `CMD` | Default command when container **starts** | Runtime - **can be overridden** by `docker run <image> <new-cmd>` |
+| `ENTRYPOINT` | Fixed command when container starts | Runtime - **cannot be overridden**, only appended to |
 
-> **CMD vs ENTRYPOINT — clarified analogy:** Think of `ENTRYPOINT` as the glass, and `CMD` as the straw. You can swap out the straw (`CMD` is overridable at `docker run`), but the glass stays fixed (`ENTRYPOINT` isn't). Many real Dockerfiles combine both:
+> **CMD vs ENTRYPOINT:** Think of `ENTRYPOINT` as the glass, and `CMD` as the straw. You can swap out the straw (`CMD` is overridable at `docker run`), but the glass stays fixed (`ENTRYPOINT` isn't). Many real Dockerfiles combine both:
 > ```dockerfile
 > ENTRYPOINT ["python"]
 > CMD ["run.py"]
@@ -319,9 +315,9 @@ graph LR
     Browser["🌐 Browser: localhost:8080"] --> HP
 ```
 
-`-p <host_port>:<container_port>` — maps a port on your host machine to a port inside the container. Without this, the app is only reachable *inside* the container's network namespace.
+`-p <host_port>:<container_port>` - maps a port on your host machine to a port inside the container. Without this, the app is only reachable *inside* the container's network namespace.
 
-> **Added concept:** If your app still isn't reachable, check your **cloud provider's Security Group / Firewall rules** (as shown for AWS EC2 in the video) — the container port mapping is a Docker-level concern; the cloud firewall is a separate, additional layer you must also open.
+> **Note:** If your app still isn't reachable, check your **cloud provider's Security Group / Firewall rules** - the container port mapping is a Docker-level concern; the cloud firewall is a separate, additional layer you must also open.
 
 ### 5.7 Useful Debugging Commands
 
@@ -337,7 +333,7 @@ docker exec -it <container_id> bash   # get an interactive shell INSIDE a runnin
 
 ### 6.1 Why Networking Is Needed
 
-By default, each container is **isolated** — two containers can't talk to each other unless you explicitly connect them via a network.
+By default, each container is **isolated** - two containers can't talk to each other unless you explicitly connect them via a network.
 
 ```mermaid
 graph TB
@@ -355,14 +351,12 @@ graph TB
 | Driver | Description | When used |
 |---|---|---|
 | **bridge** | Default network; Docker creates a virtual bridge between host and containers | Default for standalone containers |
-| **host** | Container shares the host's network stack directly (no isolation, no port mapping needed) | Rare — performance-critical or debugging use |
-| **user-defined bridge** | A custom bridge network you create — containers on it can resolve each other **by container name** (this is the key feature!) | **Recommended for multi-container apps** |
-| **none** | No networking at all — fully isolated | Security-sensitive, batch jobs needing no network |
+| **host** | Container shares the host's network stack directly (no isolation, no port mapping needed) | Rare - performance-critical or debugging use |
+| **user-defined bridge** | A custom bridge network you create - containers on it can resolve each other **by container name** (this is the key feature!) | **Recommended for multi-container apps** |
+| **none** | No networking at all - fully isolated | Security-sensitive, batch jobs needing no network |
 | **macvlan** | Assigns a container a real MAC address on the physical network | Advanced / legacy-integration use cases |
 | **ipvlan** | Similar to macvlan but shares MAC, splits by IP | Advanced networking setups |
 | **overlay** | Multi-host networking, used in Docker Swarm clusters | Swarm / multi-host orchestration |
-
-> **Correction:** The default **bridge** network does *NOT* support container-name-based DNS resolution between containers — only **user-defined bridge networks** do. This is exactly the bug demonstrated in the video (trying `mysql` as hostname failed until a custom network was created) — it's not a coincidence, it's how Docker's default bridge is designed. Always create a custom network for multi-container communication.
 
 ### 6.3 Commands
 
@@ -376,7 +370,7 @@ docker run -d --name mysql --network my-net -e MYSQL_ROOT_PASSWORD=root mysql
 docker run -d --name flask-app --network my-net -e MYSQL_HOST=mysql my-flask-image
 ```
 
-> **Key insight:** Inside a user-defined bridge network, the **container name acts as its hostname**. So `flask-app` can reach `mysql` at hostname `mysql` — Docker's internal DNS resolves it automatically.
+> **Note:** Inside a user-defined bridge network, the **container name acts as its hostname**. So `flask-app` can reach `mysql` at hostname `mysql` - Docker's internal DNS resolves it automatically.
 
 ---
 
@@ -390,7 +384,7 @@ graph LR
     Layer -.->|docker rm| Gone[❌ Data Lost!]
 ```
 
-If you `docker rm` a container (or it crashes), **any data written inside its writable layer is lost forever** — including database data.
+If you `docker rm` a container (or it crashes), **any data written inside its writable layer is lost forever** - including database data.
 
 ### 7.2 The Solution: Volumes
 
@@ -423,8 +417,6 @@ docker run -d --name mysql -v ~/volumes/mysql:/var/lib/mysql -e MYSQL_ROOT_PASSW
 | Managed by | Docker | You (any host path) |
 | Location | `/var/lib/docker/volumes/...` | Anywhere you specify |
 | Best for | Production, portability | Local dev, need exact host path access |
-
-> **Added concept:** There's a third type — **tmpfs mounts** — which store data in host RAM only (never written to disk), useful for temporary sensitive data (like secrets during a build). Not covered in the video but worth mentioning to students.
 
 ---
 
@@ -483,7 +475,6 @@ networks:
   two-tier:
 ```
 
-> **Important correction:** The video repeatedly writes `version: "3.8"` at the top of the compose file, and even hits an error ("additional property version is not allowed") mid-video. **This is correct and expected** — in **Docker Compose v2 (the current standard, using the `docker compose` CLI plugin)**, the `version` key is **deprecated/obsolete** and should simply be omitted. Just start your file directly with `services:`.
 
 ### 8.3 Key Directives
 
@@ -492,13 +483,12 @@ networks:
 | `services` | Defines each container to build/run |
 | `build.context` | Folder containing the Dockerfile to build from |
 | `image` | Use a pre-built image instead of building |
-| `environment` | Env vars — same as `docker run -e` |
-| `depends_on` | Controls **startup order** (not readiness — see below) |
+| `environment` | Env vars - same as `docker run -e` |
+| `depends_on` | Controls **startup order** (not readiness - see below) |
 | `healthcheck` | Defines a test command to verify the container is truly ready |
 | `networks` / `volumes` (top-level) | Declares shared networks/volumes referenced by services |
 | `restart: always` | Auto-restarts the container on crash/reboot |
 
-> **Critical correction — `depends_on` is NOT enough:** As the video correctly discovers through trial and error, `depends_on` only guarantees **start order**, not that the dependency is **ready to accept connections**. MySQL's container process starts almost instantly, but MySQL itself takes several seconds to actually accept connections. That's exactly why a `healthcheck` + `depends_on: condition: service_healthy` (or `condition: service_started` in older syntax) is required — this is a very common real-world bug, well demonstrated in the video's live debugging.
 
 ### 8.4 Commands
 
@@ -532,7 +522,7 @@ docker push yourusername/two-tier-backend:latest
 docker pull yourusername/two-tier-backend:latest
 ```
 
-> **Added concept:** A **Personal Access Token (PAT)** should always be preferred over your Docker Hub account password for CLI login — especially in CI/CD pipelines — because tokens can be scoped (read/write/delete) and revoked individually without changing your main account password.
+> **Note:** A **Personal Access Token (PAT)** should always be preferred over your Docker Hub account password for CLI login - especially in CI/CD pipelines - because tokens can be scoped (read/write/delete) and revoked individually without changing your main account password.
 
 ### 9.2 Using a Pushed Image in Compose
 
@@ -543,9 +533,9 @@ services:
     image: yourusername/two-tier-backend:latest
 ```
 
-This avoids rebuilding on every machine — pull the pre-built image instead.
+This avoids rebuilding on every machine - pull the pre-built image instead.
 
-> **Added concept:** Docker Hub's free tier has **public repositories by default**. You can also create **private repositories** (limited number on free tier) if you don't want your image publicly accessible. Alternatives to Docker Hub include **AWS ECR**, **Google Artifact Registry**, **GitHub Container Registry (ghcr.io)**, and self-hosted registries.
+> **Note:** Docker Hub's free tier has **public repositories by default**. You can also create **private repositories** (limited number on free tier) if you don't want your image publicly accessible. Alternatives to Docker Hub include **AWS ECR**, **Google Artifact Registry**, **GitHub Container Registry (ghcr.io)**, and self-hosted registries.
 
 ---
 
@@ -585,8 +575,6 @@ COPY . .
 CMD ["python", "run.py"]
 ```
 
-**Result from the video:** image size dropped from **~1.1 GB → ~140 MB** 🎉
-
 ### 10.3 Real-World Java/Maven Example
 
 ```dockerfile
@@ -606,7 +594,7 @@ CMD ["java", "-jar", "app.jar"]
 > **Why this matters (interview point):** Smaller images mean:
 > - Faster `docker pull`/`docker push`
 > - Faster container startup
-> - Smaller attack surface (fewer packages = fewer vulnerabilities) — ties directly into **Docker Scout** scanning (Section 15)
+> - Smaller attack surface (fewer packages = fewer vulnerabilities) - ties directly into **Docker Scout** scanning (Section 15)
 > - Lower storage/bandwidth costs in CI/CD pipelines
 
 ---
@@ -622,10 +610,10 @@ docker attach <container_id>            # attach terminal directly (blocks your 
 nohup docker attach <container_id> &> nohup.out &
 ```
 
-> **Added concept — production-grade logging:** `docker logs` is fine for local debugging, but in production you typically ship container logs to a centralized system:
+> **Note - production-grade logging:** `docker logs` is fine for local debugging, but in production you typically ship container logs to a centralized system:
 > - **Docker logging drivers**: `json-file` (default), `syslog`, `fluentd`, `awslogs`, `gelf`
 > - **The ELK/EFK stack** (Elasticsearch/Fluentd/Logstash + Kibana) or **Grafana Loki**
-> - **`docker stats`** — for real-time CPU/memory/network usage per container (not covered in the video, but essential):
+> - **`docker stats`** - for real-time CPU/memory/network usage per container:
 > ```bash
 > docker stats                 # live resource usage of all running containers
 > docker stats <container_id>  # for one specific container
@@ -657,14 +645,14 @@ graph TB
 
 | Concept | Meaning |
 |---|---|
-| **Pod** | Smallest deployable unit — wraps one or more containers that share network/storage |
+| **Pod** | Smallest deployable unit - wraps one or more containers that share network/storage |
 | **Deployment** | Manages a set of identical Pods (replicas), handles rolling updates |
 | **Service** | Stable network endpoint to reach a set of Pods (load balancing) |
 | **Ingress** | Manages external HTTP(S) routing into the cluster |
 | **Auto-healing** | If a Pod/container crashes, Kubernetes automatically restarts/replaces it |
 | **Auto-scaling** | Automatically adds/removes Pods based on load (CPU, custom metrics) |
 
-> Under the hood, Kubernetes still runs your **Docker (or containerd) containers** — it just adds a management/orchestration layer on top so you don't manually babysit containers across dozens/hundreds of machines.
+> Under the hood, Kubernetes still runs your **Docker (or containerd) containers** - it just adds a management/orchestration layer on top so you don't manually babysit containers across dozens/hundreds of machines.
 
 ---
 
@@ -681,7 +669,7 @@ graph LR
 
 ### 13.2 What Nginx Does Here
 
-Nginx acts as a **reverse proxy** — the outside world only ever talks to port `80`. Internally, Nginx forwards (`proxy_pass`) requests to the Django app running on port `8000`, so the client never needs to know or use that internal port.
+Nginx acts as a **reverse proxy** - the outside world only ever talks to port `80`. Internally, Nginx forwards (`proxy_pass`) requests to the Django app running on port `8000`, so the client never needs to know or use that internal port.
 
 ```nginx
 server {
@@ -691,12 +679,6 @@ server {
     }
 }
 ```
-
-### 13.3 Key Debugging Lessons from the Video (worth teaching explicitly)
-
-1. **`unknown server host mysql`** → the containers weren't on the same custom network. **Fix:** create one shared network and attach all three containers to it.
-2. **`Nginx: host not found in upstream`** → Nginx's config referenced a container name that didn't match the actual `container_name` in Compose. **Lesson: container names in your Nginx config, environment variables, and `docker-compose.yml` must all match exactly.**
-3. **Env var naming** — Spring/Django settings map dot-separated config keys (`spring.datasource.url`) to **UPPERCASE_UNDERSCORE** environment variables (`SPRING_DATASOURCE_URL`). This is a standard Spring Boot convention (called *relaxed binding*), not something specific to Docker.
 
 ---
 
@@ -726,14 +708,14 @@ COPY --from=builder /app/target/*.jar app.jar
 CMD ["java", "-jar", "app.jar"]
 ```
 
-### 14.3 Debugging Lesson — Real MySQL/JDBC Gotcha
+### 14.3 Debugging Lesson - Real MySQL/JDBC Gotcha
 
-The video hits: `PublicKeyRetrievalNotAllowed` type errors, fixed by adding to the JDBC URL:
+`PublicKeyRetrievalNotAllowed` type errors, fixed by adding to the JDBC URL:
 ```
 jdbc:mysql://mysql:3306/expenses_tracker?allowPublicKeyRetrieval=true&useSSL=false
 ```
 
-> **Explanation:** MySQL 8+'s default authentication plugin (`caching_sha2_password`) requires either an SSL connection or explicit permission (`allowPublicKeyRetrieval=true`) to exchange the RSA public key used for password encryption over an unencrypted channel. This is a **security feature**, not a bug — good to explain to students so they understand *why*, not just copy-paste the fix.
+> **Explanation:** MySQL 8+'s default authentication plugin (`caching_sha2_password`) requires either an SSL connection or explicit permission (`allowPublicKeyRetrieval=true`) to exchange the RSA public key used for password encryption over an unencrypted channel. This is a **security feature**, not a bug - good to explain to students so they understand *why*, not just copy-paste the fix.
 
 ### 14.4 Domain Name Mapping
 
@@ -746,13 +728,13 @@ jdbc:mysql://mysql:3306/expenses_tracker?allowPublicKeyRetrieval=true&useSSL=fal
 4. Rebuild/restart containers
 5. Open a browser → `http://yourdomain.com`
 
-> **Added concept:** For a real production domain, you'd also want **HTTPS**. The standard free approach is **Let's Encrypt** via **Certbot**, often automated with the `nginx-proxy` + `acme-companion` Docker images, or a reverse proxy like **Traefik** or **Caddy** which handles automatic TLS certificate issuance for you.
+> **Note:** For a real production domain, you'd also want **HTTPS**. The standard free approach is **Let's Encrypt** via **Certbot**, often automated with the `nginx-proxy` + `acme-companion` Docker images, or a reverse proxy like **Traefik** or **Caddy** which handles automatic TLS certificate issuance for you.
 
 ---
 
 ## 15. Bonus: Docker Scout & Docker Init
 
-### 15.1 Docker Scout — Image Vulnerability Scanning
+### 15.1 Docker Scout - Image Vulnerability Scanning
 
 ```bash
 docker scout quickview <image_name>
@@ -761,9 +743,7 @@ docker scout cves <image_name>          # detailed CVE (Common Vulnerabilities &
 
 Docker Scout analyzes your image (and its base image) for known security vulnerabilities, categorized as **Critical / High / Medium / Low** severity, and links to the actual CVE database entries.
 
-> **Added concept:** This is exactly the kind of tool used in a CI/CD pipeline's **security gate** — many teams fail a build automatically if `docker scout cves` reports any Critical/High vulnerabilities above a threshold. Similar tools: **Trivy** (mentioned in the video), **Grype**, **Snyk**.
-
-### 15.2 Docker Init — Auto-generate Boilerplate
+### 15.2 Docker Init - Auto-generate Boilerplate
 
 ```bash
 docker init
@@ -784,7 +764,7 @@ node_modules
 *.log
 ```
 
-Prevents unnecessary/sensitive files from being copied into your build context and final image — same idea as `.gitignore`.
+Prevents unnecessary/sensitive files from being copied into your build context and final image - same idea as `.gitignore`.
 
 ---
 
@@ -832,23 +812,5 @@ docker compose logs -f <service>
 docker system prune            # remove stopped containers, unused networks/images/build cache
 docker system prune -a --volumes  # nuke everything unused (careful!)
 ```
-
----
-
-## 17. Corrections & Added Concepts (Instructor Notes)
-
-A quick summary of corrections/additions to call out explicitly to students, since these are common misconceptions or interview trip-ups:
-
-1. **Containers ≠ lightweight VMs.** They're isolated *processes* on the host kernel (via namespaces + cgroups), not mini virtual machines.
-2. **Only user-defined bridge networks give you container-name DNS resolution.** The default `bridge` network does not.
-3. **`depends_on` controls start order, not readiness.** Always pair it with a `healthcheck` for stateful services like databases.
-4. **Compose `version:` key is obsolete in Compose v2** — just start the file with `services:`.
-5. **`allowPublicKeyRetrieval=true` / `useSSL=false`** is a MySQL 8 authentication-security behavior, not a random workaround.
-6. **Docker's internal stack:** CLI → dockerd → containerd → runc (OCI runtime) — not just "one Docker Engine blob."
-7. **Use Personal Access Tokens, not your account password**, for `docker login`, especially in CI/CD.
-8. **`docker stats`** is essential for real-time resource monitoring — not shown in the video but commonly used alongside `docker logs`.
-9. Beyond Docker Hub: **AWS ECR, GitHub Container Registry, Google Artifact Registry** are common alternatives, especially in cloud-native pipelines.
-10. For production HTTPS, look at **Let's Encrypt/Certbot** or reverse proxies like **Traefik/Caddy** with automatic TLS.
-11. **Podman** is a daemonless, rootless alternative to Docker worth mentioning — API-compatible with Docker CLI in most cases.
 
 ---
