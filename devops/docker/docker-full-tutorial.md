@@ -10,8 +10,6 @@ keywords: ["Introduction to Docker", "Docker tutorial for beginners", "Docker an
 
 # 🐳 Complete Docker Tutorial
 
-> Based on your "Docker in One Shot" video. Reorganized into a structured written tutorial with diagrams, corrected terminology, and a few added concepts your students will get asked about in interviews.
-
 ![Introduction to Docker](/images/docker-tutorial.jpeg)
 
 ## 1. Introduction to Docker
