@@ -9,7 +9,6 @@ keywords: ["Shell scripting for DevOps", "Bash scripting tutorial", "Linux shell
 
 # Shell Scripting for DevOps
 
-> Condensed, organized study notes based on a full "Shell Scripting in One Shot for DevOps" course.
 > Covers: Linux/Shell fundamentals → Environment Setup → Variables & Arguments → Conditionals →
 > Loops → Functions → Error Handling → Makefiles → AWS CLI Automation → Backup & Rotation Projects.
 
@@ -36,7 +35,7 @@ flowchart TB
 ## 2. History: sh vs bash
 
 | Shell | Created by | Location | Notes |
-|---|---|---|---|
+|
 | **sh** (Bourne Shell) | Steve Bourne (helped Linus Torvalds) | `/bin/sh` | The original shell |
 | **bash** (Bourne Again SHell) | Community improvements on `sh` | `/bin/bash` | The most widely used shell today - **this is what we learn** |
 
@@ -79,7 +78,7 @@ You need something to write scripts in - `vim`, `nano`, or `gedit`. This tutoria
 vim hello.txt      # opens/creates the file
 ```
 | Mode | How to enter | Purpose |
-|---|---|---|
+|
 | Command mode | Default / press `Esc` | Navigate, run commands |
 | Insert mode | Press `i` | Actually type/edit text |
 | Save & quit | `Esc` then `:wq` | Write and quit |
@@ -125,7 +124,7 @@ type owner   group    others
 Each permission group can have `r` (read), `w` (write), `x` (execute) - represented numerically:
 
 | Value | Meaning |
-|---|---|
+|
 | 4 | Read |
 | 2 | Write |
 | 1 | Execute |
@@ -157,7 +156,7 @@ A **variable** is a named container whose value can change ("vary-able").
 
 ```bash
 #!/bin/bash
-name="Jetha"
+name="Ram"
 echo "Name is $name"
 ```
 
@@ -213,7 +212,7 @@ When you run a script with extra words after it, those words are **arguments**, 
 ./myscript.sh alpha beta
 ```
 | Token | Meaning |
-|---|---|
+|
 | `$0` | The script's own name/path (`./myscript.sh`) |
 | `$1` | First argument (`alpha`) |
 | `$2` | Second argument (`beta`) |
@@ -227,7 +226,6 @@ echo "First argument: $1"
 echo "Second argument: $2"
 ```
 
-**Why this matters**: instead of a script always prompting interactively, you can pass values directly on the command line - enabling automation (e.g., creating many users in one shot):
 ```bash
 ./create_user.sh shubham
 ./create_user.sh alice
@@ -248,12 +246,12 @@ Real-world logic always has "conditions" - `if this then that, else something el
 ### Basic syntax
 ```bash
 #!/bin/bash
-read -p "Enter the name: " bandi
+read -p "Enter the name: " wife
 
-if [ "$bandi" == "DayaBhabhi" ]; then
-    echo "Jetha is loyal"
+if [ "$wife" == "Seeta" ]; then
+    echo "Ram is loyal"
 else
-    echo "Jetha is not loyal"
+    echo "Ram is not loyal"
 fi
 ```
 - `if [ condition ]; then ... fi` - note the **spaces** inside `[ ]` are mandatory, and the block is closed with `fi` (`if` spelled backwards).
@@ -262,25 +260,25 @@ fi
 ### Multiple conditions (elif)
 ```bash
 #!/bin/bash
-read -p "Enter the name: " bandi
+read -p "Enter the name: " wife
 read -p "Enter love percentage: " love
 
-if [ "$bandi" == "DayaBhabhi" ]; then
-    echo "Jetha is loyal"
+if [ "$wife" == "Seeta" ]; then
+    echo "Ram is loyal"
 elif [ "$love" -ge 100 ]; then
-    echo "Jetha is loyal"
+    echo "Ram is loyal"
 else
-    echo "Jetha is not loyal"
+    echo "Ram is not loyal"
 fi
 ```
 
 ```mermaid
 flowchart TD
-    Start([Start]) --> C1{bandi == DayaBhabhi?}
-    C1 -->|Yes| L1[Jetha is loyal]
+    Start([Start]) --> C1{wife == Seeta?}
+    C1 -->|Yes| L1[Ram is loyal]
     C1 -->|No| C2{love >= 100?}
-    C2 -->|Yes| L2[Jetha is loyal]
-    C2 -->|No| L3[Jetha is not loyal]
+    C2 -->|Yes| L2[Ram is loyal]
+    C2 -->|No| L3[Ram is not loyal]
 ```
 
 ## 10. Loops (for & while)
@@ -316,7 +314,7 @@ do
 done
 ```
 ```bash
-./forloop.sh day 0 90     # creates day0, day1, ... day90
+./forloop.sh day 0 90 
 ```
 > ⚠️ In `for (( ... ))`, there is **no semicolon needed right after** the closing `))` before `do` on the same line if you use a newline - but if you're used to C, remember Bash's `for` loop doesn't need a trailing `;` the way some other constructs do. Test small changes with trial and error - syntax errors are completely normal.
 
@@ -364,7 +362,7 @@ A **function** groups reusable logic under a name, so you don't repeat code.
 #!/bin/bash
 
 function is_loyal() {
-    if [ "$1" == "DayaBhabhi" ]; then
+    if [ "$1" == "Seeta" ]; then
         echo "$1 is loyal"
     else
         echo "$1 is not loyal"
@@ -477,7 +475,6 @@ target:
 	shell-command-1
 	shell-command-2
 ```
-> ⚠️ The indentation before commands **must be a Tab**, not spaces - this trips up almost everyone the first time.
 
 ### Example: Docker workflow Makefile
 ```makefile
@@ -632,8 +629,6 @@ sequenceDiagram
     Script->>Script: Print "Instance is now running"
 ```
 
-> **Why not just use Terraform/Ansible for this?** They're purpose-built IaC tools and are usually the better choice for real infra provisioning. But understanding how to do it in raw shell + AWS CLI builds the foundational knowledge of *what those tools are doing under the hood* - and shell + CLI scripting is genuinely used for lightweight automation tasks throughout the DevOps lifecycle (CI/CD steps, glue scripts, health checks, etc.).
-
 ## 15. Project: Backup Script with Rotation
 
 **Goal**: back up a directory daily, but only keep the **last N days** of backups (older ones get deleted automatically) - otherwise your backup storage grows forever.
@@ -661,7 +656,7 @@ display_usage() {
     echo "Usage: $0 <path-to-source> <path-to-backup-folder>"
 }
 
-# --- 1. Validate arguments ---
+# 1. Validate arguments
 if [ $# -eq 0 ]; then
     display_usage
     exit 1
@@ -671,7 +666,7 @@ SOURCE_DIR=$1
 BACKUP_DIR=$2
 TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
 
-# --- 2. Create the backup ---
+# 2. Create the backup
 create_backup() {
     zip -r "$BACKUP_DIR/backup_$TIMESTAMP.zip" "$SOURCE_DIR" > /dev/null 2>&1
     if [ $? -eq 0 ]; then
@@ -679,7 +674,7 @@ create_backup() {
     fi
 }
 
-# --- 3. Rotate old backups (keep only latest 5) ---
+# 3. Rotate old backups (keep only latest 5)
 perform_rotation() {
     backups=($(ls -t "$BACKUP_DIR"/backup*))   # sorted newest-first
 
@@ -742,25 +737,25 @@ flowchart LR
 ## 17. Quick Command & Syntax Cheatsheet
 
 ```bash
-# ----- Shebang -----
+# Shebang
 #!/bin/bash
 
-# ----- Variables -----
+# Variables
 name="value"
 echo "$name"
 result=$(some_command)
 
-# ----- User input -----
+# User input
 read -p "Prompt text: " variable_name
 
-# ----- Arguments -----
+# Arguments
 $0   # script name
 $1   # first argument
 $2   # second argument
 $#   # number of arguments
 $@   # all arguments
 
-# ----- Conditionals -----
+# Conditionals
 if [ "$a" == "$b" ]; then
     echo "equal"
 elif [ "$a" -gt 10 ]; then
@@ -769,27 +764,27 @@ else
     echo "not equal"
 fi
 
-# ----- Numeric comparisons -----
+# Numeric comparisons
 -eq  -ne  -gt  -lt  -ge  -le
 
-# ----- For loop -----
+# For loop
 for i in 1 2 3; do echo "$i"; done
 for (( i=1; i<=5; i++ )); do echo "$i"; done
 
-# ----- While loop -----
+# While loop
 i=0
 while [ $i -le 5 ]; do
     echo "$i"
     i=$((i+1))
 done
 
-# ----- Functions -----
+# Functions
 my_func() {
     echo "arg1 was $1"
 }
 my_func "hello"
 
-# ----- Error handling -----
+# Error handling
 if ! some_command; then
     echo "failed"
     exit 1
@@ -798,22 +793,22 @@ echo "exit code of last command: $?"
 command 2>/dev/null       # discard stderr
 command > /dev/null 2>&1  # discard both stdout and stderr
 
-# ----- File permissions -----
+# File permissions
 chmod 755 script.sh   # rwx r-x r-x
-chmod 700 script.sh   # rwx --- ---
+chmod 700 script.sh   # rwx
 ls -l script.sh        # inspect permissions
 
-# ----- Running scripts -----
+# Running scripts
 ./script.sh arg1 arg2
 bash script.sh arg1 arg2
 
-# ----- Arrays -----
+# Arrays
 arr=(a b c d e f)
 echo "${arr[@]}"        # all elements
 echo "${#arr[@]}"        # length
 echo "${arr[@]:3}"       # elements from index 3 onward
 
-# ----- Cron -----
+# Cron
 crontab -e
 * * * * * /bin/bash /path/to/script.sh arg1 arg2
 ```
